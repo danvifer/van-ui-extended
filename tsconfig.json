@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",               // Compila para navegadores modernos
+    "module": "ESNext",               // Usa módulos ES
+    "moduleResolution": "node",       // Resolución de módulos al estilo Node.js
+    "declaration": true,              // Genera definiciones de tipos
+    "emitDeclarationOnly": false,     // Emite tanto JS como .d.ts
+    "outDir": "./dist",               // Carpeta de salida
+    "rootDir": "./lib",               // Carpeta raíz de los archivos fuente
+    "strict": true,                   // Habilita comprobaciones estrictas
+    "esModuleInterop": true,          // Interoperabilidad con CommonJS
+    "skipLibCheck": true              // Omite verificaciones de dependencias externas
+  },
+  "include": ["lib"],                 // Incluye todos los archivos fuente
+  "exclude": ["node_modules", "dist"] // Excluye dependencias y la salida
+}
