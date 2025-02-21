@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",               // Compila para navegadores modernos
     "module": "ESNext",               // Usa módulos ES
+    "allowJs": true,
     "moduleResolution": "node",       // Resolución de módulos al estilo Node.js
     "declaration": true,              // Genera definiciones de tipos
     "emitDeclarationOnly": false,     // Emite tanto JS como .d.ts
