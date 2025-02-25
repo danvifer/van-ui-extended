@@ -1,5 +1,4 @@
 import van, { State, ChildDom } from "vanjs-core"
-import "../style.css"
 const { div, button, img, span } = van.tags
 const { path, svg } = van.tags("http://www.w3.org/2000/svg")
 export type Value = {

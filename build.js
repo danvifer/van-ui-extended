@@ -13,6 +13,7 @@ async function build() {
     external: [
       // Excluye las dependencias externas
       "@remoteoss/json-schema-form",
+      "tailwindcss",
       "vanjs-core",
       "vanjs-ext",
     ],

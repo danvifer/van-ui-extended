@@ -1,5 +1,4 @@
 import van, { State } from "vanjs-core"
-import "../style.css"
 const { textarea } = van.tags
 export const TextAreaComponent = (inputValue: State<string>, height: Number) => {
     return () =>
