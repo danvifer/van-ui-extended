@@ -1,14 +1,13 @@
 {
-  "name": "vanjs-jsf",
-  "description": "A JSON Schema Form UI Library for VanJS",
+  "name": "van-ui-extended",
+  "description": "A VanJS UI extended components library.",
   "keywords": [
     "vanjs",
-    "json",
-    "schema",
+    "vanjs-ui",
     "form",
     "ui-library"
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "wisewolftech",
     "email": ""
