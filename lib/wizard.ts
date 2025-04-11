@@ -10,34 +10,34 @@ export type Step = {
     preAction?: Function,
     postAction?: Function
 };
-const closed = van.state(false)
-async function executeActions(preAction?: Function, postAction?: Function, close?: Boolean) {
-    if (postAction) {
-        document.getElementById("spinner")?.setAttribute("class", "inline")
-        document.getElementById("no-spinner")?.setAttribute("class", "hidden")
-        await postAction()
-        document.getElementById("spinner")?.setAttribute("class", "hidden")
-        document.getElementById("no-spinner")?.setAttribute("class", "inline")
-    }
-    if (preAction) {
-        document.getElementById("spinner")?.setAttribute("class", "inline")
-        document.getElementById("no-spinner")?.setAttribute("class", "hidden")
-        await preAction()
-        document.getElementById("spinner")?.setAttribute("class", "hidden")
-        document.getElementById("no-spinner")?.setAttribute("class", "inline")
-    }
-    if (close) {
-        closed.val = true
-    }
-}
+
 export interface WizardProps {
     readonly steps: Array<Step>;
     readonly title: string;
-    readonly mode: "create" | "edit";
+    closed: State<boolean>;
     readonly closeWizard: Function;
 }
-export const WizardComponent = ({ steps, title, mode, closeWizard }: WizardProps, ...children: readonly ChildDom[]
+export const WizardComponent = ({ steps, title, closeWizard, closed }: WizardProps, ...children: readonly ChildDom[]
 ) => {
+    async function executeActions(preAction?: Function, postAction?: Function, close?: Boolean) {
+        if (postAction) {
+            document.getElementById("spinner")?.setAttribute("class", "inline")
+            document.getElementById("no-spinner")?.setAttribute("class", "hidden")
+            await postAction()
+            document.getElementById("spinner")?.setAttribute("class", "hidden")
+            document.getElementById("no-spinner")?.setAttribute("class", "inline")
+        }
+        if (preAction) {
+            document.getElementById("spinner")?.setAttribute("class", "inline")
+            document.getElementById("no-spinner")?.setAttribute("class", "hidden")
+            await preAction()
+            document.getElementById("spinner")?.setAttribute("class", "hidden")
+            document.getElementById("no-spinner")?.setAttribute("class", "inline")
+        }
+        if (close) {
+            closed.val = true
+        }
+    }
     const step = van.state(0)
     const prevButton = van.derive(() => step.val > 0 ? button({ class: "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer", type: "submit", style: "cursor: pointer;", onclick: () => step.val-- }, 'prev') : "")
     const nextButton = van.derive(() => step.val < steps.length - 1 ? button({
@@ -57,7 +57,6 @@ export const WizardComponent = ({ steps, title, mode, closeWizard }: WizardProps
     steps.forEach((val, index) => {
         stepsInfo.push(() => div({ class: "flex my-2 " + (index == step.val ? "text-[#658b8a]" : "") }, span({ class: "mr-2", style: "width:28px; height: 28px;border: thin solid; border-width: medium;border-radius: 50%;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;border-color: rgb(101, 139, 138)" + (index != step.val ? "opacity-75 text-[#658b8a]" : "") }, index + 1), val.name));
     })
-    closed.val = false
     van.add(document.body, Modal({ closed: closed, modalStyleOverrides: { "background-color": "", "color": "", "width": "80%", "height": "100%", "padding": "0px", "z-index": "1000 !important" }, modalClass: "bg-stone-900 text-white absolute inset-y-0 right-0 z-40" },
         div({ class: "p-2" }, button({ class: "cursor-pointer og ogiconclose", onclick: () => { closed.val = true; closeWizard() } }), span({ class: "inline text-xl ml-2" }, title)),
         div(
