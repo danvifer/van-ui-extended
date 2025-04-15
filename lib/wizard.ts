@@ -1,6 +1,6 @@
 import van, { ChildDom, State } from "vanjs-core";
 import { Modal } from "vanjs-ui"
-const { div, button, span } = van.tags;
+const { div, button, span, i } = van.tags;
 const { circle, path, svg } = van.tags("http://www.w3.org/2000/svg")
 
 export type Step = {
@@ -15,9 +15,13 @@ export interface WizardProps {
     readonly steps: Array<Step>;
     readonly title: string;
     closed: State<boolean>;
+    readonly primaryColor?: string;
+    readonly secondaryColor?: string;
+    readonly customPrimaryButtonStyle?: string;
+    readonly customSecondaryButtonStyle?: string;
     readonly closeWizard: Function;
 }
-export const WizardComponent = ({ steps, title, closeWizard, closed }: WizardProps, ...children: readonly ChildDom[]
+export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "" }: WizardProps, ...children: readonly ChildDom[]
 ) => {
     async function executeActions(preAction?: Function, postAction?: Function, close?: Boolean) {
         if (postAction) {
@@ -39,14 +43,14 @@ export const WizardComponent = ({ steps, title, closeWizard, closed }: WizardPro
         }
     }
     const step = van.state(0)
-    const prevButton = van.derive(() => step.val > 0 ? button({ class: "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer", type: "submit", style: "cursor: pointer;", onclick: () => step.val-- }, 'prev') : "")
+    const prevButton = van.derive(() => step.val > 0 ? button({ class: `hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer`, type: "submit", style: customSecondaryButtonStyle, onclick: () => step.val-- }, 'prev') : "")
     const nextButton = van.derive(() => step.val < steps.length - 1 ? button({
-        class: "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer", type: "submit", disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: () => {
+        class: `text-white hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer`, style: customPrimaryButtonStyle, type: "submit", disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: () => {
             executeActions(steps[step.val + 1].preAction, steps[step.val].postAction);
             step.val++;
         }
     }, 'next') : "")
-    const saveButton = van.derive(() => step.val === steps.length - 1 ? button({ class: "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer", disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: () => { executeActions(undefined, steps[step.val].postAction, true); closeWizard() } }, span({ id: "spinner", class: "hidden" },
+    const saveButton = van.derive(() => step.val === steps.length - 1 ? button({ class: `hover:opacity-90 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer`, style: customPrimaryButtonStyle, disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: () => { executeActions(undefined, steps[step.val].postAction, true); closeWizard() } }, span({ id: "spinner", class: "hidden" },
         svg({ class: "mr-3 size-5 animate-spin inline", viewBox: "0 0 24 24" },
             circle({ class: "opacity-25", cx: "12", cy: "12", "r": "10", stroke: "white", "stroke-width": "4" }),
             path({ class: "opacity-75", fill: "white", "d": "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })), "Loading"), span({ id: "no-spinner" }, 'Create')) : null)
@@ -55,7 +59,7 @@ export const WizardComponent = ({ steps, title, closeWizard, closed }: WizardPro
 
     const currentStep = van.derive(() => steps[step.val].element)
     steps.forEach((val, index) => {
-        stepsInfo.push(() => div({ class: "flex my-2 " + (index == step.val ? "text-[#658b8a]" : "") }, span({ class: "mr-2", style: "width:28px; height: 28px;border: thin solid; border-width: medium;border-radius: 50%;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;border-color: rgb(101, 139, 138)" + (index != step.val ? "opacity-75 text-[#658b8a]" : "") }, index + 1), val.name));
+        stepsInfo.push(() => div({ class: "flex my-2 " + (index == step.val ? `text-${primaryColor}` : "") }, span({ class: `mr-2 border-${primaryColor}`, style: "width:28px; height: 28px;border: thin solid; border-width: medium;border-radius: 50%;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;" + (index != step.val ? "opacity-75 text-[#658b8a]" : "") }, index + 1), val.name));
     })
     van.add(document.body, Modal({ closed: closed, modalStyleOverrides: { "background-color": "", "color": "", "width": "80%", "height": "100%", "padding": "0px", "z-index": "1000 !important" }, modalClass: "bg-stone-900 text-white absolute inset-y-0 right-0 z-40" },
         div({ class: "p-2" }, button({ class: "cursor-pointer og ogiconclose", onclick: () => { closed.val = true; closeWizard() } }), span({ class: "inline text-xl ml-2" }, title)),

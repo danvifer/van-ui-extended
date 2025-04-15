@@ -7,7 +7,7 @@
     "form",
     "ui-library"
   ],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": {
     "name": "wisewolftech",
     "email": ""
@@ -24,7 +24,7 @@
   "scripts": {
     "build": "node build.js",
     "types": "tsc",
-    "dev": "vite"
+    "dev": "vite --force"
   },
   "peerDependencies": {
     "esbuild": "^0.24.2",

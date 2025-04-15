@@ -99,7 +99,7 @@ export const Select = ({
         }
 
     }
-    return div({ class: "flex w-screen h-screen justify-center items-center" }, div({ class: selectClass },
+    return div({ class: selectClass },
         div({ class: "relative w-full group" },
             button({ class: selectClass + " min-w-[100px] py-2.5 px-3 md:text-sm text-site bg-transparent border border-dimmed  focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold cursor-pointer" },
                 innerValue
@@ -114,6 +114,6 @@ export const Select = ({
                     value.description ? div({ class: "text-xs text-gray-500" }, value.description) : null
                 )), footer.length > 0 ? div({ class: "border-t px-0 py-0" }, footer) : null
                 )
-            ))))
+            )))
 }
 

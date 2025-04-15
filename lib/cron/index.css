@@ -1,7 +1,6 @@
 cron-expression-input * {
     font-size: 16px !important;
     line-height: 21px !important;
-    color: black !important;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   }
   
@@ -13,6 +12,7 @@ cron-expression-input * {
   cron-expression-input .cronInput input[type="text"] {
     width: 98% !important;
     box-shadow: none !important;
+    color: white !important;
     padding-left: 10px !important;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
@@ -70,8 +70,8 @@ cron-expression-input * {
     padding: 6px 12px !important;
     font-size: 14px !important;
     line-height: 1.42857143 !important;
-    color: #555 !important;
-    background-color: #fff !important;
+    color: white !important;
+    background-color: #1c1917 !important;
     background-image: none !important;
     border: 1px solid #ccc !important;
     border-radius: 4px !important;
@@ -121,7 +121,7 @@ cron-expression-input * {
   
   cron-expression-input .btn:focus,
   cron-expression-input .btn:hover {
-    color: #333 !important;
+    color: black !important;
     text-decoration: none !important;
   }
   
@@ -147,7 +147,7 @@ cron-expression-input * {
   }
   
   cron-expression-input .btn-custom:hover {
-    color: #fff !important;
+    color: black !important;
     background-color: #d99129 !important;
     border-color: #d99129 !important;
   }
@@ -162,7 +162,7 @@ cron-expression-input * {
   
   cron-expression-input .btn-custom:active:focus,
   cron-expression-input .btn-custom:active:hover {
-    color: #fff !important;
+    color: black !important;
     background-color: #d99129 !important;
     border-color: #ccc !important;
   }
@@ -197,12 +197,12 @@ cron-expression-input * {
   
   cron-expression-input .nav > li > a:focus,
   cron-expression-input .nav > li > a:hover {
-    text-decoration: none !important;
     background-color: #eee !important;
+    color: black;
   }
   
   cron-expression-input .nav-tabs {
-    border-bottom: 1px solid #ddd !important;
+    border-bottom: 1px solid #020617 !important;
   }
   
   cron-expression-input .nav-tabs > li {
@@ -218,16 +218,16 @@ cron-expression-input * {
   }
   
   cron-expression-input .nav-tabs > li > a:hover {
-    border-color: #eee #eee #ddd !important;
+    border-color: #eee #eee #020617 !important;
   }
   
   cron-expression-input .nav-tabs > li.active > a,
   cron-expression-input .nav-tabs > li.active > a:focus,
   cron-expression-input .nav-tabs > li.active > a:hover {
-    color: #555 !important;
+    color: white !important;
     cursor: default !important;
-    background-color: #fff !important;
-    border: 1px solid #ddd !important;
+    background-color: #78716c !important;
+    border: 1px solid #020617 !important;
     border-bottom-color: transparent !important;
   }
   
@@ -241,7 +241,7 @@ cron-expression-input * {
   
   cron-expression-input .panel {
     margin-bottom: 20px !important;
-    background-color: #fff !important;
+    background-color: #1c1917 !important;
     border: 1px solid transparent !important;
     border-radius: 4px !important;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
@@ -260,13 +260,13 @@ cron-expression-input * {
   }
   
   cron-expression-input .panel-default {
-    border-color: #ddd !important;
+    border-color: #020617 !important;
   }
   
   cron-expression-input .panel-default > .panel-heading {
-    color: #333 !important;
-    background-color: #f5f5f5 !important;
-    border-color: #ddd !important;
+    color: white !important;
+    background-color: #1c1917 !important;
+    border-color: #020617 !important;
   }
   
   cron-expression-input .close2 {
@@ -278,7 +278,7 @@ cron-expression-input * {
   
   cron-expression-input .close2:focus,
   cron-expression-input .close2:hover {
-    color: #000 !important;
+    color: white !important;
     text-decoration: none !important;
     cursor: pointer !important;
     opacity: 0.5 !important;
@@ -299,13 +299,14 @@ cron-expression-input * {
   
   cron-expression-input .modal-dialog {
     position: relative !important;
+    background-color: #1c1917 !important;
+    color: white;
     width: auto !important;
     margin: 10px !important;
   }
   
   cron-expression-input .modal-content {
     position: relative !important;
-    background-color: #fff !important;
     -webkit-background-clip: padding-box !important;
     background-clip: padding-box !important;
     border: 1px solid #999 !important;
