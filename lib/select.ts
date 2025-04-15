@@ -10,9 +10,9 @@ export type Value = {
     func?: (value: any) => void;
 }
 let allVals: Array<Value>
-let innerValue: any;
 export interface SelectProps {
     readonly values: Value[],
+    readonly modelValue: State<any>
     readonly selected?: string,
     readonly selectClass?: string,
     readonly optionsClass?: string,
@@ -23,6 +23,7 @@ export interface SelectProps {
 }
 export const Select = ({
     values = [],
+    modelValue = van.state(""),
     selected = '',
     selectClass = 'w-[450px] text-gray-900',
     optionsClass = '',
@@ -42,7 +43,7 @@ export const Select = ({
                     multipleValues?.val.push(innerVal.value || "")
                     fillSelect()
                 } else {
-                    innerValue.val = span(innerVal.img ? img({ src: innerVal.img || "", class: "h-4 w-4 inline mr-2" }) : null, innerVal.label)
+                    modelValue.val = span(innerVal.img ? img({ src: innerVal.img || "", class: "h-4 w-4 inline mr-2" }) : null, innerVal.label)
                 }
             }
             if (func) {
@@ -79,7 +80,7 @@ export const Select = ({
                 ),
             ))
         });
-        innerValue.val = span(options)
+        modelValue.val = span(options)
     }
     allVals = values
     let innerVal
@@ -92,17 +93,17 @@ export const Select = ({
     if (innerVal) {
         if (multiple) {
             multipleValues?.val.push(innerVal.value || "")
-            innerValue = van.state()
+            modelValue = van.state()
             fillSelect()
         } else {
-            innerValue = van.state(span(innerVal.img ? img({ src: innerVal.img || "", class: "h-4 w-4 inline mr-2" }) : null, innerVal.label))
+            modelValue = van.state(span(innerVal.img ? img({ src: innerVal.img || "", class: "h-4 w-4 inline mr-2" }) : null, innerVal.label))
         }
 
     }
     return div({ class: selectClass },
         div({ class: "relative w-full group" },
             button({ class: selectClass + " min-w-[100px] py-2.5 px-3 md:text-sm text-site bg-transparent border border-dimmed  focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold cursor-pointer" },
-                innerValue
+                modelValue
             ),
             div({ id: "select-father", class: "w-full absolute z-[99] top-[100%] left-[50%] translate-x-[-50%] rounded-md overflow-hidden shadow-lg min-w-[100px] peer-focus:visible peer-focus:opacity-100 opacity-0 invisible duration-200 p-1 bg-gray-100  border border-dimmed text-xs md:text-sm " + optionsClass },
                 div({ class: "max-h-150 overflow-auto" }, vanX.list(div, values, ({ val: value }) => div({
