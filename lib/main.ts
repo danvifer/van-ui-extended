@@ -67,6 +67,7 @@ const App = () => {
   return Select(
     {
       values: vals,
+      modelValue: van.state(""),
       selected: "yes",
       multiple: false,
       selectClass: "bg-stone-800",
