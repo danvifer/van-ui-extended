@@ -1,6 +1,7 @@
 import { CronFields } from "./cron/nodes/CronFields";
 import { CronExpresionInput } from "./cron/nodes/CronExpresionInput";
-if (customElements.get("cron-expression-input")) {
+import "./cron/index.css"
+if (!customElements.get("cron-expression-input")) {
     customElements.define("cron-expression-input", CronExpresionInput);
 }
 if (!customElements.get("cron-fields")) {
