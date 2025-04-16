@@ -71,7 +71,7 @@ cron-expression-input * {
     font-size: 14px !important;
     line-height: 1.42857143 !important;
     color: white !important;
-    background-color: #1c1917 !important;
+    background-color: #2b2c2d !important;
     background-image: none !important;
     border: 1px solid #ccc !important;
     border-radius: 4px !important;
@@ -241,7 +241,7 @@ cron-expression-input * {
   
   cron-expression-input .panel {
     margin-bottom: 20px !important;
-    background-color: #1c1917 !important;
+    background-color: #2b2c2d !important;
     border: 1px solid transparent !important;
     border-radius: 4px !important;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
@@ -265,7 +265,7 @@ cron-expression-input * {
   
   cron-expression-input .panel-default > .panel-heading {
     color: white !important;
-    background-color: #1c1917 !important;
+    background-color: #2b2c2d !important;
     border-color: #020617 !important;
   }
   
@@ -299,7 +299,7 @@ cron-expression-input * {
   
   cron-expression-input .modal-dialog {
     position: relative !important;
-    background-color: #1c1917 !important;
+    background-color: #2b2c2d !important;
     color: white;
     width: auto !important;
     margin: 10px !important;
