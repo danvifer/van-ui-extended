@@ -17,11 +17,12 @@ export interface WizardProps {
     closed: State<boolean>;
     readonly primaryColor?: string;
     readonly secondaryColor?: string;
+    readonly modalClass?: string;
     readonly customPrimaryButtonStyle?: string;
     readonly customSecondaryButtonStyle?: string;
     readonly closeWizard: Function;
 }
-export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "" }: WizardProps, ...children: readonly ChildDom[]
+export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", modalClass = "bg-stone-900 text-white absolute inset-y-0 right-0 z-40", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "" }: WizardProps, ...children: readonly ChildDom[]
 ) => {
     async function executeActions(preAction?: Function, postAction?: Function, close?: Boolean) {
         if (postAction) {
@@ -59,9 +60,9 @@ export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColo
 
     const currentStep = van.derive(() => steps[step.val].element)
     steps.forEach((val, index) => {
-        stepsInfo.push(() => div({ class: "flex my-2 " + (index == step.val ? `text-${primaryColor}` : "") }, span({ class: `mr-2 border-${primaryColor}`, style: "width:28px; height: 28px;border: thin solid; border-width: medium;border-radius: 50%;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;" + (index != step.val ? "opacity-75 text-[#658b8a]" : "") }, index + 1), val.name));
+        stepsInfo.push(() => div({ class: "flex my-2 " + (index == step.val ? `text-${primaryColor}` : "") }, span({ class: `mr-2 border-${primaryColor}`, style: "width:28px; height: 28px;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;" + (index != step.val ? "opacity-75 text-[#658b8a]" : "") + (index == step.val ? "border: thin solid; border-width: medium;border-radius: 50%;" : "") }, index + 1), val.name));
     })
-    van.add(document.body, Modal({ closed: closed, modalStyleOverrides: { "background-color": "", "color": "", "width": "80%", "height": "100%", "padding": "0px", "z-index": "1000 !important" }, modalClass: "bg-stone-900 text-white absolute inset-y-0 right-0 z-40" },
+    van.add(document.body, Modal({ closed: closed, modalStyleOverrides: { "background-color": "", "color": "", "width": "80%", "height": "100%", "padding": "0px", "z-index": "1000 !important" }, modalClass },
         div({ class: "p-2" }, button({ class: "cursor-pointer og ogiconclose", onclick: () => { closed.val = true; closeWizard() } }), span({ class: "inline text-xl ml-2" }, title)),
         div(
             { id: 'appContainer', class: 'grid grid-cols-4 grid-rows-4 auto-rows-min md:grid-cols-6 lg:grid-cols-15 min-h-screen bg-neutral-900 text-white', style: "border-top: 1px solid oklch(.372 .044 257.287);" },
