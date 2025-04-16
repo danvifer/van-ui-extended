@@ -18,11 +18,12 @@ export interface WizardProps {
     readonly primaryColor?: string;
     readonly secondaryColor?: string;
     readonly modalClass?: string;
+    readonly backgroundColor?: string;
     readonly customPrimaryButtonStyle?: string;
     readonly customSecondaryButtonStyle?: string;
     readonly closeWizard: Function;
 }
-export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", modalClass = "bg-stone-900 text-white absolute inset-y-0 right-0 z-40", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "" }: WizardProps, ...children: readonly ChildDom[]
+export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", modalClass = "text-white absolute inset-y-0 right-0 z-40", backgroundColor = "#314158", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "" }: WizardProps, ...children: readonly ChildDom[]
 ) => {
     async function executeActions(preAction?: Function, postAction?: Function, close?: Boolean) {
         if (postAction) {
@@ -62,14 +63,14 @@ export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColo
     steps.forEach((val, index) => {
         stepsInfo.push(() => div({ class: "flex my-2 " + (index == step.val ? `text-${primaryColor}` : "") }, span({ class: `mr-2 border-${primaryColor}`, style: "width:28px; height: 28px;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;" + (index != step.val ? "opacity-75 text-[#658b8a]" : "") + (index == step.val ? "border: thin solid; border-width: medium;border-radius: 50%;" : "") }, index + 1), val.name));
     })
-    van.add(document.body, Modal({ closed: closed, modalStyleOverrides: { "background-color": "", "color": "", "width": "80%", "height": "100%", "padding": "0px", "z-index": "1000 !important" }, modalClass },
+    van.add(document.body, Modal({ closed: closed, modalStyleOverrides: { "background-color": "", "color": "", "width": "80%", "height": "100%", "padding": "0px", "z-index": "1000 !important" }, modalClass: modalClass + `bg-[${backgroundColor}]` },
         div({ class: "p-2" }, button({ class: "cursor-pointer og ogiconclose", onclick: () => { closed.val = true; closeWizard() } }), span({ class: "inline text-xl ml-2" }, title)),
         div(
             { id: 'appContainer', class: 'grid grid-cols-4 grid-rows-4 auto-rows-min md:grid-cols-6 lg:grid-cols-15 min-h-screen bg-neutral-900 text-white', style: "border-top: 1px solid oklch(.372 .044 257.287);" },
-            div({ id: "leftbarwrapper", class: "col-span-3 row-span-4 md:col-span-1 lg:col-span-3 text-white p-4 lg:block bg-stone-900", style: "border-right: 1px solid oklch(.372 .044 257.287);" },
+            div({ id: "leftbarwrapper", class: `col-span-3 row-span-4 md:col-span-1 lg:col-span-3 text-white p-4 lg:block bg-[${backgroundColor}]` + modalClass, style: "border-right: 1px solid oklch(.372 .044 257.287);" },
                 stepsInfo
             ),
-            () => div({ id: "appMainWrapper", class: "col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-stone-900" },
+            () => div({ id: "appMainWrapper", class: `col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-[${backgroundColor}] ` + modalClass },
                 currentStep.val, div({ class: "absolute right-0 bottom-0" }, () => prevButton.val, () => nextButton.val, () => saveButton.val
                 ))))
     )
