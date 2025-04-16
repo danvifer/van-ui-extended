@@ -67,10 +67,10 @@ export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColo
         div({ class: "p-2" }, button({ class: "cursor-pointer og ogiconclose", onclick: () => { closed.val = true; closeWizard() } }), span({ class: "inline text-xl ml-2" }, title)),
         div(
             { id: 'appContainer', class: 'grid grid-cols-4 grid-rows-4 auto-rows-min md:grid-cols-6 lg:grid-cols-15 min-h-screen bg-neutral-900 text-white', style: "border-top: 1px solid oklch(.372 .044 257.287);" },
-            div({ id: "leftbarwrapper", class: `col-span-3 row-span-4 md:col-span-1 lg:col-span-3 text-white p-4 lg:block bg-[${backgroundColor}]` + modalClass, style: "border-right: 1px solid oklch(.372 .044 257.287);" },
+            div({ id: "leftbarwrapper", class: `col-span-3 row-span-4 md:col-span-1 lg:col-span-3 text-white p-4 lg:block bg-[${backgroundColor}]`, style: "border-right: 1px solid oklch(.372 .044 257.287);" },
                 stepsInfo
             ),
-            () => div({ id: "appMainWrapper", class: `col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-[${backgroundColor}] ` + modalClass },
+            () => div({ id: "appMainWrapper", class: `col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-[${backgroundColor}] ` },
                 currentStep.val, div({ class: "absolute right-0 bottom-0" }, () => prevButton.val, () => nextButton.val, () => saveButton.val
                 ))))
     )
