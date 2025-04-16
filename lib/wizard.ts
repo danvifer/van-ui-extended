@@ -71,7 +71,7 @@ export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColo
                 stepsInfo
             ),
             () => div({ id: "appMainWrapper", class: `col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-[${backgroundColor}] ` },
-                currentStep.val, div({ class: "absolute right-0 bottom-0" }, () => prevButton.val, () => nextButton.val, () => saveButton.val
+                currentStep.val, div({ class: "absolute right-0 bottom-0 mr-4" }, () => prevButton.val, () => nextButton.val, () => saveButton.val
                 ))))
     )
 };
