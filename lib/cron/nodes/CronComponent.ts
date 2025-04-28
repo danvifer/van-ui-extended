@@ -16,10 +16,7 @@ export class CronComponent extends HTMLElement {
     }
 
     Create(self: any, template: any) {
-        self.innerHTML = "";
-        var div = document.createElement("div");
-        div.innerHTML = template;
-        self.appendChild(div);
+        self.appendChild(template);
     }
     getElements(className: any) {
         return this.state.self.querySelectorAll(className);

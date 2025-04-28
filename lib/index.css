@@ -10,7 +10,6 @@ cron-expression-input * {
   }
   
   cron-expression-input .cronInput input[type="text"] {
-    width: 98% !important;
     box-shadow: none !important;
     color: white !important;
     padding-left: 10px !important;
@@ -20,8 +19,6 @@ cron-expression-input * {
   }
   
   cron-expression-input .cronInput button {
-    position: absolute !important;
-    right: 0 !important;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
     z-index: 2 !important;

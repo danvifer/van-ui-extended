@@ -4,7 +4,7 @@ ceInputLangInternal = lang;
 import { CronComponent } from "./CronComponent";
 import { CronExpresionInputTemplateGenerator } from "../templates/CronExpresionInputTemplate";
 
-import cron from 'cron-validator'
+import { isValidCron } from 'cron-validator'
 import cronstrue from 'cronstrue';
 
 export class CronExpresionInput extends CronComponent {
@@ -33,6 +33,7 @@ export class CronExpresionInput extends CronComponent {
         });
 
         var template = CronExpresionInputTemplateGenerator(this, ceInputLangInternal);
+        console.log(template)
 
         var self = this;
         this.Create(self, template);
@@ -105,15 +106,20 @@ export class CronExpresionInput extends CronComponent {
     validator(self: this) {
         var insideInput = self.querySelector(".cronInsideInput");
         var error = self.getElement(".cronexpressionError");
+        var tooltip = self.getElement(".cronexpressionDescription");
+        console.log(!isValidCron((insideInput as HTMLInputElement).value))
+        console.log((insideInput as HTMLInputElement).value.length != 0)
         if (
             ((insideInput as HTMLInputElement)?.value?.length == 0 && self.required) ||
-            ((insideInput as HTMLInputElement).value.length != 0 && !cron.isValidCron((insideInput as HTMLInputElement).value))
+            ((insideInput as HTMLInputElement).value.length != 0 && !isValidCron((insideInput as HTMLInputElement).value))
         ) {
+            tooltip.innerHTML = cronstrue.toString((insideInput as HTMLInputElement).value)
             error.classList.replace("hiden", "show");
             return false;
         }
         error.classList.replace("show", "hiden");
         if (insideInput instanceof HTMLInputElement) {
+            tooltip.innerHTML = cronstrue.toString((insideInput as HTMLInputElement).value)
             self.setValue(insideInput.value);
         }
         return true;
@@ -212,6 +218,7 @@ export class CronExpresionInput extends CronComponent {
         this.sendEvent();
     }
     setValue(value: string | null | undefined) {
+        console.log(value)
         var defaultArray = ["*", "*", "*", "*", "*"];
         if (value == undefined) return defaultArray.join(" ");
         else if (value.length > 0) {
@@ -224,8 +231,12 @@ export class CronExpresionInput extends CronComponent {
         input3.value = value;
 
         const inputCronMsg = this.querySelector(".inputCronMsg");
+        var tooltip = this.querySelector(".cronexpressionDescription");
         if (inputCronMsg) {
             (inputCronMsg as HTMLInputElement).value = cronstrue.toString(value);
+        }
+        if (tooltip) {
+            tooltip.innerHTML = cronstrue.toString(value)
         }
         this.sendEvent();
     }

@@ -1,7 +1,8 @@
 var ceInputLangInternal = {};
 import lang from "../cultures";
 ceInputLangInternal = lang;
-
+import van from "vanjs-core";
+const { div, input, label, span } = van.tags
 import { CronComponent } from "./CronComponent";
 import { CronFieldTemplateGenerator } from "../templates/CronFieldTemplate";
 import { EspesificOptionTemplateGenerator } from "../templates/EspesificOptionTemplate";
@@ -48,10 +49,7 @@ export class CronFields extends CronComponent {
     addSpesificOptions(attr: string) {
         var match = this.getElement("*[match=" + attr + "]");
         for (var i = this.getHasZero(); i <= (this["every"] ?? 0); i++) {
-            var div = document.createElement("div");
-            div.innerHTML = EspesificOptionTemplateGenerator(this.getNumber(i), i);
-            div.setAttribute("style", "width: 55px !important;")
-            match.appendChild(div);
+            match.appendChild(div({ style: "width: 55px !important;" }, EspesificOptionTemplateGenerator(this.getNumber(i), i)));
         }
     }
     makeCron(choise: number, input: { every: any; step: any; rangeMin: any; rangeMax: any; spesific: any; }) {
