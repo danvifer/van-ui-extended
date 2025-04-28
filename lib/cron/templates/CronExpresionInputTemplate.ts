@@ -4,7 +4,7 @@ const { path, svg } = van.tags("http://www.w3.org/2000/svg")
 import { CronFields } from "../nodes/CronFields";
 export function CronExpresionInputTemplateGenerator(obj: any, objLang: any) {
     return div(div({ class: "cronInput", style: `display: flex !important; width: ${obj.width} !important; height: ${obj.height} !important;` },
-        input({ class: "cronInsideInput w-1/4 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f39910] transition-all duration-300", type: "text", placeholder: objLang.inputPlaceholder }),
+        input({ class: "cronInsideInput " + obj.extraClass, type: "text", placeholder: objLang.inputPlaceholder }),
         button({ type: "button", class: "cronButtonUI btn btn-custom", style: `font-size: 114% !important; border-color: ${obj.colorMain} !important; background-color: ${obj.colorSecond} !important;` },
             svg({ width: "1em", height: "1em", viewBox: "0 0 16 16", class: "bi bi-pencil-square", fill: "white" },
                 path({ "d": "M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" }),

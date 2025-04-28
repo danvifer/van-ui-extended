@@ -10,6 +10,7 @@ import cronstrue from 'cronstrue';
 export class CronExpresionInput extends CronComponent {
     width: string | null | undefined;
     height!: string | null;
+    extraClass: string | null | undefined;
     required!: boolean;
     hotValidate!: boolean;
     colorMain!: string;
@@ -22,6 +23,7 @@ export class CronExpresionInput extends CronComponent {
     connectedCallback() {
         this.width = this.getAttribute("width");
         this.height = this.getAttribute("height");
+        this.extraClass = this.getAttribute("extraClass");
         this.required = this.getAttribute("required") == "true";
         this.hotValidate = this.getAttribute("hotValidate") == "true";
         var color = this.getAttribute("color")?.replace("#", "");
