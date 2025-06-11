@@ -22,11 +22,12 @@ export interface WizardProps {
     readonly prevLabel?: string;
     readonly nextLabel?: string;
     readonly createLabel?: string;
+    readonly loadingLabel?: string;
     readonly customPrimaryButtonStyle?: string;
     readonly customSecondaryButtonStyle?: string;
     readonly closeWizard: Function;
 }
-export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", modalClass = "text-white absolute inset-y-0 right-0 z-40", backgroundColor = "#314158", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "", prevLabel = "Prev", nextLabel = "Next", createLabel = "Create" }: WizardProps, ...children: readonly ChildDom[]
+export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColor = "sky-700", modalClass = "text-white absolute inset-y-0 right-0 z-40", backgroundColor = "#314158", secondaryColor = "sky-900", customPrimaryButtonStyle = "", customSecondaryButtonStyle = "", prevLabel = "Prev", nextLabel = "Next", createLabel = "Create", loadingLabel = "Loading" }: WizardProps, ...children: readonly ChildDom[]
 ) => {
     async function executeActions(preAction?: Function, postAction?: Function, close?: Boolean) {
         if (postAction) {
@@ -50,15 +51,18 @@ export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColo
     const step = van.state(0)
     const prevButton = van.derive(() => step.val > 0 ? button({ class: `hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer`, type: "submit", style: customSecondaryButtonStyle, onclick: () => step.val-- }, prevLabel) : "")
     const nextButton = van.derive(() => step.val < steps.length - 1 ? button({
-        class: `text-white hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer`, style: customPrimaryButtonStyle, type: "submit", disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: () => {
-            executeActions(steps[step.val + 1].preAction, steps[step.val].postAction);
+        class: `text-white hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer`, style: customPrimaryButtonStyle, type: "submit", disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: async () => {
+            await executeActions(steps[step.val + 1].preAction, steps[step.val].postAction);
             step.val++;
         }
-    }, nextLabel) : "")
-    const saveButton = van.derive(() => step.val === steps.length - 1 ? button({ class: `hover:opacity-90 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer`, style: customPrimaryButtonStyle, disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: () => { executeActions(undefined, steps[step.val].postAction, true); closeWizard() } }, span({ id: "spinner", class: "hidden" },
+    }, span({ id: "spinner", class: "hidden" },
         svg({ class: "mr-3 size-5 animate-spin inline", viewBox: "0 0 24 24" },
             circle({ class: "opacity-25", cx: "12", cy: "12", "r": "10", stroke: "white", "stroke-width": "4" }),
-            path({ class: "opacity-75", fill: "white", "d": "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })), "Loading"), span({ id: "no-spinner" }, createLabel)) : null)
+            path({ class: "opacity-75", fill: "white", "d": "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })), loadingLabel), span({ id: "no-spinner" }, nextLabel)) : "")
+    const saveButton = van.derive(() => step.val === steps.length - 1 ? button({ class: `hover:opacity-90 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer`, style: customPrimaryButtonStyle, disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: async () => { await executeActions(undefined, steps[step.val].postAction, true); closeWizard() } }, span({ id: "spinner", class: "hidden" },
+        svg({ class: "mr-3 size-5 animate-spin inline", viewBox: "0 0 24 24" },
+            circle({ class: "opacity-25", cx: "12", cy: "12", "r": "10", stroke: "white", "stroke-width": "4" }),
+            path({ class: "opacity-75", fill: "white", "d": "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })), loadingLabel), span({ id: "no-spinner" }, createLabel)) : null)
     let stepsInfo: Array<ChildDom>
     stepsInfo = []
 

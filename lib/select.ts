@@ -40,7 +40,7 @@ export const Select = ({
         } else {
             if (innerVal) {
                 if (multiple) {
-                    multipleValues?.val.push(innerVal.value || "")
+                    multipleValues.val.push(innerVal.value || "")
                     fillSelect()
                 } else {
                     modelValue.val = span(innerVal.img ? img({ src: innerVal.img || "", class: "h-4 w-4 inline mr-2" }) : null, innerVal.label)
