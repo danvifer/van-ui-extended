@@ -7,7 +7,7 @@ export type Step = {
     name: any,
     element: readonly ChildDom[],
     stepValid: State<Boolean>,
-    noPrev: State<Boolean>
+    noPrev?: State<Boolean>
     preAction?: Function,
     postAction?: Function
 };
@@ -51,7 +51,7 @@ export const WizardComponent = ({ steps, title, closeWizard, closed, primaryColo
         }
     }
     const step = van.state(0)
-    const prevButton = van.derive(() => step.val > 0 ? button({ class: `hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer`, type: "submit", style: customSecondaryButtonStyle, disabled: () => steps[step.val].noPrev.val ? "disabled" : "", onclick: () => step.val-- }, prevLabel) : "")
+    const prevButton = van.derive(() => step.val > 0 ? button({ class: `hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer`, type: "submit", style: customSecondaryButtonStyle, disabled: () => steps[step.val].noPrev?.val ? "disabled" : "", onclick: () => step.val-- }, prevLabel) : "")
     const nextButton = van.derive(() => step.val < steps.length - 1 ? button({
         class: `text-white hover:opacity-90 font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer`, style: customPrimaryButtonStyle, type: "submit", disabled: () => steps[step.val].stepValid.val ? "" : "disabled", onclick: async () => {
             await executeActions(steps[step.val + 1].preAction, steps[step.val].postAction);
