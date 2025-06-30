@@ -87,7 +87,6 @@ export class CronExpresionInput extends CronComponent {
                 node = node.parentNode;
                 if (node.nodeName == "CRON-FIELDS") value = false;
             }
-
             var input2 = self.getElement(".cronInsideInput");
             self.setValue(
                 self.generateCron(

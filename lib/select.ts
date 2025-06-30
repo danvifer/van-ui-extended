@@ -109,7 +109,7 @@ export const Select = ({
                 )
             ),
             div({ id: "select-father", class: "w-full absolute z-[99] top-[100%] left-[50%] translate-x-[-50%] rounded-md overflow-hidden shadow-lg min-w-[100px] peer-focus:visible peer-focus:opacity-100 opacity-0 invisible duration-200 p-1  border border-dimmed text-xs md:text-sm " + optionsClass },
-                div({ class: "max-h-150 overflow-auto" }, vanX.list(div, values, ({ val: value }) => div({
+                div(vanX.list(div, values, ({ val: value }) => div({
                     class: "cursor-pointer w-full block cursor-pointer hover:text-link px-3 py-2 rounded-md " + optionClass,
                     onclick: () => setValue(value.value || "", value.func, values)
                 },
