@@ -3,7 +3,7 @@ import { Select } from "./index";
 
 
 const { div, p, h1, button } = van.tags;
-
+import * as vanX from "vanjs-ext"
 const jsonSchemaDemo = {
   type: "object",
   additionalProperties: false,
@@ -63,7 +63,7 @@ const App = () => {
     //alert(`Submitted successfully: ${JSON.stringify(values, null, 2)}`);
     console.log("Submitted!", values);
   };
-  const vals = [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]
+  const vals = vanX.reactive([{ value: "yes", label: "Yes" }, { value: "no", label: "No" }])
   return Select(
     {
       values: vals,
