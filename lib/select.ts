@@ -104,7 +104,7 @@ export const Select = ({
     }
     return div({ class: selectClass },
         () => div({ class: "relative w-full group" },
-            button({ onfocus: () => { open.val = true; console.log(open.val) }, onblur: () => { open.val = false; console.log(open.val) }, class: selectClass + " min-w-[100px] py-2.5 px-3 md:text-sm text-site bg-transparent border border-dimmed  focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold cursor-pointer" },
+            button({ onfocus: () => { open.val = true; }, onblur: () => { setTimeout(() => open.val = false, 135); }, class: selectClass + " min-w-[100px] py-2.5 px-3 md:text-sm text-site bg-transparent border border-dimmed  focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold cursor-pointer" },
                 modelValue.val ? modelValue.val : noLabel,
                 svg({ class: "h-5 w-5 text-gray-400 flex justify-end", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 20 20", fill: "currentColor", "aria-hidden": "true" },
                     path({ "fill-rule": "evenodd", "d": "M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z", "clip-rule": "evenodd" }),
@@ -114,7 +114,7 @@ export const Select = ({
                 open.val ? div({ id: "select-father", class: "w-full absolute z-[99] top-[100%] left-[50%] translate-x-[-50%] rounded-md overflow-hidden shadow-lg min-w-[100px] duration-200 p-1  border border-dimmed text-xs md:text-sm " + optionsClass },
                     div(vanX.list(div, values, ({ val: value }) => div({
                         class: "cursor-pointer w-full block cursor-pointer hover:text-link px-3 py-2 rounded-md " + optionClass,
-                        onclick: () => setValue(value.value || "", value.func, values)
+                        onclick: () => { console.log("entro"); setValue(value.value || "", value.func, values) }
                     },
                         value.img ? img({ src: value.img || "", class: "h-4 w-4 inline mr-2" }) : null,
                         value.label,
