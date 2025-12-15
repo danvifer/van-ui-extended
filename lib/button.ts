@@ -19,14 +19,10 @@ export const xbutton = ({
   icon,
   onClick,
   disabled = false,
-
-  // ✅ default bonito (pero el usuario lo puede pisar)
   className = "bg-black text-white hover:bg-gray-700 hover:opacity-90",
-
   labelClass = "",
   iconClass = "text-current",
 }: ButtonProps) => {
-  // ✅ base SOLO estructura/estados (sin bg/text/hover)
   const baseClasses =
     "inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 mr-2 " +
     "text-sm font-medium select-none " +
@@ -49,18 +45,17 @@ export const xbutton = ({
           typeof icon === "string" ? span({ class: icon }) : icon
         )
 
-  return button(
-    {
-      type: "button",
-      title: title ?? label,
-      class: classes,
-      disabled,
-      onclick: (e: MouseEvent) => {
-        if (disabled) return
-        onClick?.(e)
-      },
+        const props: Record<string, any> = {
+    type: "button",
+    class: classes,
+    disabled,
+    onclick: (e: MouseEvent) => {
+      if (disabled) return
+      onClick?.(e)
     },
-    iconNode,
-    span({ class: labelClass }, label)
-  )
+  }
+
+  if (title && title.trim() !== "") props.title = title
+
+  return button(props, iconNode, span({ class: labelClass }, label))
 }
