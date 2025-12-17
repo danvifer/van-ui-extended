@@ -1,6 +1,8 @@
-export { TableComponent } from "./table";
-export { TextAreaComponent } from "./textarea";
-export { Select } from "./select";
-export { WizardComponent } from "./wizard";
-export { CronComponent } from "./cron";
-export { TimePickerComponent } from "./timePicker";
+export { TableComponent } from "./table"
+export { TextAreaComponent } from "./textarea"
+export { Select } from "./select"
+export { WizardComponent } from "./wizard"
+export { CronComponent } from "./cron"
+export { TimePickerComponent } from "./timePicker"
+export { xButton } from "./xButton"
+export { xLastValue } from "./xLastValue"
