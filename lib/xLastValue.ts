@@ -18,7 +18,7 @@ export interface XLastValueProps {
   readonly hoverClass?: string
 }
 
-export const xlastValue = (
+export const xLastValue = (
   {
     value,
     preicon,
@@ -26,11 +26,10 @@ export const xlastValue = (
     title = "",
     subtitle = "",
     onClick,
-    className = "",
+    className = "w-full rounded-md border border-stone-800 bg-neutral-900 text-white select-none",
     titleClass = "px-4 pt-3 text-sm text-stone-300",
     subtitleClass = "px-4 pb-3 text-xs text-stone-400 truncate",
-    valueClass =
-      "text-right font-light tabular-nums tracking-tight text-white " +
+    valueClass = "text-right font-light tabular-nums tracking-tight text-white " +
       "text-[clamp(1.25rem,4vw,1.875rem)] sm:text-3xl md:text-4xl lg:text-5xl",
 
     hoverClass = "hover:bg-neutral-800 hover:border-stone-700",
@@ -39,25 +38,22 @@ export const xlastValue = (
   }: XLastValueProps,
   ...children: ChildDom[]
 ) => {
-  const baseClasses =
-    "w-full rounded-md border border-stone-800 bg-neutral-900 text-white select-none"
-
   const interactiveClasses = onClick ? `cursor-pointer ${hoverClass}` : ""
-  const classes = `${baseClasses} ${interactiveClasses} ${className}`.trim()
+  const classes = `${className} ${interactiveClasses}`.trim()
 
   const preNode =
     preicon == null
       ? null
       : typeof preicon === "string"
-        ? span({ class: preicon, "aria-hidden": "true" })
-        : preicon
+      ? span({ class: preicon, "aria-hidden": "true" })
+      : preicon
 
   const postNode =
     posticon == null
       ? null
       : typeof posticon === "string"
-        ? span({ class: posticon, "aria-hidden": "true" })
-        : posticon
+      ? span({ class: posticon, "aria-hidden": "true" })
+      : posticon
 
   const displayValue = value
 
@@ -68,22 +64,29 @@ export const xlastValue = (
 
     div(
       {
-        class:
-          "px-4 py-4 flex items-center gap-3 flex-nowrap justify-between",
+        class: "px-4 py-4 flex items-center gap-3 flex-nowrap justify-between",
       },
 
       preNode ? div({ class: preiconClass }, preNode) : null,
 
       div(
         { class: "flex-1 min-w-0" },
-        div({ class: ["leading-none truncate", valueClass].join(" ").trim() }, displayValue)
+        div(
+          { class: ["leading-none truncate", valueClass].join(" ").trim() },
+          displayValue
+        )
       ),
 
       postNode ? div({ class: posticonClass }, postNode) : null
     ),
 
     children.length
-      ? div({ class: "px-4 pb-3 flex flex-wrap items-center justify-center gap-3" }, ...children)
+      ? div(
+          {
+            class: "px-4 pb-3 flex flex-wrap items-center justify-center gap-3",
+          },
+          ...children
+        )
       : null,
 
     subtitle ? div({ class: subtitleClass }, subtitle) : null
