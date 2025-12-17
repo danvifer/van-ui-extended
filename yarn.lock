@@ -425,13 +425,6 @@
   dependencies:
     "@types/geojson" "*"
 
-"@types/pikaday@^1.7.9":
-  version "1.7.9"
-  resolved "https://registry.npmjs.org/@types/pikaday/-/pikaday-1.7.9.tgz"
-  integrity sha512-DZ6oG5WoYX9Es2VTgvJpzxKMTU4WE0jq9noVSs0VTdmCREYv/AXSaybQj0Sm9Q9XO1pmFrdfBCpL4OVRX/QkAg==
-  dependencies:
-    moment ">=2.29.2"
-
 cron-validator@^1.3.1:
   version "1.4.0"
   resolved "https://registry.npmjs.org/cron-validator/-/cron-validator-1.4.0.tgz"
@@ -504,20 +497,10 @@ graceful-fs@^4.2.4:
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-gridstack@^12.3.3:
-  version "12.3.3"
-  resolved "https://registry.npmjs.org/gridstack/-/gridstack-12.3.3.tgz"
-  integrity sha512-Bboi4gj7HXGnx1VFXQNde4Nwi5srdUSuCCnOSszKhFjBs8EtMEWhsKX02BjIKkErq/FjQUkNUbXUYeQaVMQ0jQ==
-
 jiti@^2.6.1:
   version "2.6.1"
   resolved "https://registry.npmjs.org/jiti/-/jiti-2.6.1.tgz"
   integrity sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==
-
-lave@^1.1.10:
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/lave/-/lave-1.1.10.tgz#062207652c5502d7c6ff096c9de3995401f634d5"
-  integrity sha512-L0Tya6SY/ytDnR52Ie6F4Jk8ZuCh8VaGWPMiLcVemoS1aBUDAkMEMJ4eaSY4VQLEJd0dMrTqekFfMb8kBmgI/A==
 
 leaflet@^1.9.4:
   version "1.9.4"
@@ -605,11 +588,6 @@ magic-string@^0.30.21:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.5.5"
 
-moment@>=2.29.2:
-  version "2.30.1"
-  resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
-  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
-
 nanoid@^3.3.11:
   version "3.3.11"
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz"
@@ -622,10 +600,19 @@ picocolors@^1.1.1:
 
 pikaday@^1.8.2:
   version "1.8.2"
-  resolved "https://registry.npmjs.org/pikaday/-/pikaday-1.8.2.tgz"
+  resolved "https://registry.yarnpkg.com/pikaday/-/pikaday-1.8.2.tgz#72cc73fab7ccc068cbdf7dcaa1ce400fcfd894e3"
   integrity sha512-TNtsE+34BIax3WtkB/qqu5uepV1McKYEgvL3kWzU7aqPCpMEN6rBF3AOwu4WCwAealWlBGobXny/9kJb49C1ew==
 
-postcss@^8.4.41, postcss@^8.4.49, postcss@^8.5.3:
+postcss@^8.4.41, postcss@^8.5.3:
+  version "8.5.3"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.5.3.tgz#1463b6f1c7fb16fe258736cba29a2de35237eafb"
+  integrity sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==
+  dependencies:
+    nanoid "^3.3.8"
+    picocolors "^1.1.1"
+    source-map-js "^1.2.1"
+
+postcss@^8.4.49:
   version "8.5.6"
   resolved "https://registry.npmjs.org/postcss/-/postcss-8.5.6.tgz"
   integrity sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==

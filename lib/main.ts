@@ -39,8 +39,6 @@ const jsonSchemaDemo = {
       type: "string",
     }, */
   },
-  required: ["has_pet"],
-  "x-jsf-order": ["has_pet", "pet_name", "pet_age", "dietary_needs"],
 }
 
 // App
