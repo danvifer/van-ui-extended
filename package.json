@@ -38,12 +38,14 @@
     "leaflet": "^1.9.4",
     "pikaday": "^1.8.2",
     "postcss": "^8.5.3",
+    "uuid": "^13.0.0",
     "vanjs-core": "^1.5.3",
     "vanjs-ext": "^0.6.2",
     "vanjs-ui": "^0.11.10"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.21",
+    "@types/pikaday": "^1.7.10",
     "tailwindcss": "^4.0.8",
     "vite": "^6.0.9"
   }
