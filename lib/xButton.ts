@@ -38,7 +38,11 @@ export const xButton = ({
               .trim(),
             "aria-hidden": "true",
           },
-          typeof icon === "string" ? span({ class: icon }) : icon
+          typeof icon === "string"
+            ? span({ class: icon })
+            : icon instanceof Node
+            ? icon.cloneNode(true)
+            : icon
         )
 
   const props: Record<string, any> = {

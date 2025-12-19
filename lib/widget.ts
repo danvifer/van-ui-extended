@@ -33,7 +33,7 @@ export const Widget = ({
       const id = uuidv4()
       widget = tags.div({
         id: id,
-        style: "height: 100%;",
+        style: "height: 90%;",
       })
 
       setTimeout(() => {
@@ -53,8 +53,9 @@ export const Widget = ({
       }, 1000)
       break
   }
-  let container = tags.div({ style: "height:90%" }, [
-    tags.div(
+  let container = tags.div({ style: "height:100%" }, [
+    /* tags.span(
+      { class: "float-right" },
       xButton({
         icon: svg(
           {
@@ -75,7 +76,7 @@ export const Widget = ({
           onReload()
         },
       })
-    ),
+    ), */
     widget,
   ])
   return container

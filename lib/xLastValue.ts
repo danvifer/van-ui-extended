@@ -46,6 +46,8 @@ export const xLastValue = (
       ? null
       : typeof preicon === "string"
       ? span({ class: preicon, "aria-hidden": "true" })
+      : preicon instanceof Node
+      ? preicon.cloneNode(true)
       : preicon
 
   const postNode =
@@ -53,6 +55,8 @@ export const xLastValue = (
       ? null
       : typeof posticon === "string"
       ? span({ class: posticon, "aria-hidden": "true" })
+      : posticon instanceof Node
+      ? posticon.cloneNode(true)
       : posticon
 
   const displayValue = value
