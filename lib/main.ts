@@ -1,80 +1,75 @@
-import van from "vanjs-core"
-import { xlastValue } from "./lastValue"
+import van from "vanjs-core";
+import { xSelect, xOption } from "./xSelect";
 
-const { div, button, main } = van.tags
-const { path, svg } = van.tags("http://www.w3.org/2000/svg")
+const { div, main, span, h1, h2, h3 } = van.tags;
+const svgNS = van.tags("http://www.w3.org/2000/svg");
 
-const infoIcon = svg(
+const Flag = (svgEl: any) =>
+  div(
+    {
+      class:
+        "inline-flex items-center justify-center w-5 h-5 rounded-sm overflow-hidden shrink-0",
+    },
+    svgEl
+  );
+
+const svgSpain = svgNS.svg(
   {
-    fill: "none",
-    viewBox: "0 0 24 24",
-    strokeWidth: "1.5",
-    stroke: "currentColor",
-    class: "w-5 h-5",
-  },
-  path({
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    d: "m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z",
-  })
-)
-
-const temperatureIcon = svg(
-  {
-    viewBox: "0 0 24 24",
-    width: "24",
-    height: "24",
-    fill: "none",
-    strokeWidth: "1.5",
-    stroke: "currentColor",
-    class: "w-5 h-5",
     xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 2048 2048",
+    class: "w-full h-full",
   },
-
-  path({
-    d: "M5 11.9995C3.78555 12.9117 3 14.3641 3 15.9999C3 18.7613 5.23858 20.9999 8 20.9999C10.7614 20.9999 13 18.7613 13 15.9999C13 14.3641 12.2144 12.9117 11 11.9995",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
+  svgNS.path({
+    style: "fill:#ffc501",
+    d: "M255.999 793.25h1536v461.501h-1536z",
   }),
-
-  path({
-    d: "M5 12V3H11V12",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
+  svgNS.path({
+    style: "fill:#c60b1e",
+    d: "M255.999 1254.75h1536v230.75h-1536z",
   }),
-
-  path({
-    d: "M11 3L13 3",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-  }),
-
-  path({
-    d: "M11 6L13 6",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-  }),
-
-  path({
-    d: "M11 9H13",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-  }),
-
-  path({
-    d: "M8 14C6.89543 14 6 14.8954 6 16C6 17.1046 6.89543 18 8 18C9.10457 18 10 17.1046 10 16C10 14.8954 9.10457 14 8 14ZM8 14V6",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-  }),
-
-  path({
-    d: "M19 6V18M19 18L21.5 15.5M19 18L16.5 15.5",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
+  svgNS.path({
+    style: "fill:#c60b1e",
+    d: "M255.999 562.499h1536v230.75h-1536z",
   })
-)
+);
 
-const pencilIcon = svg(
+const svgBrazil = svgNS.svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 2048 2048",
+    class: "w-full h-full",
+  },
+  svgNS.path({ style: "fill:#009b3a", d: "M256 562.5h1536v923H256z" }),
+  svgNS.path({
+    style: "fill:#ffe52b",
+    transform: "scale(1.76006 1) rotate(-45 1351.967 232.216)",
+    d: "M0 0h495.002v495.002H0z",
+  }),
+  svgNS.path({
+    style: "fill:#005eac",
+    d: "M1247.07 1024c0 123.247-99.875 223.151-223.074 223.151-123.2 0-223.075-99.904-223.075-223.149 0-123.241 99.875-223.149 223.075-223.149 123.2 0 223.074 99.908 223.074 223.148z",
+  }),
+  svgNS.path({
+    style: "fill:#fff",
+    d: "m1246.04 1061.92-9.38 35.884S1086.995 937.792 805.25 970.992l12.804-37.293s249.245-41.232 427.987 128.221z",
+  })
+);
+
+const svgGermany = svgNS.svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 2048 2048",
+    class: "w-full h-full",
+  },
+  svgNS.path({ style: "fill:#000", d: "M255.999 562.744h1536V870.33h-1536z" }),
+  svgNS.path({ style: "fill:#d00", d: "M255.999 870.329h1536v307.586h-1536z" }),
+  svgNS.path({
+    style: "fill:#ffce00",
+    d: "M255.999 1177.92h1536v307.586h-1536z",
+  })
+);
+
+const arrowDownShortIcon = svgNS.svg(
   {
     fill: "none",
     viewBox: "0 0 24 24",
@@ -82,110 +77,264 @@ const pencilIcon = svg(
     stroke: "currentColor",
     class: "w-5 h-5",
   },
-  path({
+  svgNS.path({
     strokeLinecap: "round",
     strokeLinejoin: "round",
-    d: "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
+    d: "M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3",
   })
-)
+);
+1;
 
-const test = xlastValue(
+const arrowUpShortIcon = svgNS.svg(
   {
-    title: "Titulo de Temperatura",
-    subtitle: "Subtitulo de temperatura",
-    value: "42°C",
-    posticon: pencilIcon,
-    onClick: () => console.log("click"),
+    fill: "none",
+    viewBox: "0 0 24 24",
+    strokeWidth: "1.5",
+    stroke: "currentColor",
+    class: "w-5 h-5",
   },
-  div(
-    { class: "px-4 pb-3 flex flex-wrap justify-center gap-3" },
-    button(
-      {
-        class:
-          "rounded-md border border-stone-800 bg-neutral-900 text-white select-none cursor-pointer hover:bg-neutral-800 px-4 py-2",
-        onclick: (e: MouseEvent) => {
-          e.stopPropagation()
-          console.log("View details")
-        },
-      },
-      "Detalles"
-    ),
-    button(
-      {
-        class:
-          "rounded-md border border-stone-800 bg-neutral-900 text-white select-none cursor-pointer hover:bg-neutral-800 px-4 py-2",
-        onclick: (e: MouseEvent) => {
-          e.stopPropagation()
-          console.log("Edit value")
-        },
-      },
-      "Editar"
-    )
-  )
-)
+  svgNS.path({
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    d: "M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18",
+  })
+);
 
-const cardLeft = xlastValue(
+const optionRow = (flagSvg: any, label: string) =>
+  div({ class: "flex items-center gap-2" }, Flag(flagSvg), span(label));
+
+const optSpain = xOption({
+  value: "es",
+  text: "España",
+  data: optionRow(svgSpain, "España"),
+});
+const optBrazil = xOption({
+  value: "br",
+  text: "Brasil",
+  data: optionRow(svgBrazil, "Brasil"),
+});
+const optGermany = xOption({
+  value: "de",
+  text: "Alemania",
+  data: optionRow(svgGermany, "Alemania"),
+});
+
+const selectSimpleSearch = xSelect(
+  { placeholder: "Escoja un pais", searchable: false, search_autofocus: true },
+  xOption({ value: "es", text: "España", data: span("España") }),
+  xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
+  xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
+);
+
+const selectSimpleSearchIcons = xSelect(
   {
-    title: "Temperatura interior",
-    subtitle: "temperatura",
-    value: "18°C",
-    className: "bg-neutral-950 border-stone-700",
-    hoverClass: "hover:bg-stone-900 hover:border-stone-600",
-    titleClass: "px-4 pt-3 text-sm text-stone-300",
-    subtitleClass: "px-4 pb-3 text-xs text-stone-400",
-    valueClass:
-      "ml-0 text-left font-semibold text-teal-300 " +
-      "text-[clamp(1.75rem,5vw,2.5rem)] tabular-nums",
-    onClick: () => console.log("Card izquierda"),
+    searchable: true,
+    placeholder: "Escoja un país",
+    search_autofocus: true,
+    multiple: false,
   },
+  optSpain,
+  optBrazil,
+  optGermany
+);
 
-  div(
-    { class: "px-4 pb-3 flex justify-start" },
-    button(
-      {
-        class:
-          "px-4 py-2 rounded-md bg-teal-700 text-white text-sm font-medium " +
-          "hover:bg-teal-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300",
-        onclick: (e: MouseEvent) => {
-          e.stopPropagation()
-          console.log("Abrir detalles")
-        },
-      },
-      "Ver detalles"
-    )
-  )
-)
-
-const cardCenteredWithImage = xlastValue(
+const selectDisabled = xSelect(
   {
-    title: "Temperatura exterior",
-    subtitle: "Estación meteorológica",
-    value: "18°C",
-    className:"bg-cover bg-center border-stone-800",
-    hoverClass: "hover:brightness-110",
-    titleClass: "px-4 pt-3 text-sm text-white/90",
-    subtitleClass: "px-4 pb-3 text-xs text-white/80",
-    valueClass:"ml-0 text-center font-bold text-white drop-shadow-md text-[clamp(2rem,6vw,3rem)]",
-    preicon: infoIcon,
-    posticon: temperatureIcon,
-    preiconClass:"shrink-0 flex items-center justify-center text-teal-300 drop-shadow-sm",
-    posticonClass:"shrink-0 flex items-center justify-center text-teal-300 drop-shadow-sm",
-    onClick: () => console.log("Card imagen"),
-  }
-)
+    searchable: true,
+    disabled: true,
+    placeholder: "Escoja un país",
+    search_autofocus: true,
+    multiple: false,
+  },
+  optSpain,
+  optBrazil,
+  optGermany
+);
+
+const selectOtherIconsDownAndUp = xSelect(
+  {
+    searchable: true,
+    iconCollapse: arrowUpShortIcon,
+    iconDown: arrowDownShortIcon,
+    placeholder: "Escoja un país",
+    search_autofocus: true,
+    multiple: false,
+  },
+  optSpain,
+  optBrazil,
+  optGermany
+);
+
+const selectMultipleSearchIcons = xSelect(
+  {
+    searchable: true,
+    placeholder: "Escoja uno o varios países",
+    search_autofocus: true,
+    multiple: true,
+  },
+  optSpain,
+  optBrazil,
+  optGermany
+);
+
+const selectSearchMultiple = xSelect(
+  {
+    searchable: true,
+    placeholder: "Seleccione uno o varios colores",
+    search_autofocus: true,
+    multiple: true,
+  },
+  xOption({ value: "es", text: "España", data: span("España") }),
+  xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
+  xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
+);
+
+const optDisabledStyled = xOption({
+  value: "it",
+  text: "Italia",
+  disabled: true,
+  disabled_class:
+    "text-stone-400 bg-neutral-900 cursor-not-allowed italic opacity-70",
+  data: span("Italia (no disponible)"),
+});
+
+const optSelectedStyled = xOption({
+  value: "fr",
+  text: "Francia",
+  selected: true,
+  selectedClass: "bg-sky-700 text-white font-semibold",
+  data: span("Francia"),
+});
+
+const selectWithDisabledAndSelectedStyles = xSelect(
+  { searchable: true, placeholder: "País con estilos", search_autofocus: true },
+  optSpain,
+  optBrazil,
+  optGermany,
+  optDisabledStyled,
+  optSelectedStyled
+);
+
+const selectWithOnSelected = xSelect(
+  {
+    searchable: true,
+    placeholder: "Selecciona un país (onSelected)",
+    search_autofocus: true,
+    onSelected: (value) => {
+      alert(`Has seleccionado: ${value}`);
+    },
+  },
+  optSpain,
+  optBrazil,
+  optGermany
+);
+
+const selectMultipleClareable = xSelect(
+  {
+    searchable: true,
+    placeholder: "Escoja uno o varios países",
+    search_autofocus: true,
+    multiple: true,
+    clearable: true,
+  },
+  optSpain,
+  optBrazil,
+  optGermany
+);
+
+const selectCompact = xSelect(
+  {
+    searchable: true,
+    placeholder: "Compact",
+    search_ph: "Buscar...",
+    multiple: true,
+
+    className:
+      "relative w-full rounded border border-stone-700 bg-neutral-900 px-2 pr-9 py-1.5 text-xs " +
+      "text-white placeholder:text-stone-500 outline-none " +
+      "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+
+    checkboxInputClass:
+      "appearance-none h-3.5 w-3.5 shrink-0 rounded border border-stone-500 bg-neutral-900 " +
+      "grid place-content-center cursor-pointer " +
+      "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 " +
+      "checked:bg-emerald-400 checked:border-emerald-400 " +
+      "before:content-[''] before:w-2 before:h-1 before:border-b-2 before:border-l-2 before:border-neutral-900 " +
+      "before:-rotate-45 before:opacity-0 checked:before:opacity-100",
+  },
+  xOption({
+    text: "Colorado",
+    value: "co",
+    className:
+      "w-full text-left px-2 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none",
+    selectedClass: "bg-neutral-800 text-white font-semibold",
+    data: "Colorado",
+  }),
+  xOption({
+    text: "Florida",
+    value: "fl",
+    className:
+      "w-full text-left px-2 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none",
+    data: "Florida",
+  })
+);
 
 van.add(
   document.body,
   main(
-    {
-      role: "main",
-      class: "p-4 sm:p-6 md:p-8 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-3xl mx-auto",
-    },
+    h1(
+      {
+        class: "text-center text-2xl font-semibold mb-8 mt-4",
+      },
+      "Componente xSelect y xOption"
+    ),
     div(
-      { class: "flex flex-col gap-4" },
-      test,
-      cardLeft,
-      cardCenteredWithImage
+      {
+        class:
+          "w-full p-6 " +
+          "max-w-6xl mx-auto " +
+          "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-start",
+      },
+
+      div(
+        { class: "space-y-2" },
+        span("Sin búsqueda ni iconos"),
+        selectSimpleSearch
+      ),
+
+      div(
+        { class: "space-y-2" },
+        span("Con búsqueda e iconos"),
+        selectSimpleSearchIcons
+      ),
+
+      div({ class: "space-y-2" }, span("Select disabled"), selectDisabled),
+
+      div(
+        { class: "space-y-2" },
+        span("Múltiple con búsqueda y sin iconos"),
+        selectSearchMultiple
+      ),
+
+      div(
+        { class: "space-y-2" },
+        span("Múltiple con búsqueda e iconos"),
+        selectMultipleSearchIcons
+      ),
+
+      div(
+        { class: "space-y-2" },
+        span("Iconos up y down modificados"),
+        selectOtherIconsDownAndUp
+      ),
+      div(
+        { class: "space-y-2" },
+        span("Disabled_class y selectedClass"),
+        selectWithDisabledAndSelectedStyles
+      ),
+      div({ class: "space-y-2" }, span("onSelected"), selectWithOnSelected),
+      div({ class: "space-y-2" }, span("clareable"), selectMultipleClareable),
+      div({ class: "space-y-2" }, span("selectHighContrast"), selectCompact)
     )
   )
-)
+);
