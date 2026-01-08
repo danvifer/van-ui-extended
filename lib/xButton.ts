@@ -3,7 +3,7 @@ import van, { ChildDom } from "vanjs-core"
 const { button, span } = van.tags
 
 export interface ButtonProps {
-  readonly label: string
+  readonly label?: string
   readonly title?: string
   readonly icon?: string | ChildDom
   readonly onClick?: (ev: MouseEvent) => void
@@ -19,7 +19,7 @@ export const xButton = ({
   icon,
   onClick,
   disabled = false,
-  className = "bg-gray-500 inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 mr-2 text-sm font-medium select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 enabled:cursor-pointer enabled:hover:bg-gray-600 enabled:hover:opacity-90 focus-visible:ring-stone-400 disabled:cursor-not-allowed disabled:opacity-50 ",
+  className = "inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 mr-2 text-sm font-medium select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 enabled:cursor-pointer enabled:hover:bg-gray-600 enabled:hover:opacity-90 focus-visible:ring-stone-400 disabled:cursor-not-allowed disabled:opacity-50 ",
   labelClass = "",
   iconClass = "text-current",
 }: ButtonProps) => {
@@ -38,7 +38,11 @@ export const xButton = ({
               .trim(),
             "aria-hidden": "true",
           },
-          typeof icon === "string" ? span({ class: icon }) : icon
+          typeof icon === "string"
+            ? span({ class: icon })
+            : icon instanceof Node
+            ? icon.cloneNode(true)
+            : icon
         )
 
   const props: Record<string, any> = {

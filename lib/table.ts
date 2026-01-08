@@ -1,4 +1,4 @@
-import van from "vanjs-core"
+import van, { ChildDom } from "vanjs-core"
 import { State } from "vanjs-core"
 const {
   table,
@@ -27,7 +27,7 @@ export type Action = {
   label?: string | State<string>
   func: Function
   condition?: Function
-  icon?: string
+  icon?: string | ChildDom
   disable?: Function
 }
 export type Pagination = {
@@ -410,10 +410,11 @@ export const TableComponent = ({
                                                     !item.actions.val
                                                 },
                                               },
-                                              span({
-                                                class:
-                                                  "text-xl og " + action.icon,
-                                              }),
+                                              typeof action.icon === "function"
+                                                ? action.icon
+                                                : action.icon instanceof Node
+                                                ? action.icon.cloneNode(true)
+                                                : action.icon,
                                               action.label
                                             )
                                           : null
@@ -441,10 +442,11 @@ export const TableComponent = ({
                                             action.func(item)
                                           },
                                         },
-
-                                        span({
-                                          class: "text-xl og " + action.icon,
-                                        }),
+                                        typeof action.icon === "function"
+                                          ? action.icon
+                                          : action.icon instanceof Node
+                                          ? action.icon.cloneNode(true)
+                                          : action.icon,
                                         action.label
                                           ? span(
                                               { class: "ml-2" },
