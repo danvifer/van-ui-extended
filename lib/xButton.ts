@@ -5,6 +5,7 @@ const { button, span } = van.tags
 export interface ButtonProps {
   readonly label?: string
   readonly title?: string
+  readonly id?: string
   readonly icon?: string | ChildDom
   readonly onClick?: (ev: MouseEvent) => void
   readonly disabled?: boolean
@@ -21,6 +22,7 @@ export const xButton = ({
   disabled = false,
   className = "inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 mr-2 text-sm font-medium select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 enabled:cursor-pointer enabled:hover:bg-gray-600 enabled:hover:opacity-90 focus-visible:ring-stone-400 disabled:cursor-not-allowed disabled:opacity-50 ",
   labelClass = "",
+  id = "",
   iconClass = "text-current",
 }: ButtonProps) => {
   const classes = className.trim()
@@ -48,6 +50,7 @@ export const xButton = ({
   const props: Record<string, any> = {
     type: "button",
     class: classes,
+    id: id,
     disabled,
     onclick: (e: MouseEvent) => {
       if (disabled) return

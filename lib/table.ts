@@ -15,11 +15,105 @@ const {
   b,
   label,
 } = van.tags
+import { xButton } from "./xButton"
+const { svg, path } = van.tags("http://www.w3.org/2000/svg")
+const descIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25",
+  })
+)
+const ascIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12",
+  })
+)
+const filterIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z",
+  })
+)
+const actionsIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5",
+  })
+)
+const xIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "M6 18 18 6M6 6l12 12",
+  })
+)
+const checkIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "m4.5 12.75 6 6 9-13.5",
+  })
+)
+
 export type Column = {
   key: string
   label: string | State<string>
   order?: boolean
   filter?: string
+  tdClass?: string
   filterModal?: State<boolean>
   filterValues?: State<any[]>
 }
@@ -117,6 +211,10 @@ export const TableComponent = ({
       ) {
         if (item.filterModal) item.filterModal.val = false
       }
+      if (!item.tdClass) {
+        item.tdClass =
+          "text-center border-b border-stone-100 dark:border-stone-700 p-4 text-stone-500 dark:text-stone-400"
+      }
     })
   })
   return [
@@ -169,28 +267,28 @@ export const TableComponent = ({
                             },
                           },
                           col.label,
-                          span({
-                            class:
-                              "ml-1 text-xs " +
-                              (orderCol.val === col.key
-                                ? orderBy.val === "asc"
-                                  ? "og ogiconsortasc"
-                                  : "og ogiconsortdesc"
-                                : ""),
-                          })
+                          span(
+                            {
+                              class: "ml-1 text-xs ",
+                            },
+                            orderCol.val === col.key
+                              ? orderBy.val === "asc"
+                                ? ascIcon
+                                : descIcon
+                              : null
+                          )
                         )
                       : col.label,
                     col.filter
-                      ? button({
+                      ? xButton({
                           id: "filter-father-" + index,
-                          class:
-                            "og ogiconfilter path1 uppercase cursor-pointer rounded-md px-1 mx-2 py-2 text-white hover:bg-gray-600 focus:outline-none ",
-                          onclick: () => {
-                            console.log(col)
+                          className:
+                            "uppercase cursor-pointer rounded-md px-1 mx-2 py-2 text-white hover:bg-gray-600 focus:outline-none ",
+                          icon: filterIcon,
+                          onClick: () => {
                             if (!col.filterModal)
                               col.filterModal = van.state(false)
                             col.filterModal.val = !col.filterModal.val
-                            console.log(col.filterModal.val)
                           },
                         })
                       : null,
@@ -274,55 +372,50 @@ export const TableComponent = ({
                           div(
                             { class: "" },
                             col.filter === "basic"
-                              ? button(
-                                  {
-                                    class:
-                                      "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none left-0",
-                                    onclick: () => {
-                                      filterValue.val = ""
-                                      filters[col.key] = filterValue.val
-                                      funcFilter(filters)
-                                    },
-                                  },
-                                  span({ class: "og ogiconclose mr-2" }),
-                                  clearLabel
-                                )
-                              : null,
-                            button(
-                              {
-                                class:
-                                  "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none disabled:opacity-75 disabled:cursor-not-allowed right-0",
-                                disabled: () =>
-                                  filterValue.val === "" &&
-                                  col.filter === "basic",
-                                onclick: () => {
-                                  if (col.filterModal)
-                                    col.filterModal.val = false
-                                  if (col.filter === "basic") {
+                              ? xButton({
+                                  className:
+                                    "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none left-0",
+                                  icon: xIcon,
+                                  label: clearLabel,
+                                  onClick: () => {
+                                    filterValue.val = ""
                                     filters[col.key] = filterValue.val
-                                  } else if (
-                                    col.filter === "complex" &&
-                                    col.filterValues
-                                  ) {
-                                    filters[col.key] = col.filterValues.val
-                                      .filter((val: any) => val.value.val)
-                                      .map(
-                                        (filter: { label: any }) => filter.label
-                                      )
-                                    console.log(filters[col.key])
-                                  } else if (col.filterValues) {
-                                    console.log(col)
-                                    console.log(data.val)
-                                    filters[col.key] = col.filterValues.val
-                                      .filter((uuid) => uuid.value.val)
-                                      .map((uuid) => uuid.uuid)
-                                  }
-                                  funcFilter(filters)
-                                },
+                                    funcFilter(filters)
+                                  },
+                                })
+                              : null,
+                            xButton({
+                              className:
+                                "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none disabled:opacity-75 disabled:cursor-not-allowed right-0",
+                              icon: checkIcon,
+                              label: applyLabel,
+                              disabled:
+                                filterValue.val === "" &&
+                                col.filter === "basic",
+                              onClick: () => {
+                                if (col.filterModal) col.filterModal.val = false
+                                if (col.filter === "basic") {
+                                  filters[col.key] = filterValue.val
+                                } else if (
+                                  col.filter === "complex" &&
+                                  col.filterValues
+                                ) {
+                                  filters[col.key] = col.filterValues.val
+                                    .filter((val: any) => val.value.val)
+                                    .map(
+                                      (filter: { label: any }) => filter.label
+                                    )
+                                  console.log(filters[col.key])
+                                } else if (col.filterValues) {
+                                  console.log(col)
+                                  console.log(data.val)
+                                  filters[col.key] = col.filterValues.val
+                                    .filter((uuid) => uuid.value.val)
+                                    .map((uuid) => uuid.uuid)
+                                }
+                                funcFilter(filters)
                               },
-                              span({ class: "og ogiconcheck mr-2" }),
-                              applyLabel
-                            )
+                            })
                           )
                         )
                       : null
@@ -360,8 +453,7 @@ export const TableComponent = ({
                 ...columns.map((col) =>
                   td(
                     {
-                      class:
-                        "text-center border-b border-stone-100 dark:border-stone-700 p-4 text-stone-500 dark:text-stone-400",
+                      class: col.tdClass || "",
                     },
                     item[col.key as keyof any]
                   )
@@ -380,11 +472,12 @@ export const TableComponent = ({
                                   class:
                                     "grid relative group justify-items-center",
                                 },
-                                button({
+                                xButton({
                                   id: "select-father-" + index,
-                                  class:
-                                    "og ogiconactions uppercase cursor-pointer rounded-md px-2 py-2 mx-2 text-white hover:bg-gray-600 focus:outline-none ",
-                                  onclick: () =>
+                                  className:
+                                    "uppercase cursor-pointer rounded-md px-2 py-2 mx-2 text-white hover:bg-gray-600 focus:outline-none ",
+                                  icon: actionsIcon,
+                                  onClick: () =>
                                     (item.actions.val =
                                       !item.actions
                                         .val) /*  blur: () => item.actions.val = false */,
@@ -549,34 +642,6 @@ export const TableComponent = ({
 
               div(
                 { class: "" },
-                /*  Select({
-                  values: vanX.reactive([
-                    {
-                      value: "100",
-                      label: "100",
-                      func: (value) => {
-                        pagination?.selectFunc?.(value)
-                        rows = value
-                        page.val = 1
-                      },
-                    },
-                    {
-                      value: "50",
-                      label: "50",
-                      func: (value) => {
-                        pagination?.selectFunc?.(value)
-                        rows = value
-                        page.val = 1
-                      },
-                    },
-                  ]),
-                  selected: rows,
-                  multiple: false,
-                  modelValue: van.state(""),
-                  selectClass: "w-[100px] text-sky-50 bg-[#313233]",
-                  optionClass: "text-sky-50 hover:bg-[#595b5d] bg-[#313233]",
-                  optionsClass: "text-sky-50 bg-[#313233] absolute",
-                }), */
                 !editRows.val
                   ? [
                       button(
