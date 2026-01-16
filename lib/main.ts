@@ -1,8 +1,8 @@
-import van from "vanjs-core";
-import { xSelect, xOption } from "./xSelect";
+import van from "vanjs-core"
+import { xSelect, xOption } from "./xSelect"
 
-const { div, main, span, h1, h2, h3 } = van.tags;
-const svgNS = van.tags("http://www.w3.org/2000/svg");
+const { div, main, span, h1, h2, h3 } = van.tags
+const svgNS = van.tags("http://www.w3.org/2000/svg")
 
 const Flag = (svgEl: any) =>
   div(
@@ -11,7 +11,7 @@ const Flag = (svgEl: any) =>
         "inline-flex items-center justify-center w-5 h-5 rounded-sm overflow-hidden shrink-0",
     },
     svgEl
-  );
+  )
 
 const svgSpain = svgNS.svg(
   {
@@ -31,7 +31,7 @@ const svgSpain = svgNS.svg(
     style: "fill:#c60b1e",
     d: "M255.999 562.499h1536v230.75h-1536z",
   })
-);
+)
 
 const svgBrazil = svgNS.svg(
   {
@@ -53,7 +53,7 @@ const svgBrazil = svgNS.svg(
     style: "fill:#fff",
     d: "m1246.04 1061.92-9.38 35.884S1086.995 937.792 805.25 970.992l12.804-37.293s249.245-41.232 427.987 128.221z",
   })
-);
+)
 
 const svgGermany = svgNS.svg(
   {
@@ -67,7 +67,7 @@ const svgGermany = svgNS.svg(
     style: "fill:#ffce00",
     d: "M255.999 1177.92h1536v307.586h-1536z",
   })
-);
+)
 
 const arrowDownShortIcon = svgNS.svg(
   {
@@ -82,8 +82,8 @@ const arrowDownShortIcon = svgNS.svg(
     strokeLinejoin: "round",
     d: "M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3",
   })
-);
-1;
+)
+1
 
 const arrowUpShortIcon = svgNS.svg(
   {
@@ -98,58 +98,58 @@ const arrowUpShortIcon = svgNS.svg(
     strokeLinejoin: "round",
     d: "M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18",
   })
-);
+)
 
 const optionRow = (flagSvg: any, label: string) =>
-  div({ class: "flex items-center gap-2" }, Flag(flagSvg), span(label));
+  div({ class: "flex items-center gap-2" }, Flag(flagSvg), span(label))
 
 const optSpain = xOption({
   value: "es",
   text: "España",
   data: optionRow(svgSpain, "España"),
-});
+})
 const optBrazil = xOption({
   value: "br",
   text: "Brasil",
   data: optionRow(svgBrazil, "Brasil"),
-});
+})
 const optGermany = xOption({
   value: "de",
   text: "Alemania",
   data: optionRow(svgGermany, "Alemania"),
-});
+})
 
 const selectSimpleSearch = xSelect(
   { placeholder: "Escoja un pais", searchable: false, search_autofocus: true },
   xOption({ value: "es", text: "España", data: span("España") }),
   xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
   xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
-);
+)
 
 const selectSimpleSearchIcons = xSelect(
   {
     searchable: true,
     placeholder: "Escoja un país",
-    search_autofocus: true,
+    search_autofocus: false,
     multiple: false,
   },
   optSpain,
   optBrazil,
   optGermany
-);
+)
 
 const selectDisabled = xSelect(
   {
     searchable: true,
     disabled: true,
     placeholder: "Escoja un país",
-    search_autofocus: true,
+    search_autofocus: false,
     multiple: false,
   },
   optSpain,
   optBrazil,
   optGermany
-);
+)
 
 const selectOtherIconsDownAndUp = xSelect(
   {
@@ -163,7 +163,7 @@ const selectOtherIconsDownAndUp = xSelect(
   optSpain,
   optBrazil,
   optGermany
-);
+)
 
 const selectMultipleSearchIcons = xSelect(
   {
@@ -175,7 +175,7 @@ const selectMultipleSearchIcons = xSelect(
   optSpain,
   optBrazil,
   optGermany
-);
+)
 
 const selectSearchMultiple = xSelect(
   {
@@ -187,24 +187,21 @@ const selectSearchMultiple = xSelect(
   xOption({ value: "es", text: "España", data: span("España") }),
   xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
   xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
-);
+)
 
 const optDisabledStyled = xOption({
   value: "it",
   text: "Italia",
   disabled: true,
-  disabled_class:
-    "text-stone-400 bg-neutral-900 cursor-not-allowed italic opacity-70",
   data: span("Italia (no disponible)"),
-});
+})
 
 const optSelectedStyled = xOption({
   value: "fr",
   text: "Francia",
   selected: true,
-  selectedClass: "bg-sky-700 text-white font-semibold",
   data: span("Francia"),
-});
+})
 
 const selectWithDisabledAndSelectedStyles = xSelect(
   { searchable: true, placeholder: "País con estilos", search_autofocus: true },
@@ -213,7 +210,7 @@ const selectWithDisabledAndSelectedStyles = xSelect(
   optGermany,
   optDisabledStyled,
   optSelectedStyled
-);
+)
 
 const selectWithOnSelected = xSelect(
   {
@@ -221,13 +218,16 @@ const selectWithOnSelected = xSelect(
     placeholder: "Selecciona un país (onSelected)",
     search_autofocus: true,
     onSelected: (value) => {
-      alert(`Has seleccionado: ${value}`);
+      alert(`Has seleccionado: ${value}`)
     },
+    optionClassName: "bg-sky-700 text-white font-semibold",
+    optionSelectedClass: "bg-sky-700 text-white font-semibold",
+    optionDisabledClass: "bg-sky-700 text-white font-semibold",
   },
   optSpain,
   optBrazil,
   optGermany
-);
+)
 
 const selectMultipleClareable = xSelect(
   {
@@ -240,7 +240,7 @@ const selectMultipleClareable = xSelect(
   optSpain,
   optBrazil,
   optGermany
-);
+)
 
 const selectCompact = xSelect(
   {
@@ -261,23 +261,21 @@ const selectCompact = xSelect(
       "checked:bg-emerald-400 checked:border-emerald-400 " +
       "before:content-[''] before:w-2 before:h-1 before:border-b-2 before:border-l-2 before:border-neutral-900 " +
       "before:-rotate-45 before:opacity-0 checked:before:opacity-100",
+    optionClassName: "bg-sky-700 text-white font-semibold",
+    optionSelectedClass: "bg-sky-700 text-white font-semibold",
+    optionDisabledClass: "bg-sky-700 text-white font-semibold",
   },
   xOption({
     text: "Colorado",
     value: "co",
-    className:
-      "w-full text-left px-2 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none",
-    selectedClass: "bg-neutral-800 text-white font-semibold",
     data: "Colorado",
   }),
   xOption({
     text: "Florida",
     value: "fl",
-    className:
-      "w-full text-left px-2 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none",
     data: "Florida",
   })
-);
+)
 
 van.add(
   document.body,
@@ -337,4 +335,4 @@ van.add(
       div({ class: "space-y-2" }, span("selectHighContrast"), selectCompact)
     )
   )
-);
+)

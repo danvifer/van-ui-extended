@@ -4,18 +4,48 @@ const { div, input, ul, li, button, span, label } = van.tags
 const { path, svg } = van.tags("http://www.w3.org/2000/svg")
 
 const chevronDownIcon = svg(
-  { fill: "none", viewBox: "0 0 24 24", strokeWidth: "1.5", stroke: "currentColor", class: "w-5 h-5" },
-  path({ strokeLinecap: "round", strokeLinejoin: "round", d: "m19.5 8.25-7.5 7.5-7.5-7.5" })
+  {
+    fill: "none",
+    viewBox: "0 0 24 24",
+    strokeWidth: "1.5",
+    stroke: "currentColor",
+    class: "w-5 h-5",
+  },
+  path({
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    d: "m19.5 8.25-7.5 7.5-7.5-7.5",
+  })
 )
 
 const chevronUpIcon = svg(
-  { fill: "none", viewBox: "0 0 24 24", strokeWidth: "1.5", stroke: "currentColor", class: "w-5 h-5" },
-  path({ strokeLinecap: "round", strokeLinejoin: "round", d: "m4.5 15.75 7.5-7.5 7.5 7.5" })
+  {
+    fill: "none",
+    viewBox: "0 0 24 24",
+    strokeWidth: "1.5",
+    stroke: "currentColor",
+    class: "w-5 h-5",
+  },
+  path({
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    d: "m4.5 15.75 7.5-7.5 7.5 7.5",
+  })
 )
 
 const xMarkIcon = svg(
-  { fill: "none", viewBox: "0 0 24 24", strokeWidth: "1.8", stroke: "currentColor", class: "w-4 h-4" },
-  path({ strokeLinecap: "round", strokeLinejoin: "round", d: "M6 18 18 6M6 6l12 12" })
+  {
+    fill: "none",
+    viewBox: "0 0 24 24",
+    strokeWidth: "1.8",
+    stroke: "currentColor",
+    class: "w-4 h-4",
+  },
+  path({
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    d: "M6 18 18 6M6 6l12 12",
+  })
 )
 
 export interface XSelectProps {
@@ -40,6 +70,9 @@ export interface XSelectProps {
   readonly clearButtonClass?: string
   readonly checkboxLabelClass?: string
   readonly checkboxInputClass?: string
+  readonly optionClassName?: string
+  readonly optionDisabledClass?: string
+  readonly optionSelectedClass?: string
 }
 
 export interface XOptionProps {
@@ -48,17 +81,11 @@ export interface XOptionProps {
   readonly data: ChildDom
   readonly value?: any
   readonly text?: string
-  readonly className?: string
-  readonly disabled_class?: string
-  readonly selectedClass?: string
 }
 
 export const xOption = ({
   disabled = false,
   selected = false,
-  className = "w-full text-left px-3 py-2 text-sm text-white hover:bg-neutral-800 focus:outline-none",
-  disabled_class = "opacity-50 cursor-not-allowed",
-  selectedClass = "bg-neutral-800 text-white font-semibold",
   data,
   value,
   text,
@@ -67,9 +94,6 @@ export const xOption = ({
   props: {
     disabled,
     selected,
-    className,
-    disabled_class,
-    selectedClass,
     data,
     value,
     text,
@@ -82,7 +106,11 @@ const asChildDom = (value: string | ChildDom): ChildDom => {
 }
 
 const normalizeText = (value: string) =>
-  value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
 
 export const xSelect = (
   {
@@ -101,40 +129,38 @@ export const xSelect = (
     multiple = false,
     clearable = false,
 
-    className =
-      "relative w-full rounded-md border border-stone-800 bg-neutral-900 px-3 pr-10 py-2 text-sm " +
+    className = "relative w-full rounded-md border border-stone-800 bg-neutral-900 px-3 pr-10 py-2 text-sm " +
       "text-white placeholder:text-stone-500 caret-white shadow-sm outline-none " +
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900 " +
       "disabled:cursor-not-allowed disabled:opacity-50",
 
-    listClass =
-      "absolute z-20 mt-2 w-full overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
+    listClass = "absolute z-20 mt-2 w-full overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
 
     optionClass = "",
     optionActiveClass = "bg-neutral-800",
     noResultsClass = "px-3 py-2 text-sm text-stone-400",
 
-    iconButtonClass =
-      "absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded p-1 " +
+    iconButtonClass = "absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded p-1 " +
       "text-stone-300 hover:bg-neutral-800 hover:text-white " +
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900",
 
-    clearButtonClass =
-      "absolute right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded p-1 " +
+    clearButtonClass = "absolute right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded p-1 " +
       "cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 " +
       "text-stone-300 hover:bg-neutral-800 hover:text-white " +
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900",
 
     checkboxLabelClass = "flex items-center gap-3 w-full cursor-pointer select-none",
 
-    checkboxInputClass =
-      "appearance-none h-4 w-4 shrink-0 rounded border border-stone-500 bg-neutral-900 " +
+    checkboxInputClass = "appearance-none h-4 w-4 shrink-0 rounded border border-stone-500 bg-neutral-900 " +
       "grid place-content-center cursor-pointer " +
       "focus-visible:ring-2 focus-visible:ring-stone-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 " +
       "checked:bg-neutral-100 checked:border-neutral-100 " +
       "before:content-[''] before:w-2 before:h-1 before:border-b-2 before:border-l-2 before:border-neutral-900 " +
       "before:-rotate-45 before:opacity-0 checked:before:opacity-100 " +
       "disabled:opacity-50 disabled:cursor-not-allowed",
+    optionClassName = "w-full text-left px-3 py-2 text-sm text-white hover:bg-neutral-800 focus:outline-none",
+    optionDisabledClass = "opacity-50 cursor-not-allowed",
+    optionSelectedClass = "bg-neutral-800 text-white font-semibold",
   }: XSelectProps,
   ...options: Array<ReturnType<typeof xOption>>
 ) => {
@@ -170,7 +196,8 @@ export const xSelect = (
   const getSingleSelectedLabel = () =>
     selectedIndexes.val.length ? getOptionText(selectedIndexes.val[0]) : ""
 
-  const getSelectedSummary = () => selectedIndexes.val.map(getOptionText).filter(Boolean).join(", ")
+  const getSelectedSummary = () =>
+    selectedIndexes.val.map(getOptionText).filter(Boolean).join(", ")
 
   const getMultiPrefix = () => {
     const summary = getSelectedSummary()
@@ -181,7 +208,9 @@ export const xSelect = (
     const query = normalizeText(searchQuery.val)
     const baseIndexes = optionItems.map((_, i) => i)
     if (!searchable || !query) return baseIndexes
-    return baseIndexes.filter((i) => normalizeText(getOptionText(i)).includes(query))
+    return baseIndexes.filter((i) =>
+      normalizeText(getOptionText(i)).includes(query)
+    )
   }
 
   const openDropdown = () => {
@@ -204,16 +233,22 @@ export const xSelect = (
 
   const closeDropdown = () => {
     isDropdownOpen.val = false
-    searchQuery.val = ""
+    //searchQuery.val = ""
     activeFilteredIndex.val = -1
     inputEl.value = multiple ? getSelectedSummary() : getSingleSelectedLabel()
   }
 
   const scrollActiveOptionIntoView = () => {
     const filtered = getFilteredRealIndexes()
-    if (activeFilteredIndex.val < 0 || activeFilteredIndex.val >= filtered.length) return
+    if (
+      activeFilteredIndex.val < 0 ||
+      activeFilteredIndex.val >= filtered.length
+    )
+      return
     const realIndex = filtered[activeFilteredIndex.val]
-    const optionEl = listboxEl.querySelector<HTMLElement>(`#${optionDomId(realIndex)}`)
+    const optionEl = listboxEl.querySelector<HTMLElement>(
+      `#${optionDomId(realIndex)}`
+    )
     optionEl?.scrollIntoView({ block: "nearest" })
   }
 
@@ -224,7 +259,9 @@ export const xSelect = (
       return
     }
     const next =
-      activeFilteredIndex.val < 0 ? 0 : (activeFilteredIndex.val + delta + filtered.length) % filtered.length
+      activeFilteredIndex.val < 0
+        ? 0
+        : (activeFilteredIndex.val + delta + filtered.length) % filtered.length
     activeFilteredIndex.val = next
     queueMicrotask(scrollActiveOptionIntoView)
   }
@@ -251,9 +288,14 @@ export const xSelect = (
   const toggleByRealIndex = (realIndex: number) => {
     if (optionItems[realIndex].disabled) return
 
-    const value = optionItems[realIndex].value ?? optionItems[realIndex].text ?? optionItems[realIndex].data
+    const value =
+      optionItems[realIndex].value ??
+      optionItems[realIndex].text ??
+      optionItems[realIndex].data
     onSelected?.(value)
-
+    if (searchable) {
+      searchQuery.val = optionItems[realIndex].text || ""
+    }
     if (!multiple) {
       selectedIndexes.val = [realIndex]
       inputEl.value = getOptionText(realIndex)
@@ -300,7 +342,8 @@ export const xSelect = (
     const filtered = getFilteredRealIndexes()
 
     if (filtered.length === 0) activeFilteredIndex.val = -1
-    else if (activeFilteredIndex.val >= filtered.length) activeFilteredIndex.val = filtered.length - 1
+    else if (activeFilteredIndex.val >= filtered.length)
+      activeFilteredIndex.val = filtered.length - 1
     else if (activeFilteredIndex.val === -1) activeFilteredIndex.val = 0
 
     if (!filtered.length) {
@@ -316,12 +359,11 @@ export const xSelect = (
         const selectedOption = isIndexSelected(realIndex)
 
         const activeStyle = activeOption ? optionActiveClass : ""
-        const selectedStyle = selectedOption ? (opt.selectedClass || "") : ""
-        const disabledStyle = disabledOption ? (opt.disabled_class || "") : ""
+        const selectedStyle = selectedOption ? optionSelectedClass : ""
+        const disabledStyle = disabledOption ? optionDisabledClass : ""
 
         const optionClassFinal = [
           "cursor-pointer",
-          opt.className || "",
           optionClass,
           activeStyle,
           selectedStyle,
@@ -360,7 +402,11 @@ export const xSelect = (
           },
         })
 
-        const content = label({ class: checkboxLabelClass, for: id }, cb, opt.data)
+        const content = label(
+          { class: checkboxLabelClass, for: id },
+          cb,
+          opt.data
+        )
 
         return li(
           {
@@ -413,12 +459,14 @@ export const xSelect = (
           xMarkIcon
         )
       : null
-
+  const readOnly = !searchable
+    ? "read-only:cursor-pointer read-only:caret-transparent "
+    : ""
   const inputEl = input({
     id: inputId,
     type: "text",
     disabled,
-    class: className,
+    class: readOnly + className,
     placeholder: searchable ? search_ph : placeholder,
     value: multiple ? getSelectedSummary() : getSingleSelectedLabel(),
     readOnly: !searchable,
@@ -485,7 +533,9 @@ export const xSelect = (
 
       if (multiple && isDropdownOpen.val) {
         const prefix = getMultiPrefix()
-        searchQuery.val = full.startsWith(prefix) ? full.slice(prefix.length) : full
+        searchQuery.val = full.startsWith(prefix)
+          ? full.slice(prefix.length)
+          : full
       } else {
         searchQuery.val = full
       }
@@ -512,7 +562,9 @@ export const xSelect = (
 
     if (clearButtonEl) {
       const hasSelection = selectedIndexes.val.length > 0
-      ;(clearButtonEl as HTMLButtonElement).style.display = hasSelection ? "inline-flex" : "none"
+      ;(clearButtonEl as HTMLButtonElement).style.display = hasSelection
+        ? "inline-flex"
+        : "none"
     }
 
     if (!isDropdownOpen.val) {
@@ -522,7 +574,9 @@ export const xSelect = (
         if (multiple) inputEl.value = getMultiPrefix() + searchQuery.val
         else inputEl.value = searchQuery.val
       } else {
-        inputEl.value = multiple ? getSelectedSummary() : getSingleSelectedLabel()
+        inputEl.value = multiple
+          ? getSelectedSummary()
+          : getSingleSelectedLabel()
       }
     }
 
