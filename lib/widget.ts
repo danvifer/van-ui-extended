@@ -21,7 +21,7 @@ export const Widget = ({
       widget = tags.div(
         TableComponent({
           ...widgetConfiguration,
-        })
+        }),
       )
       break
     case "lastValue":
@@ -35,9 +35,9 @@ export const Widget = ({
         id: id,
         style: "height: 90%;",
       })
-
       setTimeout(() => {
         let chartDom = document.getElementById(id)
+        console.log(chartDom)
         let myChart = echarts.init(chartDom, null, {
           renderer: "svg",
         })

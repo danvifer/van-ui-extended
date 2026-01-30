@@ -30,7 +30,7 @@ const descIcon = svg(
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     d: "M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25",
-  })
+  }),
 )
 const ascIcon = svg(
   {
@@ -45,7 +45,7 @@ const ascIcon = svg(
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     d: "M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12",
-  })
+  }),
 )
 const filterIcon = svg(
   {
@@ -60,7 +60,7 @@ const filterIcon = svg(
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     d: "M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z",
-  })
+  }),
 )
 const actionsIcon = svg(
   {
@@ -75,7 +75,7 @@ const actionsIcon = svg(
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     d: "M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5",
-  })
+  }),
 )
 const xIcon = svg(
   {
@@ -90,7 +90,7 @@ const xIcon = svg(
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     d: "M6 18 18 6M6 6l12 12",
-  })
+  }),
 )
 const checkIcon = svg(
   {
@@ -105,7 +105,7 @@ const checkIcon = svg(
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     d: "m4.5 12.75 6 6 9-13.5",
-  })
+  }),
 )
 
 export type Column = {
@@ -211,10 +211,6 @@ export const TableComponent = ({
       ) {
         if (item.filterModal) item.filterModal.val = false
       }
-      if (!item.tdClass) {
-        item.tdClass =
-          "text-center border-b border-stone-100 dark:border-stone-700 p-4 text-stone-500 dark:text-stone-400"
-      }
     })
   })
   return [
@@ -236,7 +232,7 @@ export const TableComponent = ({
                       class:
                         "accent-teal-600 w-5 h-5 text-teal-600 accent-teal-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 ",
                       type: "checkbox",
-                    })
+                    }),
                   )
                 : null,
               ...columns.map((col, index) => {
@@ -275,8 +271,8 @@ export const TableComponent = ({
                               ? orderBy.val === "asc"
                                 ? ascIcon
                                 : descIcon
-                              : null
-                          )
+                              : null,
+                          ),
                         )
                       : col.label,
                     col.filter
@@ -303,7 +299,7 @@ export const TableComponent = ({
                           span({ class: "flex text-xl" }, filterLabel),
                           div(
                             { class: "text-sm mb-2" },
-                            filterDescriptionLabel
+                            filterDescriptionLabel,
                           ),
                           col.filter === "basic"
                             ? input({
@@ -319,56 +315,61 @@ export const TableComponent = ({
                                 },
                               })
                             : col.filter === "checks" &&
-                              col.filterValues &&
-                              col.filterValues.val
-                            ? col.filterValues.val.map((uuid) => {
-                                return label(
-                                  { class: "flex items-center mb-3 space-x-3" },
-                                  input({
-                                    type: "checkbox",
-                                    name: "checked-demo",
-                                    checked: () => uuid.value.val,
-                                    class:
-                                      "accent-orange-400 bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-yellow-500 checked:border-transparent focus:outline-none",
-                                    oninput: () => {
-                                      uuid.value.val = !uuid.value.val
-                                    },
-                                  }),
-                                  span(
+                                col.filterValues &&
+                                col.filterValues.val
+                              ? col.filterValues.val.map((uuid) => {
+                                  return label(
                                     {
+                                      class: "flex items-center mb-3 space-x-3",
+                                    },
+                                    input({
+                                      type: "checkbox",
+                                      name: "checked-demo",
+                                      checked: () => uuid.value.val,
                                       class:
-                                        "font-normal text-gray-700 dark:text-white",
-                                    },
-                                    uuid.uuid
+                                        "accent-orange-400 bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-yellow-500 checked:border-transparent focus:outline-none",
+                                      oninput: () => {
+                                        uuid.value.val = !uuid.value.val
+                                      },
+                                    }),
+                                    span(
+                                      {
+                                        class:
+                                          "font-normal text-gray-700 dark:text-white",
+                                      },
+                                      uuid.uuid,
+                                    ),
                                   )
-                                )
-                              })
-                            : col.filter === "complex" &&
-                              col.filterValues &&
-                              col.filterValues.val
-                            ? col.filterValues.val.map((val) => {
-                                return label(
-                                  { class: "flex items-center mb-3 space-x-3" },
-                                  input({
-                                    type: "checkbox",
-                                    name: "checked-demo",
-                                    checked: () => val.value.val,
-                                    class:
-                                      "accent-orange-400 bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-yellow-500 checked:border-transparent focus:outline-none",
-                                    oninput: () => {
-                                      val.value.val = !val.value.val
-                                    },
-                                  }),
-                                  span(
-                                    {
-                                      class:
-                                        "font-normal text-gray-700 dark:text-white",
-                                    },
-                                    val.label
-                                  )
-                                )
-                              })
-                            : null,
+                                })
+                              : col.filter === "complex" &&
+                                  col.filterValues &&
+                                  col.filterValues.val
+                                ? col.filterValues.val.map((val) => {
+                                    return label(
+                                      {
+                                        class:
+                                          "flex items-center mb-3 space-x-3",
+                                      },
+                                      input({
+                                        type: "checkbox",
+                                        name: "checked-demo",
+                                        checked: () => val.value.val,
+                                        class:
+                                          "accent-orange-400 bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-yellow-500 checked:border-transparent focus:outline-none",
+                                        oninput: () => {
+                                          val.value.val = !val.value.val
+                                        },
+                                      }),
+                                      span(
+                                        {
+                                          class:
+                                            "font-normal text-gray-700 dark:text-white",
+                                        },
+                                        val.label,
+                                      ),
+                                    )
+                                  })
+                                : null,
                           div(
                             { class: "" },
                             col.filter === "basic"
@@ -403,7 +404,7 @@ export const TableComponent = ({
                                   filters[col.key] = col.filterValues.val
                                     .filter((val: any) => val.value.val)
                                     .map(
-                                      (filter: { label: any }) => filter.label
+                                      (filter: { label: any }) => filter.label,
                                     )
                                   console.log(filters[col.key])
                                 } else if (col.filterValues) {
@@ -415,10 +416,10 @@ export const TableComponent = ({
                                 }
                                 funcFilter(filters)
                               },
-                            })
-                          )
+                            }),
+                          ),
                         )
-                      : null
+                      : null,
                   )
               }),
               actionsColumn.length > 0
@@ -426,10 +427,10 @@ export const TableComponent = ({
                     {
                       class: condensed ? "font-medium p-2" : "font-medium p-4",
                     },
-                    actionsLabel
+                    actionsLabel,
                   )
-                : null
-            )
+                : null,
+            ),
           ),
           tbody(
             { class: tbodyClass },
@@ -447,16 +448,18 @@ export const TableComponent = ({
                         class:
                           "accent-teal-600 w-5 h-5 text-teal-600 accent-teal-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 ",
                         type: "checkbox",
-                      })
+                      }),
                     )
                   : null,
                 ...columns.map((col) =>
                   td(
                     {
-                      class: col.tdClass || "",
+                      class:
+                        col.tdClass ||
+                        "text-center border-b border-stone-100 dark:border-stone-700 p-4 text-stone-500 dark:text-stone-400",
                     },
-                    item[col.key as keyof any]
-                  )
+                    item[col.key as keyof any],
+                  ),
                 ),
                 actionsColumn.length > 0
                   ? () =>
@@ -506,14 +509,14 @@ export const TableComponent = ({
                                               typeof action.icon === "function"
                                                 ? action.icon
                                                 : action.icon instanceof Node
-                                                ? action.icon.cloneNode(true)
-                                                : action.icon,
-                                              action.label
+                                                  ? action.icon.cloneNode(true)
+                                                  : "",
+                                              action.label,
                                             )
-                                          : null
-                                      )
+                                          : null,
+                                      ),
                                     )
-                                  : null
+                                  : null,
                               )
                             : div(
                                 {
@@ -526,7 +529,7 @@ export const TableComponent = ({
                                     ? button(
                                         {
                                           class:
-                                            "mt-1 mr-3 ml-3 py-2 px-3 md:text-sm text-white border border-dimmed enabled:hover:bg-stone-500 enabled:hover:border-brand enabled:hover:outline-none enabled:hover:ring-0  focus:border-brand focus:outline-none focus:ring-0 flex justify-between rounded font-semibold cursor-pointer border-none disabled:cursor-not-allowed disabled:opacity-75",
+                                            " mt-1 mr-3 ml-3 py-2 px-3 md:text-sm text-white border border-dimmed enabled:hover:bg-stone-500 enabled:hover:border-brand enabled:hover:outline-none enabled:hover:ring-0  focus:border-brand focus:outline-none focus:ring-0 flex justify-between rounded font-semibold cursor-pointer border-none disabled:cursor-not-allowed disabled:opacity-75 ",
                                           disabled: () =>
                                             action.disable
                                               ? !action.disable?.(item)
@@ -538,33 +541,30 @@ export const TableComponent = ({
                                         typeof action.icon === "function"
                                           ? action.icon
                                           : action.icon instanceof Node
-                                          ? action.icon.cloneNode(true)
-                                          : action.icon,
-                                        action.label
-                                          ? span(
-                                              { class: "ml-2" },
-                                              action.label
-                                            )
-                                          : null
+                                            ? action.icon.cloneNode(true)
+                                            : typeof action.icon === "string"
+                                              ? span({ class: action.icon })
+                                              : "",
+                                        span({ class: "ml-2" }, action.label),
                                       )
-                                    : null
-                                )
+                                    : null,
+                                ),
                               )
-                          : null
+                          : null,
                       )
-                  : null
+                  : null,
               )
             }),
             data.val.length === 0
               ? tr(
                   td(
                     { colSpan: "12", class: "w-full text-center h-20 text-xl" },
-                    noDataLabel
-                  )
+                    noDataLabel,
+                  ),
                 )
-              : null
-          )
-        )
+              : null,
+          ),
+        ),
       ),
     hr({ class: "border-stone-700" }),
     () =>
@@ -586,7 +586,7 @@ export const TableComponent = ({
                 },
               },
               "<< ",
-              pagination?.firstLabel
+              pagination?.firstLabel,
             ),
             button(
               {
@@ -599,16 +599,16 @@ export const TableComponent = ({
                 },
               },
               "< ",
-              pagination?.prevLabel
+              pagination?.prevLabel,
             ),
             div(
               { class: "mb-1 ml-5 text-gray-700 dark:text-gray-400" },
               (pagination?.pageLabel ?? "") + " ",
               b(
-                data.val.length > 0 ? pagination.page?.val ?? 0 : 0,
+                data.val.length > 0 ? (pagination.page?.val ?? 0) : 0,
                 "-",
-                pagination?.pages?.val?.toString()
-              )
+                pagination?.pages?.val?.toString(),
+              ),
             ),
             button(
               {
@@ -621,7 +621,7 @@ export const TableComponent = ({
                 },
               },
               pagination?.nextLabel,
-              " >"
+              " >",
             ),
             button(
               {
@@ -635,7 +635,7 @@ export const TableComponent = ({
                 },
               },
               pagination?.lastLabel,
-              " >>"
+              " >>",
             ),
             span(
               { class: "text-gray-700 dark:text-gray-400" },
@@ -652,7 +652,7 @@ export const TableComponent = ({
                             editRows.val = true
                           },
                         },
-                        "Edit"
+                        "Edit",
                       ),
                       label(rows),
                     ]
@@ -671,18 +671,18 @@ export const TableComponent = ({
                             pagination?.selectFunc?.(rows)
                           },
                         },
-                        "Save"
+                        "Save",
                       ),
                     ],
-                span({ class: "ml-1" }, pagination?.paginationLabel)
-              )
+                span({ class: "ml-1" }, pagination?.paginationLabel),
+              ),
             ),
             span(
               { class: "ml-2 text-gray-700 dark:text-gray-400" },
               pagination?.elements?.val?.toString(),
               " ",
-              pagination?.elementsLabel
-            )
+              pagination?.elementsLabel,
+            ),
           )
         : null,
   ]

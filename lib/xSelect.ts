@@ -160,7 +160,7 @@ export const xSelect = (
       "disabled:opacity-50 disabled:cursor-not-allowed",
     optionClassName = "w-full text-left px-3 py-2 text-sm text-white hover:bg-neutral-800 focus:outline-none",
     optionDisabledClass = "opacity-50 cursor-not-allowed",
-    optionSelectedClass = "bg-neutral-800 text-white font-semibold",
+    optionSelectedClass = "",
   }: XSelectProps,
   ...options: Array<ReturnType<typeof xOption>>
 ) => {
@@ -364,7 +364,7 @@ export const xSelect = (
 
         const optionClassFinal = [
           "cursor-pointer",
-          optionClass,
+          optionClassName,
           activeStyle,
           selectedStyle,
           disabledStyle,
