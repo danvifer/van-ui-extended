@@ -47,6 +47,22 @@ const ascIcon = svg(
     d: "M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12",
   }),
 )
+const filteredIcon = svg(
+  {
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    "stroke-width": "1.5",
+    stroke: "currentColor",
+    class: "size-6",
+  },
+  path({
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    d: "M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5",
+  }),
+)
+
 const filterIcon = svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
@@ -84,7 +100,7 @@ const xIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "size-1 ",
   },
   path({
     "stroke-linecap": "round",
@@ -99,7 +115,7 @@ const checkIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "size-1",
   },
   path({
     "stroke-linecap": "round",
@@ -155,6 +171,7 @@ export interface TableProps {
   readonly clearLabel?: string
   readonly applyLabel?: string
   readonly filterDescriptionLabel?: string
+  readonly RowFormatterClass?: (item: any) => string
   readonly funcOrder?: Function
   readonly funcFilter?: Function
   readonly filters?: any
@@ -172,6 +189,7 @@ export const TableComponent = ({
   pagination = {
     page: van.state(1),
   },
+  RowFormatterClass = () => "",
   condensed = false,
   actionsLabel = "actions",
   tableClass = "table-auto overflow-auto border-collapse text-sm w-full",
@@ -248,7 +266,7 @@ export const TableComponent = ({
                     col.order
                       ? span(
                           {
-                            class: "cursor-pointer",
+                            class: "cursor-pointer flex",
                             onclick: () => {
                               if (orderCol.val === col.key) {
                                 orderBy.val =
@@ -264,9 +282,7 @@ export const TableComponent = ({
                           },
                           col.label,
                           span(
-                            {
-                              class: "ml-1 text-xs ",
-                            },
+                            { class: "ml-1" },
                             orderCol.val === col.key
                               ? orderBy.val === "asc"
                                 ? ascIcon
@@ -279,8 +295,9 @@ export const TableComponent = ({
                       ? xButton({
                           id: "filter-father-" + index,
                           className:
-                            "uppercase cursor-pointer rounded-md px-1 mx-2 py-2 text-white hover:bg-gray-600 focus:outline-none ",
-                          icon: filterIcon,
+                            (filters[col.key] ? "underline " : "") +
+                            "uppercase cursor-pointer rounded-md mx-2 text-white hover:bg-gray-600 focus:outline-none ",
+                          icon: filters[col.key] ? filteredIcon : filterIcon,
                           onClick: () => {
                             if (!col.filterModal)
                               col.filterModal = van.state(false)
@@ -309,9 +326,7 @@ export const TableComponent = ({
                                 placeholder: col.label,
                                 value: filterValue,
                                 oninput: (e) => {
-                                  const value = (e.target as HTMLInputElement)
-                                    .value
-                                  filterValue.val = value
+                                  filterValue.val = e.target.value
                                 },
                               })
                             : col.filter === "checks" &&
@@ -387,12 +402,9 @@ export const TableComponent = ({
                               : null,
                             xButton({
                               className:
-                                "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none disabled:opacity-75 disabled:cursor-not-allowed right-0",
+                                "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none disabled:opacity-75 right-0",
                               icon: checkIcon,
                               label: applyLabel,
-                              disabled:
-                                filterValue.val === "" &&
-                                col.filter === "basic",
                               onClick: () => {
                                 if (col.filterModal) col.filterModal.val = false
                                 if (col.filter === "basic") {
@@ -437,7 +449,7 @@ export const TableComponent = ({
             ...data.val.map((item, index) => {
               item.actions = van.state(false)
               return tr(
-                { class: tbodyhoverClass },
+                { class: tbodyhoverClass + " " + RowFormatterClass(item) },
                 addMultiSelect
                   ? td(
                       {
