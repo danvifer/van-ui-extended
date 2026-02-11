@@ -1,338 +1,260 @@
-import van from "vanjs-core"
-import { xSelect, xOption } from "./xSelect"
+import van from "vanjs-core";
+import type { EChartsOption } from "echarts";
+import { xChart } from "./xChart";
 
-const { div, main, span, h1, h2, h3 } = van.tags
-const svgNS = van.tags("http://www.w3.org/2000/svg")
+const { header, main, div, button, h1, h2, p } = van.tags;
 
-const Flag = (svgEl: any) =>
-  div(
+const chartCardClass =
+  "block w-full rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden";
+
+const basicOptions: EChartsOption = {
+  xAxis: {
+    type: "category",
+    data: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"],
+  },
+  yAxis: { type: "value" },
+  series: [{ type: "line", data: [150, 230, 224, 218, 135] }],
+};
+
+const reactiveValues = van.state([120, 200, 150, 80, 70]);
+
+const reactiveOptions = van.derive<EChartsOption>(() => ({
+  xAxis: {
+    type: "category",
+    data: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"],
+  },
+  yAxis: { type: "value" },
+  series: [{ type: "line", data: reactiveValues.val }],
+}));
+
+const lastEvent = van.state("—");
+
+const eventOptions: EChartsOption = {
+  legend: { data: ["Sales"] },
+  xAxis: {
+    type: "category",
+    data: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"],
+  },
+  yAxis: { type: "value" },
+  series: [{ name: "Sales", type: "line", data: [120, 200, 150, 80, 70] }],
+};
+
+const themeOptions: EChartsOption = {
+  tooltip: {},
+  xAxis: { type: "category", data: ["1", "2", "3", "4"] },
+  yAxis: { type: "value" },
+  series: [{ type: "line", data: [120, 180, 90, 210] }],
+};
+
+const donutOptions: EChartsOption = {
+  tooltip: {
+    trigger: "item",
+    formatter: "{b}: {c} ({d}%)",
+  },
+  legend: {
+    bottom: "0",
+  },
+  series: [
     {
-      class:
-        "inline-flex items-center justify-center w-5 h-5 rounded-sm overflow-hidden shrink-0",
+      name: "Datos IoT",
+      type: "pie",
+      radius: ["45%", "70%"],
+      avoidLabelOverlap: false,
+      label: {
+        show: true,
+        formatter: "{b}\n{d}%",
+      },
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: 16,
+          fontWeight: "bold",
+        },
+      },
+      labelLine: {
+        show: true,
+      },
+      data: [
+        { value: 1240, name: "Sensores de temperatura" },
+        { value: 980, name: "Sensores de humedad" },
+      ],
     },
-    svgEl
-  )
+  ],
+};
 
-const svgSpain = svgNS.svg(
-  {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 2048 2048",
-    class: "w-full h-full",
+const iotBarOptions: EChartsOption = {
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "shadow" },
   },
-  svgNS.path({
-    style: "fill:#ffc501",
-    d: "M255.999 793.25h1536v461.501h-1536z",
-  }),
-  svgNS.path({
-    style: "fill:#c60b1e",
-    d: "M255.999 1254.75h1536v230.75h-1536z",
-  }),
-  svgNS.path({
-    style: "fill:#c60b1e",
-    d: "M255.999 562.499h1536v230.75h-1536z",
-  })
-)
-
-const svgBrazil = svgNS.svg(
-  {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 2048 2048",
-    class: "w-full h-full",
+  grid: {
+    left: "3%",
+    right: "4%",
+    bottom: "3%",
+    containLabel: true,
   },
-  svgNS.path({ style: "fill:#009b3a", d: "M256 562.5h1536v923H256z" }),
-  svgNS.path({
-    style: "fill:#ffe52b",
-    transform: "scale(1.76006 1) rotate(-45 1351.967 232.216)",
-    d: "M0 0h495.002v495.002H0z",
-  }),
-  svgNS.path({
-    style: "fill:#005eac",
-    d: "M1247.07 1024c0 123.247-99.875 223.151-223.074 223.151-123.2 0-223.075-99.904-223.075-223.149 0-123.241 99.875-223.149 223.075-223.149 123.2 0 223.074 99.908 223.074 223.148z",
-  }),
-  svgNS.path({
-    style: "fill:#fff",
-    d: "m1246.04 1061.92-9.38 35.884S1086.995 937.792 805.25 970.992l12.804-37.293s249.245-41.232 427.987 128.221z",
-  })
-)
-
-const svgGermany = svgNS.svg(
-  {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 2048 2048",
-    class: "w-full h-full",
-  },
-  svgNS.path({ style: "fill:#000", d: "M255.999 562.744h1536V870.33h-1536z" }),
-  svgNS.path({ style: "fill:#d00", d: "M255.999 870.329h1536v307.586h-1536z" }),
-  svgNS.path({
-    style: "fill:#ffce00",
-    d: "M255.999 1177.92h1536v307.586h-1536z",
-  })
-)
-
-const arrowDownShortIcon = svgNS.svg(
-  {
-    fill: "none",
-    viewBox: "0 0 24 24",
-    strokeWidth: "1.5",
-    stroke: "currentColor",
-    class: "w-5 h-5",
-  },
-  svgNS.path({
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    d: "M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3",
-  })
-)
-1
-
-const arrowUpShortIcon = svgNS.svg(
-  {
-    fill: "none",
-    viewBox: "0 0 24 24",
-    strokeWidth: "1.5",
-    stroke: "currentColor",
-    class: "w-5 h-5",
-  },
-  svgNS.path({
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    d: "M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18",
-  })
-)
-
-const optionRow = (flagSvg: any, label: string) =>
-  div({ class: "flex items-center gap-2" }, Flag(flagSvg), span(label))
-
-const optSpain = xOption({
-  value: "es",
-  text: "España",
-  data: optionRow(svgSpain, "España"),
-})
-const optBrazil = xOption({
-  value: "br",
-  text: "Brasil",
-  data: optionRow(svgBrazil, "Brasil"),
-})
-const optGermany = xOption({
-  value: "de",
-  text: "Alemania",
-  data: optionRow(svgGermany, "Alemania"),
-})
-
-const selectSimpleSearch = xSelect(
-  { placeholder: "Escoja un pais", searchable: false, search_autofocus: true },
-  xOption({ value: "es", text: "España", data: span("España") }),
-  xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
-  xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
-)
-
-const selectSimpleSearchIcons = xSelect(
-  {
-    searchable: true,
-    placeholder: "Escoja un país",
-    search_autofocus: false,
-    multiple: false,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectDisabled = xSelect(
-  {
-    searchable: true,
-    disabled: true,
-    placeholder: "Escoja un país",
-    search_autofocus: false,
-    multiple: false,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectOtherIconsDownAndUp = xSelect(
-  {
-    searchable: true,
-    iconCollapse: arrowUpShortIcon,
-    iconDown: arrowDownShortIcon,
-    placeholder: "Escoja un país",
-    search_autofocus: true,
-    multiple: false,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectMultipleSearchIcons = xSelect(
-  {
-    searchable: true,
-    placeholder: "Escoja uno o varios países",
-    search_autofocus: true,
-    multiple: true,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectSearchMultiple = xSelect(
-  {
-    searchable: true,
-    placeholder: "Seleccione uno o varios colores",
-    search_autofocus: true,
-    multiple: true,
-  },
-  xOption({ value: "es", text: "España", data: span("España") }),
-  xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
-  xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
-)
-
-const optDisabledStyled = xOption({
-  value: "it",
-  text: "Italia",
-  disabled: true,
-  data: span("Italia (no disponible)"),
-})
-
-const optSelectedStyled = xOption({
-  value: "fr",
-  text: "Francia",
-  selected: true,
-  data: span("Francia"),
-})
-
-const selectWithDisabledAndSelectedStyles = xSelect(
-  { searchable: true, placeholder: "País con estilos", search_autofocus: true },
-  optSpain,
-  optBrazil,
-  optGermany,
-  optDisabledStyled,
-  optSelectedStyled
-)
-
-const selectWithOnSelected = xSelect(
-  {
-    searchable: true,
-    placeholder: "Selecciona un país (onSelected)",
-    search_autofocus: true,
-    onSelected: (value) => {
-      alert(`Has seleccionado: ${value}`)
+  xAxis: {
+    type: "category",
+    data: ["Temperatura", "Humedad", "Acelerómetros", "Presión", "GPS"],
+    axisLabel: {
+      rotate: 20,
     },
-    optionClassName: "bg-sky-700 text-white font-semibold",
-    optionSelectedClass: "bg-sky-700 text-white font-semibold",
-    optionDisabledClass: "bg-sky-700 text-white font-semibold",
   },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectMultipleClareable = xSelect(
-  {
-    searchable: true,
-    placeholder: "Escoja uno o varios países",
-    search_autofocus: true,
-    multiple: true,
-    clearable: true,
+  yAxis: {
+    type: "value",
   },
-  optSpain,
-  optBrazil,
-  optGermany
-)
+  series: [
+    {
+      name: "Eventos IoT",
+      type: "bar",
+      barWidth: "55%",
+      data: [1240, 980, 620, 430, 310],
+    },
+  ],
+};
 
-const selectCompact = xSelect(
-  {
-    searchable: true,
-    placeholder: "Compact",
-    search_ph: "Buscar...",
-    multiple: true,
+const showChart = van.state(true);
 
-    className:
-      "relative w-full rounded border border-stone-700 bg-neutral-900 px-2 pr-9 py-1.5 text-xs " +
-      "text-white placeholder:text-stone-500 outline-none " +
-      "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+const lifecycleOptions: EChartsOption = {
+  xAxis: { type: "category", data: ["1", "2", "3", "4"] },
+  yAxis: { type: "value" },
+  series: [{ type: "line", data: [5, 20, 36, 10] }],
+};
 
-    checkboxInputClass:
-      "appearance-none h-3.5 w-3.5 shrink-0 rounded border border-stone-500 bg-neutral-900 " +
-      "grid place-content-center cursor-pointer " +
-      "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 " +
-      "checked:bg-emerald-400 checked:border-emerald-400 " +
-      "before:content-[''] before:w-2 before:h-1 before:border-b-2 before:border-l-2 before:border-neutral-900 " +
-      "before:-rotate-45 before:opacity-0 checked:before:opacity-100",
-    optionClassName: "bg-sky-700 text-white font-semibold",
-    optionSelectedClass: "bg-sky-700 text-white font-semibold",
-    optionDisabledClass: "bg-sky-700 text-white font-semibold",
+const iotCustomTheme = {
+  backgroundColor: "#113604",
+  textStyle: {
+    color: "#ac2bb8",
   },
-  xOption({
-    text: "Colorado",
-    value: "co",
-    data: "Colorado",
-  }),
-  xOption({
-    text: "Florida",
-    value: "fl",
-    data: "Florida",
-  })
-)
+  title: {
+    textStyle: {
+      color: "#b9d81c",
+    },
+  },
+  legend: {
+    textStyle: {
+      color: "#db1414",
+    },
+  },
+  categoryAxis: {
+    axisLine: {
+      lineStyle: { color: "#4daa4f" },
+    },
+    axisLabel: {
+      color: "#e615c0",
+    },
+  },
+  valueAxis: {
+    axisLine: {
+      lineStyle: { color: "#371546" },
+    },
+    splitLine: {
+      lineStyle: { color: "#075d61" },
+    },
+    axisLabel: {
+      color: "#d3870b",
+    },
+  },
+};
 
 van.add(
   document.body,
-  main(
-    h1(
-      {
-        class: "text-center text-2xl font-semibold mb-8 mt-4",
-      },
-      "Componente xSelect y xOption"
+  div(
+    { class: "min-h-screen bg-white text-slate-900" },
+
+    header({ class: "p-6" }, h1({ class: "text-2xl font-bold" }, "xChart")),
+
+    main(
+      { class: "p-6 space-y-10" },
+
+      h2({ class: "text-xl font-bold" }, "Basic"),
+      xChart({
+        options: basicOptions,
+        height: "300px",
+        className: chartCardClass,
+      }),
+
+      h2({ class: "text-xl font-bold" }, "Reactive"),
+      button(
+        {
+          class: "px-3 py-2 rounded bg-slate-900 text-white",
+          onclick: () => {
+            reactiveValues.val = reactiveValues.val.map(
+              (v) => v + Math.round(Math.random() * 40 - 20),
+            );
+          },
+        },
+        "Datos aleatorios",
+      ),
+      xChart({
+        options: reactiveOptions,
+        height: "320px",
+        className: chartCardClass,
+      }),
+
+      h2({ class: "text-xl font-bold" }, "Dark theme"),
+      xChart({
+        options: themeOptions,
+        height: "320px",
+        ariaLabel: "Theme chart",
+        className: "border-slate-800 bg-slate-950",
+        theme: "dark",
+      }),
+
+      h2({ class: "text-xl font-bold" }, "Custom theme"),
+      xChart({
+        options: iotBarOptions,
+        height: "340px",
+        ariaLabel: "IoT bar chart with custom theme",
+        className: "rounded-xl overflow-hidden",
+        theme: iotCustomTheme,
+      }),
+
+      h2({ class: "text-xl font-bold" }, "Events"),
+      div({ class: "text-sm text-slate-600" }, () => `${lastEvent.val}`),
+      xChart({
+        options: eventOptions,
+        height: "320px",
+        className: chartCardClass,
+        events: {
+          click: (p) => {
+            lastEvent.val = `value ${p?.value}`;
+          },
+        },
+      }),
+      h2({ class: "text-xl font-bold" }, "Doughnut"),
+      xChart({
+        options: donutOptions,
+        height: "360px",
+        className: chartCardClass,
+      }),
+      h2({ class: "text-xl font-bold" }, "Bar with events in console"),
+      xChart({
+        options: iotBarOptions,
+        height: "340px",
+        ariaLabel: "Eventos IoT",
+        className: chartCardClass,
+        events: {
+          click: (p) => console.log("Sensor:", p.name, "Eventos:", p.value),
+        },
+      }),
+      h2({ class: "text-xl font-bold" }, "5) Lifecycle / dispose"),
+      button(
+        {
+          class: "px-3 py-2 rounded bg-slate-900 text-white",
+          onclick: () => (showChart.val = !showChart.val),
+        },
+        () => (showChart.val ? "Unmount chart" : "Mount chart"),
+      ),
+      () =>
+        showChart.val
+          ? xChart({
+              options: lifecycleOptions,
+              height: "280px",
+              ariaLabel: "Lifecycle chart",
+              onInit: (c) => console.log("mounted:", c),
+            })
+          : div({ class: "text-sm text-slate-500" }, "Chart unmounted"),
     ),
-    div(
-      {
-        class:
-          "w-full p-6 " +
-          "max-w-6xl mx-auto " +
-          "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-start",
-      },
-
-      div(
-        { class: "space-y-2" },
-        span("Sin búsqueda ni iconos"),
-        selectSimpleSearch
-      ),
-
-      div(
-        { class: "space-y-2" },
-        span("Con búsqueda e iconos"),
-        selectSimpleSearchIcons
-      ),
-
-      div({ class: "space-y-2" }, span("Select disabled"), selectDisabled),
-
-      div(
-        { class: "space-y-2" },
-        span("Múltiple con búsqueda y sin iconos"),
-        selectSearchMultiple
-      ),
-
-      div(
-        { class: "space-y-2" },
-        span("Múltiple con búsqueda e iconos"),
-        selectMultipleSearchIcons
-      ),
-
-      div(
-        { class: "space-y-2" },
-        span("Iconos up y down modificados"),
-        selectOtherIconsDownAndUp
-      ),
-      div(
-        { class: "space-y-2" },
-        span("Disabled_class y selectedClass"),
-        selectWithDisabledAndSelectedStyles
-      ),
-      div({ class: "space-y-2" }, span("onSelected"), selectWithOnSelected),
-      div({ class: "space-y-2" }, span("clareable"), selectMultipleClareable),
-      div({ class: "space-y-2" }, span("selectHighContrast"), selectCompact)
-    )
-  )
-)
+  ),
+);
