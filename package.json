@@ -47,6 +47,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.8.1",
     "thememirror": "^2.0.1",
+    "typescript": "^5.7.3",
     "uuid": "^13.0.0",
     "vanjs-core": "^1.5.3",
     "vanjs-ext": "^0.6.2",
