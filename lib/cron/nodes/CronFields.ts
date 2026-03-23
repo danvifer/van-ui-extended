@@ -36,66 +36,81 @@ export class CronFields extends CronComponent {
         this.eventListen("select");
         this.eventListen("input");
     }
-    addSelectOptions(attr: string) {
-        var match = this.getElement("*[match=" + attr + "]");
-        for (var i = this.getHasZero(); i <= (this["every"] ?? 0); i++) {
-            var option = document.createElement("option");
-            option.innerText = this.getNumber(i);
-            option.value = i.toString();
-            match.appendChild(option);
-        }
+  addSelectOptions(attr: string) {
+    const match = this.getElement(`*[match=${attr}]`)
+    if (!match) return
+
+    const everyVal = Number((this as any).every) || 0
+    for (let i = this.getHasZero(); i <= everyVal; i++) {
+      const option = document.createElement("option")
+      option.innerText = this.getNumber(i)
+      option.value = i.toString()
+      match.appendChild(option)
     }
-    addSpesificOptions(attr: string) {
-        var match = this.getElement("*[match=" + attr + "]");
-        for (var i = this.getHasZero(); i <= (this["every"] ?? 0); i++) {
-            var div = document.createElement("div");
-            div.innerHTML = EspesificOptionTemplateGenerator(this.getNumber(i), i);
-            div.setAttribute("style", "width: 55px !important;")
-            match.appendChild(div);
-        }
+  }
+
+  addSpesificOptions(attr: string) {
+    const match = this.getElement(`*[match=${attr}]`)
+    if (!match) return
+
+    const everyVal = Number((this as any).every) || 0
+    for (let i = this.getHasZero(); i <= everyVal; i++) {
+      const div = document.createElement("div")
+      div.innerHTML = EspesificOptionTemplateGenerator(this.getNumber(i), i)
+      div.setAttribute("style", "width: 55px !important;")
+      match.appendChild(div)
     }
-    makeCron(choise: number, input: { every: any; step: any; rangeMin: any; rangeMax: any; spesific: any; }) {
-        var expression = "*";
-        if (choise == 1) {
-            if (input.step == "*") expression = `${input.every}`;
-            else expression = `${input.every}/${input.step}`;
-        } else if (
-            choise == 2 &&
-            !(input.rangeMin == "*" || input.rangeMax == "*")
-        ) {
-            let min = parseInt(input.rangeMin);
-            let max = parseInt(input.rangeMax);
-            if (min < max) expression = `${input.rangeMin}-${input.rangeMax}`;
-        } else if (choise == 3 && input.spesific.length != 0) {
-            expression = "";
-            input.spesific.forEach((m: string) => {
-                expression += m + ",";
-            });
-            expression = expression.slice(0, expression.length - 1);
-        }
-        this.value = expression;
+  }
+
+  makeCron(
+    choise: string | number,
+    input: {
+      every: string
+      step: string
+      rangeMin: string
+      rangeMax: string
+      spesific: string[]
+    },
+  ) {
+    let expression = "*"
+    const choiceNum = Number(choise)
+
+    if (choiceNum === 1) {
+      if (input.step === "*") expression = `${input.every}`
+      else expression = `${input.every}/${input.step}`
+    } else if (
+      choiceNum === 2 &&
+      !(input.rangeMin === "*" || input.rangeMax === "*")
+    ) {
+      const min = parseInt(input.rangeMin)
+      const max = parseInt(input.rangeMax)
+      if (min < max) expression = `${input.rangeMin}-${input.rangeMax}`
+    } else if (choiceNum === 3 && input.spesific.length !== 0) {
+      expression = input.spesific.join(",")
     }
-    eventListen(attr: string) {
-        var self = this;
-        this.getElements(attr).forEach((element: { addEventListener: (arg0: string, arg1: (e: any) => void) => void; }) => {
-            element.addEventListener("change", (e: any) => {
-                var choise = self.getElement("*[match=choise]:checked").value;
-                var every = self.getElement("*[match=every]").value;
-                var step = self.getElement("*[match=step]").value;
-                var rangeMin = self.getElement("*[match=rangeMin]").value;
-                var rangeMax = self.getElement("*[match=rangeMax]").value;
-                var spesific = Array.prototype.map.call(
-                    self.getElements("*[match=spesific] input:checked"),
-                    (input) => input.value
-                );
-                self.makeCron(choise, {
-                    every,
-                    step,
-                    rangeMin,
-                    rangeMax,
-                    spesific,
-                });
-            });
-        });
-    }
+    this.value = expression
+  }
+
+  eventListen(attr: string) {
+    this.getElements(attr).forEach((element) => {
+      element.addEventListener("change", () => {
+        const choiceEl = this.getElement("*[match=choise]:checked") as HTMLInputElement
+        const everyEl = this.getElement("*[match=every]") as HTMLSelectElement
+        const stepEl = this.getElement("*[match=step]") as HTMLSelectElement
+        const rangeMinEl = this.getElement("*[match=rangeMin]") as HTMLSelectElement
+        const rangeMaxEl = this.getElement("*[match=rangeMax]") as HTMLSelectElement
+        
+        const selection = this.getElements("*[match=spesific] input:checked")
+        const spesific = Array.from(selection).map((input) => (input as HTMLInputElement).value)
+
+        this.makeCron(choiceEl?.value || "0", {
+          every: everyEl?.value || "*",
+          step: stepEl?.value || "*",
+          rangeMin: rangeMinEl?.value || "*",
+          rangeMax: rangeMaxEl?.value || "*",
+          spesific,
+        })
+      })
+    })
+  }
 }
