@@ -8,244 +8,311 @@ import cron from 'cron-validator'
 import cronstrue from 'cronstrue';
 
 export class CronExpresionInput extends CronComponent {
-    width: string | null | undefined;
-    height!: string | null;
-    required!: boolean;
-    hotValidate!: boolean;
-    colorMain!: string;
-    colorSecond!: string;
-    currentValue: any;
-    constructor() {
-        super();
+  width: string | null | undefined
+  height!: string | null
+  required!: boolean
+  hotValidate!: boolean
+  colorMain!: string
+  colorSecond!: string
+  currentValue: string | undefined
+
+  constructor() {
+    super()
+  }
+
+  connectedCallback() {
+    this.width = this.getAttribute("width")
+    this.height = this.getAttribute("height")
+    this.required = this.getAttribute("required") === "true"
+    this.hotValidate = this.getAttribute("hotValidate") === "true"
+    const color = this.getAttribute("color")?.replace("#", "") || "000000"
+    this.colorMain = "#" + color
+    this.colorSecond = this.increaseBrightness(color, 10)
+
+    this.Init({
+      self: this,
+    })
+
+    const template = CronExpresionInputTemplateGenerator(
+      this,
+      ceInputLangInternal,
+    )
+
+    this.Create(this, template)
+    this.setValue(this.getAttribute("value"))
+
+    const input1 = this.getElement(".cronInsideInput") as HTMLInputElement
+    if (input1) {
+      input1.addEventListener("keydown", (e) => this.validateLongitud(e))
+      input1.addEventListener("keypress", (e) => this.validateLongitud(e))
+      input1.addEventListener("keyup", (e) => this.validateLongitud(e))
     }
 
-    connectedCallback() {
-        this.width = this.getAttribute("width");
-        this.height = this.getAttribute("height");
-        this.required = this.getAttribute("required") == "true";
-        this.hotValidate = this.getAttribute("hotValidate") == "true";
-        var color = this.getAttribute("color")?.replace("#", "");
-        this.colorMain = "#" + color;
-        this.colorSecond = this.increaseBrightness(color, 10);
+    this.addEvent(".cronButtonUI", "click", () => {
+      this.querySelectorAll("form").forEach((element) => element.reset())
+      const insideInput = this.getElementsByClassName(
+        "cronInsideInput",
+      )[0] as HTMLInputElement
+      if (insideInput) {
+        this.currentValue = insideInput.value
+        if (this.currentValue.split(" ").length === 5)
+          this.getCron(this.currentValue)
+      }
+      this.modalToggle()
+    })
 
-        this.Init({
-            self: this,
-        });
+    this.addEvent(".cronClose", "click", () => {
+      this.setValue(this.currentValue)
+      this.modalToggle()
+    })
 
-        var template = CronExpresionInputTemplateGenerator(this, ceInputLangInternal);
+    this.addEvent(".cronSave", "click", () => this.modalToggle())
 
-        var self = this;
-        this.Create(self, template);
-        this.setValue(this.getAttribute("value"));
+    this.addEvent("li > a", "click", (scope) => {
+      let index = 0
+      this.getElements("li > a").forEach((elem, i) => {
+        elem.parentElement?.setAttribute("class", "nav-link")
+        if (elem === scope) {
+          index = i
+        }
+      })
+      scope.parentElement?.setAttribute("class", "nav-link active in")
+      const elements = this.getElements("cron-fields")
+      elements.forEach((elem) =>
+        elem.parentElement?.setAttribute("class", 'tab-pane fade"'),
+      )
+      elements[index].parentElement?.setAttribute("class", "tab-pane active in")
+    })
 
-        var input1 = this.getElement(".cronInsideInput");
-        input1.addEventListener("keydown", (e: any) => self.validateLongitud(e));
-        input1.addEventListener("keypress", (e: any) => self.validateLongitud(e));
-        input1.addEventListener("keyup", (e: any) => self.validateLongitud(e));
-        this.addEvent(".cronButtonUI", "click", () => {
-            self.querySelectorAll("form").forEach((element) => element.reset());
-            if (self.getElementsByClassName("cronInsideInput").length != 0) {
-                self.currentValue = (self.getElementsByClassName("cronInsideInput")[0] as HTMLInputElement).value;
-                if (self.currentValue.split(" ").length == 5) self.getCron(self.currentValue);
-            }
-            self.modalToggle();
-        });
-        this.addEvent(".cronClose", "click", () => {
-            self.setValue(self.currentValue);
-            self.modalToggle();
-        });
-        this.addEvent(".cronSave", "click", () => self.modalToggle());
-        this.addEvent("li > a", "click", (scope: { parentNode: { setAttribute: (arg0: string, arg1: string) => void; }; }) => {
-            var index = 0;
-            self.getElements("li > a").forEach(function (elem: { parentNode: { setAttribute: (arg0: string, arg1: string) => void; }; }, i: number) {
-                elem.parentNode.setAttribute("class", "nav-link");
-                if (elem == scope) {
-                    index = i;
-                }
-            });
-            scope.parentNode.setAttribute("class", "nav-link active in");
-            var elements = self.getElements("cron-fields");
-            elements.forEach((elem: { parentNode: { setAttribute: (arg0: string, arg1: string) => any; }; }) => elem.parentNode.setAttribute("class", 'tab-pane fade"'));
-            elements[index].parentNode.setAttribute("class", "tab-pane active in");
-        });
-        var formParent = self.querySelector(".cronInsideInput")?.closest("form");
-        if (formParent != null) {
-            formParent.closest("form")?.addEventListener("submit", (e) => {
-                if (!self.validator(self)) e.preventDefault();
-            });
-        }
-        if (self.hotValidate) {
-            this.addEvent(".cronInsideInput", "change", (e: any) => self.validator(self));
-        }
-        this.addEvent("cron-fields", "change", (e: { parentNode: any; }) => {
-            var value = true;
-            var node = e.parentNode;
-            while (value) {
-                node = node.parentNode;
-                if (node.nodeName == "CRON-FIELDS") value = false;
-            }
+    const formParent = this.querySelector(".cronInsideInput")?.closest("form")
+    if (formParent != null) {
+      formParent.addEventListener("submit", (e) => {
+        if (!this.validator()) e.preventDefault()
+      })
+    }
 
-            var input2 = self.getElement(".cronInsideInput");
-            self.setValue(
-                self.generateCron(
-                    parseInt(node.getAttribute("pos")),
-                    input2["value"],
-                    node.value
-                )
-            );
-        });
+    if (this.hotValidate) {
+      this.addEvent(".cronInsideInput", "change", () => this.validator())
+    }
 
-        this.getElements(".propagationClass").forEach((element: { addEventListener: (arg0: string, arg1: (e: any) => any) => any; }) =>
-            element.addEventListener("input", (e: { stopPropagation: () => any; }) =>
-                e.stopPropagation())
-        );
+    this.addEvent("cron-fields", "change", (e) => {
+      let value = true
+      let node: HTMLElement | null = e.parentElement
+      while (value && node) {
+        if (node.nodeName === "CRON-FIELDS") {
+          value = false
+        } else {
+          node = node.parentElement
+        }
+      }
 
-        self.validator(self);
-    }
-    validator(self: this) {
-        var insideInput = self.querySelector(".cronInsideInput");
-        var error = self.getElement(".cronexpressionError");
-        if (
-            ((insideInput as HTMLInputElement)?.value?.length == 0 && self.required) ||
-            ((insideInput as HTMLInputElement).value.length != 0 && !cron.isValidCron((insideInput as HTMLInputElement).value))
-        ) {
-            error.classList.replace("hiden", "show");
-            return false;
-        }
-        error.classList.replace("show", "hiden");
-        if (insideInput instanceof HTMLInputElement) {
-            self.setValue(insideInput.value);
-        }
-        return true;
-    }
-    getTypeCron(expresion: string | string[]) {
-        if (expresion.includes("/") || expresion.includes("*")) return 1;
-        else if (expresion.includes("-")) return 2;
-        return 3;
-    }
-    getTypeStep(expresion: string) {
-        const separator = "/";
-        var step = {
-            every: "*",
-            step: "*",
-        };
-        if (!expresion.includes(separator) && expresion != "*") step.every = expresion;
-        else if (expresion.includes("*") && expresion.includes(separator)) step.step = expresion.split(separator)[1];
-        else if (expresion.includes(separator)) {
-            var c = expresion.split(separator);
-            step.every = c[0];
-            step.step = c[1];
-        }
-        return step;
-    }
-    getTypeRange(expresion: string) {
-        const separator = "-";
-        var range = {
-            min: "0",
-            max: "0",
-        };
-        if (expresion.includes(separator)) {
-            var c = expresion.split(separator);
-            range.min = c[0];
-            range.max = c[1];
-        }
-        return range;
-    }
-    getTypeChoise(expresion: string) {
-        return expresion.split(",");
-    }
-    getCron(cronExpresion: string) {
-        var forms = this.querySelectorAll("form");
-        var crons = cronExpresion.split(" ");
-        this.setCronInTab(forms[0], crons[0], this.getTypeCron(crons[0]));
-        this.setCronInTab(forms[1], crons[1], this.getTypeCron(crons[1]));
-        this.setCronInTab(forms[2], crons[2], this.getTypeCron(crons[2]), 1);
-        this.setCronInTab(forms[3], crons[3], this.getTypeCron(crons[3]), 1);
-        this.setCronInTab(forms[4], crons[4], this.getTypeCron(crons[4]));
-    }
-    setCronInTab(form: HTMLFormElement, value: any, type: number, decrement = 0) {
-        var choises = form.querySelectorAll("input[name='choise']");
-        choises.forEach((choise: { removeAttribute: (arg0: string) => any; }) => choise.removeAttribute("checked"));
-        (choises[type - 1] as HTMLInputElement).checked = true;
-        switch (type) {
-            case 1:
-                var step = this.getTypeStep(value);
-                var decrementStep = 1 - decrement;
-                const everyElement = form.querySelector("*[match=every]");
-                if (everyElement) {
-                    (everyElement as HTMLSelectElement).selectedIndex =
-                        parseInt(step["every"]) + decrementStep;
-                }
-                const stepElement = form.querySelector("*[match=step]");
-                if (stepElement) {
-                    (stepElement as HTMLSelectElement).selectedIndex =
-                        parseInt(step["step"]) + decrementStep;
-                }
-                break;
-            case 2:
-                var range = this.getTypeRange(value);
-                const rangeMinElement = form.querySelector("*[match=rangeMin]");
-                if (rangeMinElement) {
-                    (rangeMinElement as HTMLSelectElement).selectedIndex =
-                        parseInt(range["min"]) - decrement;
-                }
-                const rangeMaxElement = form.querySelector("*[match=rangeMax]");
-                if (rangeMaxElement) {
-                    (rangeMaxElement as HTMLSelectElement).selectedIndex =
-                        parseInt(range["max"]) - decrement;
-                }
-                break;
-            case 3:
-                var cs = this.getTypeChoise(value);
-                form
-                    .querySelectorAll("*[match=spesific] input")
-                    .forEach((element, index) => {
-                        const inputElement = element as HTMLInputElement;
-                        if (cs.includes((index + decrement).toString())) inputElement.checked = true;
-                    });
-                break;
-        }
-    }
-    validateLongitud(e: { target: { value: string; }; }) {
-        var values = e.target.value.trim().split(" ");
-        if (values.length > 5) e.target.value = values.slice(0, 5).join(" ");
-        this.sendEvent();
-    }
-    setValue(value: string | null | undefined) {
-        var defaultArray = ["*", "*", "*", "*", "*"];
-        if (value == undefined) return defaultArray.join(" ");
-        else if (value.length > 0) {
-            var array = value.trim().split(" ");
-            for (var i = 0; i < 5; i++)
-                if (array[i] != undefined) defaultArray[i] = array[i];
-            value = defaultArray.join(" ");
-        }
-        var input3 = this.getElement(".cronInsideInput");
-        input3.value = value;
+      if (node) {
+        const input2 = this.getElement(".cronInsideInput") as HTMLInputElement
+        this.setValue(
+          this.generateCron(
+            parseInt(node.getAttribute("pos") || "0"),
+            input2.value,
+            (node as any).value,
+          ),
+        )
+      }
+    })
 
-        const inputCronMsg = this.querySelector(".inputCronMsg");
-        if (inputCronMsg) {
-            (inputCronMsg as HTMLInputElement).value = cronstrue.toString(value);
+    this.getElements(".propagationClass").forEach((element) =>
+      element.addEventListener("input", (e) => e.stopPropagation()),
+    )
+
+    this.validator()
+  }
+
+  validator() {
+    const insideInput = this.querySelector(
+      ".cronInsideInput",
+    ) as HTMLInputElement
+    const error = this.getElement(".cronexpressionError")
+    if (!error) return true
+
+    if (
+      (insideInput?.value?.length === 0 && this.required) ||
+      (insideInput?.value?.length !== 0 && !cron.isValidCron(insideInput.value))
+    ) {
+      error.classList.replace("hiden", "show")
+      return false
+    }
+    error.classList.replace("show", "hiden")
+    if (insideInput) {
+      this.setValue(insideInput.value)
+    }
+    return true
+  }
+
+  getTypeCron(expression: string) {
+    if (expression.includes("/") || expression.includes("*")) return 1
+    else if (expression.includes("-")) return 2
+    return 3
+  }
+
+  getTypeStep(expression: string) {
+    const separator = "/"
+    const step = {
+      every: "*",
+      step: "*",
+    }
+    if (!expression.includes(separator) && expression !== "*") {
+      step.every = expression
+    } else if (expression.includes("*") && expression.includes(separator)) {
+      step.step = expression.split(separator)[1]
+    } else if (expression.includes(separator)) {
+      const c = expression.split(separator)
+      step.every = c[0]
+      step.step = c[1]
+    }
+    return step
+  }
+
+  getTypeRange(expression: string) {
+    const separator = "-"
+    const range = {
+      min: "0",
+      max: "0",
+    }
+    if (expression.includes(separator)) {
+      const c = expression.split(separator)
+      range.min = c[0]
+      range.max = c[1]
+    }
+    return range
+  }
+
+  getTypeChoice(expression: string) {
+    return expression.split(",")
+  }
+
+  getCron(cronExpression: string) {
+    const forms = this.querySelectorAll("form")
+    const crons = cronExpression.split(" ")
+    if (forms[0]) this.setCronInTab(forms[0], crons[0], this.getTypeCron(crons[0]))
+    if (forms[1]) this.setCronInTab(forms[1], crons[1], this.getTypeCron(crons[1]))
+    if (forms[2]) this.setCronInTab(forms[2], crons[2], this.getTypeCron(crons[2]), 1)
+    if (forms[3]) this.setCronInTab(forms[3], crons[3], this.getTypeCron(crons[3]), 1)
+    if (forms[4]) this.setCronInTab(forms[4], crons[4], this.getTypeCron(crons[4]))
+  }
+
+  setCronInTab(
+    form: HTMLFormElement,
+    value: string,
+    type: number,
+    decrement = 0,
+  ) {
+    const choices = form.querySelectorAll<HTMLInputElement>(
+      "input[name='choise']",
+    )
+    choices.forEach((choice) => choice.removeAttribute("checked"))
+    if (choices[type - 1]) choices[type - 1].checked = true
+
+    switch (type) {
+      case 1: {
+        const step = this.getTypeStep(value)
+        const decrementStep = 1 - decrement
+        const everyElement = form.querySelector(
+          "*[match=every]",
+        ) as HTMLSelectElement
+        if (everyElement) {
+          everyElement.selectedIndex = parseInt(step.every) + decrementStep
         }
-        this.sendEvent();
+        const stepElement = form.querySelector(
+          "*[match=step]",
+        ) as HTMLSelectElement
+        if (stepElement) {
+          stepElement.selectedIndex = parseInt(step.step) + decrementStep
+        }
+        break
+      }
+      case 2: {
+        const range = this.getTypeRange(value)
+        const rangeMinElement = form.querySelector(
+          "*[match=rangeMin]",
+        ) as HTMLSelectElement
+        if (rangeMinElement) {
+          rangeMinElement.selectedIndex = parseInt(range.min) - decrement
+        }
+        const rangeMaxElement = form.querySelector(
+          "*[match=rangeMax]",
+        ) as HTMLSelectElement
+        if (rangeMaxElement) {
+          rangeMaxElement.selectedIndex = parseInt(range.max) - decrement
+        }
+        break
+      }
+      case 3: {
+        const cs = this.getTypeChoice(value)
+        form
+          .querySelectorAll("*[match=spesific] input")
+          .forEach((element, index) => {
+            const inputElement = element as HTMLInputElement
+            if (cs.includes((index + decrement).toString()))
+              inputElement.checked = true
+          })
+        break
+      }
     }
-    modalToggle() {
-        this.getElement(".modal").classList.toggle("show");
+  }
+
+  validateLongitud(e: Event) {
+    const target = e.target as HTMLInputElement
+    if (!target) return
+    const values = target.value.trim().split(" ")
+    if (values.length > 5) target.value = values.slice(0, 5).join(" ")
+    this.sendEvent()
+  }
+
+  setValue(value: string | null | undefined) {
+    const defaultArray = ["*", "*", "*", "*", "*"]
+    if (value === undefined || value === null) {
+      value = defaultArray.join(" ")
+    } else if (value.length > 0) {
+      const array = value.trim().split(" ")
+      for (let i = 0; i < 5; i++) {
+        if (array[i] !== undefined) defaultArray[i] = array[i]
+      }
+      value = defaultArray.join(" ")
     }
-    generateCron(pos: number, values: string, value: any) {
-        var val = values.split(" ");
-        val[pos] = value;
-        return val.join(" ");
+    const input3 = this.getElement(".cronInsideInput") as HTMLInputElement
+    if (input3) {
+      input3.value = value
     }
-    sendEvent() {
-        var input4 = this.getElement(".cronInsideInput");
-        var event = new CustomEvent("input", {
-            detail: {
-                value: input4.value,
-            },
-            bubbles: true,
-            cancelable: true,
-        });
-        this.dispatchEvent(event);
+
+    const inputCronMsg = this.querySelector(".inputCronMsg") as HTMLInputElement
+    if (inputCronMsg) {
+      try {
+        inputCronMsg.value = cronstrue.toString(value)
+      } catch {
+        inputCronMsg.value = ""
+      }
     }
+    this.sendEvent()
+  }
+
+  modalToggle() {
+    this.getElement(".modal")?.classList.toggle("show")
+  }
+
+  generateCron(pos: number, values: string, value: string) {
+    const val = values.split(" ")
+    val[pos] = value
+    return val.join(" ")
+  }
+
+  sendEvent() {
+    const input4 = this.getElement(".cronInsideInput") as HTMLInputElement
+    if (!input4) return
+    const event = new CustomEvent("input", {
+      detail: {
+        value: input4.value,
+      },
+      bubbles: true,
+      cancelable: true,
+    })
+    this.dispatchEvent(event)
+  }
 }
