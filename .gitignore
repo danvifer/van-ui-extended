@@ -1,2 +1,15 @@
 node_modules
 dist
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Este es el que me preguntaste:
+.yarn/install-state.gz
+
+# Bloquea el caché
+.pnp.*

@@ -1,57 +1,70 @@
+export interface CronState {
+  self: HTMLElement
+  props?: string[]
+  [key: string]: unknown
+}
+
 export class CronComponent extends HTMLElement {
-    state: any;
-    hasZero: any;
-    constructor() {
-        super();
-    }
+  state!: CronState
+  hasZero?: boolean
 
-    Init(state: any) {
-        this.state = state;
+  constructor() {
+    super()
+  }
 
-        if (this.state.props != undefined) {
-            this.state.props.forEach((p: any) => {
-                this.state.self[p] = state.self.getAttribute(p);
-            });
-        }
-    }
+  Init(state: CronState) {
+    this.state = state
 
-    Create(self: any, template: any) {
-        self.appendChild(template);
+    if (this.state.props !== undefined) {
+      this.state.props.forEach((p) => {
+        const val = state.self.getAttribute(p)
+        ;(this.state as Record<string, unknown>)[p] = val
+        ;(this as Record<string, unknown>)[p] = val
+      })
     }
-    getElements(className: any) {
-        return this.state.self.querySelectorAll(className);
-    }
-    getElement(className: any) {
-        return this.state.self.querySelector(className);
-    }
-    getNumber(n: any) {
-        return n.toString().padStart(2, "0");
-    }
-    getHasZero() {
-        return this.hasZero ? 0 : 1;
-    }
-    addEvent(className: any, event: any, handle: any) {
-        this.getElements(className).forEach((element: any) =>
-            element.addEventListener(event, (e: any) => handle(e.target))
-        );
-    }
-    increaseBrightness(hex: any, percent: any) {
-        hex = hex.replace(/^\s*#|\s*$/g, "");
-        if (hex.length == 3) hex = hex.replace(/(.)/g, "$1$1");
+  }
 
-        var r = parseInt(hex.substr(0, 2), 16);
-        var g = parseInt(hex.substr(2, 2), 16);
-        var b = parseInt(hex.substr(4, 2), 16);
+  getElements(selector: string): NodeListOf<HTMLElement> {
+    return this.state.self.querySelectorAll(selector)
+  }
 
-        return (
-            "#" +
-            (0 | ((1 << 8) + r + ((256 - r) * percent) / 100))
-                .toString(16)
-                .substr(1) +
-            (0 | ((1 << 8) + g + ((256 - g) * percent) / 100))
-                .toString(16)
-                .substr(1) +
-            (0 | ((1 << 8) + b + ((256 - b) * percent) / 100)).toString(16).substr(1)
-        );
-    }
+  getElement(selector: string): HTMLElement | null {
+    return this.state.self.querySelector(selector)
+  }
+
+  getNumber(n: number | string): string {
+    return n.toString().padStart(2, "0")
+  }
+
+  getHasZero(): number {
+    return this.hasZero ? 0 : 1
+  }
+
+  addEvent(
+    selector: string,
+    event: string,
+    handle: (target: HTMLElement) => void,
+  ) {
+    this.getElements(selector).forEach((element) =>
+      element.addEventListener(event, () => {
+        handle(element as HTMLElement)
+      }),
+    )
+  }
+
+  increaseBrightness(hex: string, percent: number): string {
+    hex = hex.replace(/^\s*#|\s*$/g, "")
+    if (hex.length === 3) hex = hex.replace(/(.)/g, "$1$1")
+
+    const r = parseInt(hex.substring(0, 2), 16)
+    const g = parseInt(hex.substring(2, 4), 16)
+    const b = parseInt(hex.substring(4, 6), 16)
+
+    const format = (c: number) =>
+      Math.min(255, Math.max(0, Math.round(c + ((255 - c) * percent) / 100)))
+        .toString(16)
+        .padStart(2, "0")
+
+    return `#${format(r)}${format(g)}${format(b)}`
+  }
 }

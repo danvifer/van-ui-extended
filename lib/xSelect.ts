@@ -134,7 +134,7 @@ export const xSelect = (
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900 " +
       "disabled:cursor-not-allowed disabled:opacity-50",
 
-    listClass = "absolute z-20 mt-2 w-full overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
+    listClass = "fixed z-[9999] overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
 
     optionClass = "",
     optionActiveClass = "bg-neutral-800",
@@ -159,7 +159,7 @@ export const xSelect = (
       "before:-rotate-45 before:opacity-0 checked:before:opacity-100 " +
       "disabled:opacity-50 disabled:cursor-not-allowed",
     optionClassName = "w-full text-left px-3 py-2 text-sm text-white hover:bg-neutral-800 focus:outline-none",
-    optionDisabledClass = "opacity-50 cursor-not-allowed",
+    optionDisabledClass = "opacity-50 cursor-not-allowed " ,
     optionSelectedClass = "",
   }: XSelectProps,
   ...options: Array<ReturnType<typeof xOption>>
@@ -211,6 +211,13 @@ export const xSelect = (
     return baseIndexes.filter((i) =>
       normalizeText(getOptionText(i)).includes(query)
     )
+  }
+
+  const positionDropdown = () => {
+    const rect = inputEl.getBoundingClientRect()
+    listboxEl.style.top = `${rect.bottom + 8}px`
+    listboxEl.style.left = `${rect.left}px`
+    listboxEl.style.width = `${rect.width}px`
   }
 
   const openDropdown = () => {
@@ -360,14 +367,13 @@ export const xSelect = (
 
         const activeStyle = activeOption ? optionActiveClass : ""
         const selectedStyle = selectedOption ? optionSelectedClass : ""
-        const disabledStyle = disabledOption ? optionDisabledClass : ""
+        const disabledStyle = disabledOption ? optionDisabledClass : "cursor-pointer"
 
         const optionClassFinal = [
-          "cursor-pointer",
           optionClassName,
           activeStyle,
           selectedStyle,
-          disabledStyle,
+          disabledStyle
         ]
           .join(" ")
           .trim()
@@ -548,12 +554,14 @@ export const xSelect = (
 
   const rootEl = div(
     { class: "relative inline-block w-full" },
-    div({ class: "relative" }, inputEl, clearButtonEl, toggleButtonEl),
-    listboxEl
+    div({ class: "relative" }, inputEl, clearButtonEl, toggleButtonEl)
   )
+
+  document.body.appendChild(listboxEl)
 
   const syncUi = () => {
     listboxEl.style.display = isDropdownOpen.val ? "block" : "none"
+    if (isDropdownOpen.val) positionDropdown()
 
     const down = toggleButtonEl.children[0] as HTMLElement
     const up = toggleButtonEl.children[1] as HTMLElement
@@ -613,11 +621,18 @@ export const xSelect = (
       if (!isDropdownOpen.val) return
       const targetNode = e.target
       if (!(targetNode instanceof Node)) return
-      if (rootEl.contains(targetNode)) return
+      if (rootEl.contains(targetNode) || listboxEl.contains(targetNode)) return
       closeDropdown()
     },
     true
   )
+
+  window.addEventListener("scroll", () => {
+    if (isDropdownOpen.val) positionDropdown()
+  }, true)
+  window.addEventListener("resize", () => {
+    if (isDropdownOpen.val) positionDropdown()
+  })
 
   renderListbox()
   syncUi()
