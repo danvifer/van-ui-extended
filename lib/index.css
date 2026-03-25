@@ -350,7 +350,8 @@ cron-expression-input * {
     clear: both !important;
   }
   
-  cron-expression-input .show {
+  cron-expression-input .show,
+  cron-expression-input .modal.show {
     display: block !important;
   }
   

@@ -1,338 +1,294 @@
-import van from "vanjs-core"
-import { xSelect, xOption } from "./xSelect"
+import van from "vanjs-core";
+import type { EChartsOption } from "echarts";
+import {
+  Widget,
+  TableComponent,
+  TextAreaComponent,
+  Select,
+  TimePickerComponent,
+  xButton,
+  xLastValue,
+  xSelect,
+  xOption,
+  xCodeMirror,
+  CronComponent,
+} from "./index";
 
-const { div, main, span, h1, h2, h3 } = van.tags
-const svgNS = van.tags("http://www.w3.org/2000/svg")
+const { header, main, div, button, h1, h2, p, hr, style } = van.tags;
+const cronTag = van.tags["cron-expression-input"];
 
-const Flag = (svgEl: any) =>
-  div(
+const cardClass =
+  "block w-full rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden p-4";
+
+// ── Shared chart options for Widget demos ────────────────────
+const lineChartOptions: EChartsOption = {
+  xAxis: {
+    type: "category",
+    data: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"],
+  },
+  yAxis: { type: "value" },
+  series: [{ type: "line", data: [150, 230, 224, 218, 135] }],
+};
+
+const barChartOptions: EChartsOption = {
+  tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+  xAxis: {
+    type: "category",
+    data: ["Temperatura", "Humedad", "Acelerómetros", "Presión", "GPS"],
+  },
+  yAxis: { type: "value" },
+  series: [
     {
-      class:
-        "inline-flex items-center justify-center w-5 h-5 rounded-sm overflow-hidden shrink-0",
+      name: "Eventos IoT",
+      type: "bar",
+      barWidth: "55%",
+      data: [1240, 980, 620, 430, 310],
     },
-    svgEl
-  )
+  ],
+};
 
-const svgSpain = svgNS.svg(
-  {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 2048 2048",
-    class: "w-full h-full",
-  },
-  svgNS.path({
-    style: "fill:#ffc501",
-    d: "M255.999 793.25h1536v461.501h-1536z",
-  }),
-  svgNS.path({
-    style: "fill:#c60b1e",
-    d: "M255.999 1254.75h1536v230.75h-1536z",
-  }),
-  svgNS.path({
-    style: "fill:#c60b1e",
-    d: "M255.999 562.499h1536v230.75h-1536z",
-  })
-)
+// ── State values ─────────────────────────────────────────────
+const textareaValue = van.state("Hello from TextAreaComponent");
+const selectValue = van.state({});
+const timeValue = van.state("14:30");
+const xSelectValue = van.state("");
+const codeMirrorValue = van.state('const greeting = "Hello, world!";\nconsole.log(greeting);');
 
-const svgBrazil = svgNS.svg(
-  {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 2048 2048",
-    class: "w-full h-full",
-  },
-  svgNS.path({ style: "fill:#009b3a", d: "M256 562.5h1536v923H256z" }),
-  svgNS.path({
-    style: "fill:#ffe52b",
-    transform: "scale(1.76006 1) rotate(-45 1351.967 232.216)",
-    d: "M0 0h495.002v495.002H0z",
-  }),
-  svgNS.path({
-    style: "fill:#005eac",
-    d: "M1247.07 1024c0 123.247-99.875 223.151-223.074 223.151-123.2 0-223.075-99.904-223.075-223.149 0-123.241 99.875-223.149 223.075-223.149 123.2 0 223.074 99.908 223.074 223.148z",
-  }),
-  svgNS.path({
-    style: "fill:#fff",
-    d: "m1246.04 1061.92-9.38 35.884S1086.995 937.792 805.25 970.992l12.804-37.293s249.245-41.232 427.987 128.221z",
-  })
-)
+const sectionTitle = (text: string) =>
+  h2({ class: "text-xl font-bold" }, text);
 
-const svgGermany = svgNS.svg(
-  {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 2048 2048",
-    class: "w-full h-full",
-  },
-  svgNS.path({ style: "fill:#000", d: "M255.999 562.744h1536V870.33h-1536z" }),
-  svgNS.path({ style: "fill:#d00", d: "M255.999 870.329h1536v307.586h-1536z" }),
-  svgNS.path({
-    style: "fill:#ffce00",
-    d: "M255.999 1177.92h1536v307.586h-1536z",
-  })
-)
-
-const arrowDownShortIcon = svgNS.svg(
-  {
-    fill: "none",
-    viewBox: "0 0 24 24",
-    strokeWidth: "1.5",
-    stroke: "currentColor",
-    class: "w-5 h-5",
-  },
-  svgNS.path({
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    d: "M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3",
-  })
-)
-1
-
-const arrowUpShortIcon = svgNS.svg(
-  {
-    fill: "none",
-    viewBox: "0 0 24 24",
-    strokeWidth: "1.5",
-    stroke: "currentColor",
-    class: "w-5 h-5",
-  },
-  svgNS.path({
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    d: "M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18",
-  })
-)
-
-const optionRow = (flagSvg: any, label: string) =>
-  div({ class: "flex items-center gap-2" }, Flag(flagSvg), span(label))
-
-const optSpain = xOption({
-  value: "es",
-  text: "España",
-  data: optionRow(svgSpain, "España"),
-})
-const optBrazil = xOption({
-  value: "br",
-  text: "Brasil",
-  data: optionRow(svgBrazil, "Brasil"),
-})
-const optGermany = xOption({
-  value: "de",
-  text: "Alemania",
-  data: optionRow(svgGermany, "Alemania"),
-})
-
-const selectSimpleSearch = xSelect(
-  { placeholder: "Escoja un pais", searchable: false, search_autofocus: true },
-  xOption({ value: "es", text: "España", data: span("España") }),
-  xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
-  xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
-)
-
-const selectSimpleSearchIcons = xSelect(
-  {
-    searchable: true,
-    placeholder: "Escoja un país",
-    search_autofocus: false,
-    multiple: false,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectDisabled = xSelect(
-  {
-    searchable: true,
-    disabled: true,
-    placeholder: "Escoja un país",
-    search_autofocus: false,
-    multiple: false,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectOtherIconsDownAndUp = xSelect(
-  {
-    searchable: true,
-    iconCollapse: arrowUpShortIcon,
-    iconDown: arrowDownShortIcon,
-    placeholder: "Escoja un país",
-    search_autofocus: true,
-    multiple: false,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectMultipleSearchIcons = xSelect(
-  {
-    searchable: true,
-    placeholder: "Escoja uno o varios países",
-    search_autofocus: true,
-    multiple: true,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectSearchMultiple = xSelect(
-  {
-    searchable: true,
-    placeholder: "Seleccione uno o varios colores",
-    search_autofocus: true,
-    multiple: true,
-  },
-  xOption({ value: "es", text: "España", data: span("España") }),
-  xOption({ value: "br", text: "Brasil", data: span("Brasil") }),
-  xOption({ value: "ger", text: "Alemania", data: span("Alemania") })
-)
-
-const optDisabledStyled = xOption({
-  value: "it",
-  text: "Italia",
-  disabled: true,
-  data: span("Italia (no disponible)"),
-})
-
-const optSelectedStyled = xOption({
-  value: "fr",
-  text: "Francia",
-  selected: true,
-  data: span("Francia"),
-})
-
-const selectWithDisabledAndSelectedStyles = xSelect(
-  { searchable: true, placeholder: "País con estilos", search_autofocus: true },
-  optSpain,
-  optBrazil,
-  optGermany,
-  optDisabledStyled,
-  optSelectedStyled
-)
-
-const selectWithOnSelected = xSelect(
-  {
-    searchable: true,
-    placeholder: "Selecciona un país (onSelected)",
-    search_autofocus: true,
-    onSelected: (value) => {
-      alert(`Has seleccionado: ${value}`)
-    },
-    optionClassName: "bg-sky-700 text-white font-semibold",
-    optionSelectedClass: "bg-sky-700 text-white font-semibold",
-    optionDisabledClass: "bg-sky-700 text-white font-semibold",
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectMultipleClareable = xSelect(
-  {
-    searchable: true,
-    placeholder: "Escoja uno o varios países",
-    search_autofocus: true,
-    multiple: true,
-    clearable: true,
-  },
-  optSpain,
-  optBrazil,
-  optGermany
-)
-
-const selectCompact = xSelect(
-  {
-    searchable: true,
-    placeholder: "Compact",
-    search_ph: "Buscar...",
-    multiple: true,
-
-    className:
-      "relative w-full rounded border border-stone-700 bg-neutral-900 px-2 pr-9 py-1.5 text-xs " +
-      "text-white placeholder:text-stone-500 outline-none " +
-      "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
-
-    checkboxInputClass:
-      "appearance-none h-3.5 w-3.5 shrink-0 rounded border border-stone-500 bg-neutral-900 " +
-      "grid place-content-center cursor-pointer " +
-      "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 " +
-      "checked:bg-emerald-400 checked:border-emerald-400 " +
-      "before:content-[''] before:w-2 before:h-1 before:border-b-2 before:border-l-2 before:border-neutral-900 " +
-      "before:-rotate-45 before:opacity-0 checked:before:opacity-100",
-    optionClassName: "bg-sky-700 text-white font-semibold",
-    optionSelectedClass: "bg-sky-700 text-white font-semibold",
-    optionDisabledClass: "bg-sky-700 text-white font-semibold",
-  },
-  xOption({
-    text: "Colorado",
-    value: "co",
-    data: "Colorado",
-  }),
-  xOption({
-    text: "Florida",
-    value: "fl",
-    data: "Florida",
-  })
-)
+const separator = () =>
+  hr({ class: "border-slate-200" });
 
 van.add(
   document.body,
-  main(
-    h1(
-      {
-        class: "text-center text-2xl font-semibold mb-8 mt-4",
-      },
-      "Componente xSelect y xOption"
+  div(
+    { class: "min-h-screen bg-white text-slate-900" },
+
+    header(
+      { class: "p-6" },
+      h1({ class: "text-2xl font-bold" }, "van-ui-extended — Component Demos"),
     ),
-    div(
-      {
-        class:
-          "w-full p-6 " +
-          "max-w-6xl mx-auto " +
-          "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-start",
-      },
 
+    main(
+      { class: "p-6 space-y-10" },
+
+      // ── xButton ────────────────────────────────────────────
+      sectionTitle("xButton"),
       div(
-        { class: "space-y-2" },
-        span("Sin búsqueda ni iconos"),
-        selectSimpleSearch
+        { class: "flex flex-wrap gap-3" },
+        xButton({
+          label: "Primary",
+          className:
+            "inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium bg-slate-900 text-white hover:bg-slate-700",
+          onClick: () => alert("Primary clicked"),
+        }),
+        xButton({
+          label: "Secondary",
+          className:
+            "inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-100",
+          onClick: () => alert("Secondary clicked"),
+        }),
+        xButton({
+          label: "Disabled",
+          disabled: true,
+          className:
+            "inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium bg-slate-900 text-white disabled:opacity-50 disabled:cursor-not-allowed",
+        }),
       ),
 
+      separator(),
+
+      // ── xLastValue ─────────────────────────────────────────
+      sectionTitle("xLastValue"),
       div(
-        { class: "space-y-2" },
-        span("Con búsqueda e iconos"),
-        selectSimpleSearchIcons
+        { class: "grid grid-cols-1 sm:grid-cols-3 gap-4" },
+        xLastValue({
+          value: "23.5 °C",
+          title: "Temperatura",
+          subtitle: "Sensor DHT22",
+        }),
+        xLastValue({
+          value: "61 %",
+          title: "Humedad",
+          subtitle: "Sensor DHT22",
+        }),
+        xLastValue({
+          value: "1013 hPa",
+          title: "Presión",
+          subtitle: "Sensor BMP280",
+          onClick: () => alert("Presión clicked"),
+        }),
       ),
 
-      div({ class: "space-y-2" }, span("Select disabled"), selectDisabled),
+      separator(),
 
+      // ── TableComponent ─────────────────────────────────────
+      sectionTitle("TableComponent"),
+      TableComponent({
+        columns: [
+          { key: "sensor", label: "Sensor" },
+          { key: "value", label: "Value" },
+          { key: "unit", label: "Unit" },
+          { key: "status", label: "Status" },
+        ],
+        data: [
+          { sensor: "Temperatura", value: 23.5, unit: "°C", status: "OK" },
+          { sensor: "Humedad", value: 61, unit: "%", status: "OK" },
+          { sensor: "Presión", value: 1013, unit: "hPa", status: "OK" },
+          { sensor: "CO2", value: 412, unit: "ppm", status: "Warning" },
+        ],
+        tableClass: "table-auto text-pretty overflow-auto border-collapse text-sm w-full",
+      }),
+
+      separator(),
+
+      // ── TextAreaComponent ──────────────────────────────────
+      sectionTitle("TextAreaComponent"),
       div(
-        { class: "space-y-2" },
-        span("Múltiple con búsqueda y sin iconos"),
-        selectSearchMultiple
+        { class: cardClass },
+        div({class: "text-sky-50"},TextAreaComponent(textareaValue, 120)),
+        p(
+          { class: "mt-2 text-sm text-slate-500" },
+          () => `Value: ${textareaValue.val}`,
+        ),
       ),
 
+      separator(),
+
+      // ── xSelect / xOption ──────────────────────────────────
+      sectionTitle("xSelect / xOption"),
       div(
-        { class: "space-y-2" },
-        span("Múltiple con búsqueda e iconos"),
-        selectMultipleSearchIcons
+        { class: cardClass + " " },
+        xSelect(
+          {
+            searchable: true,
+            placeholder: "Choose a device...",
+            onSelected: (val: any) => {
+              xSelectValue.val = val;
+            },
+          },
+          xOption({ data: "Gateway Alpha", value: "gw-alpha" }),
+          xOption({ data: "Gateway Beta", value: "gw-beta" }),
+          xOption({ data: "Sensor Node 1", value: "sn-1" }),
+          xOption({ data: "Sensor Node 2", value: "sn-2" }),
+          xOption({ data: "Actuator A", value: "act-a", disabled: true }),
+        ),
+        p(
+          { class: "mt-2 text-sm text-slate-500" },
+          () => `Selected: ${xSelectValue.val || "—"}`,
+        ),
       ),
 
+      separator(),
+
+      // ── TimePickerComponent ────────────────────────────────
+      sectionTitle("TimePickerComponent"),
       div(
-        { class: "space-y-2" },
-        span("Iconos up y down modificados"),
-        selectOtherIconsDownAndUp
+        { class: cardClass },
+        TimePickerComponent(
+          "demo-time",
+          "Pick a time",
+          "rounded-md border border-slate-300 px-3 py-2 text-sm",
+          timeValue,
+        ),
+        p(
+          { class: "mt-2 text-sm text-slate-500" },
+          () => `Time: ${timeValue.val}`,
+        ),
       ),
+
+      separator(),
+
+      // ── xCodeMirror ────────────────────────────────────────
+      sectionTitle("xCodeMirror"),
       div(
-        { class: "space-y-2" },
-        span("Disabled_class y selectedClass"),
-        selectWithDisabledAndSelectedStyles
+        { class: cardClass },
+        xCodeMirror({
+          value: codeMirrorValue.val,
+          language: "javascript",
+        }),
       ),
-      div({ class: "space-y-2" }, span("onSelected"), selectWithOnSelected),
-      div({ class: "space-y-2" }, span("clareable"), selectMultipleClareable),
-      div({ class: "space-y-2" }, span("selectHighContrast"), selectCompact)
-    )
-  )
-)
+
+      separator(),
+
+      // ── Widget: table ──────────────────────────────────────
+      h1(
+        { class: "text-2xl font-bold pt-10 border-t border-slate-200" },
+        "Widget",
+      ),
+
+      sectionTitle("Widget: table"),
+      Widget({
+        type: "table",
+        widgetConfiguration: {
+          columns: [
+            { key: "sensor", label: "Sensor" },
+            { key: "value", label: "Value" },
+            { key: "unit", label: "Unit" },
+          ],
+          data: van.state([
+            { sensor: "Temperatura", value: 23.5, unit: "°C" },
+            { sensor: "Humedad", value: 61, unit: "%" },
+            { sensor: "Presión", value: 1013, unit: "hPa" },
+            { sensor: "CO2", value: 412, unit: "ppm" },
+          ]),
+        },
+      }),
+
+      // ── Widget: lastValue ──────────────────────────────────
+      sectionTitle("Widget: lastValue"),
+      Widget({
+        type: "lastValue",
+        widgetConfiguration: {
+          value: "23.5 °C",
+          title: "Temperatura",
+          subtitle: "Sensor DHT22 — last reading",
+        },
+      }),
+
+      // ── Widget: chart ──────────────────────────────────────
+      sectionTitle("Widget: chart"),
+      div(
+        { style: "height:400px" },
+        Widget({
+          type: "chart",
+          widgetConfiguration: {
+            option: lineChartOptions,
+            height: "100%",
+          },
+        }),
+      ),
+
+      // ── Widget: chart (dark) ───────────────────────────────
+      sectionTitle("Widget: chart (dark theme)"),
+      div(
+        { style: "height:400px" },
+        Widget({
+          type: "chart",
+          widgetConfiguration: {
+            option: barChartOptions,
+            theme: "dark",
+            height: "100%",
+            className: "border-slate-800 bg-slate-950",
+            ariaLabel: "IoT bar widget",
+          },
+        }),
+      ),
+
+      separator(),
+
+      // ── CronComponent ───────────────────────────────────────
+      sectionTitle("CronComponent"),
+      div(
+        { class: cardClass },
+        style("cron-expression-input .cronInput input[type='text'] { color: black !important; }"),
+        cronTag({ value: "0 */5 * * *", width: "100%", height: "40px", color: "#334155" }),
+        p(
+          { class: "mt-2 text-sm text-slate-500" },
+          "Click the pencil icon to open the cron editor.",
+        ),
+      ),
+    ),
+  ),
+);

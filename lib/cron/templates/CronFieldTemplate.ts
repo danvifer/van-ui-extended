@@ -8,7 +8,7 @@ export function CronFieldTemplateGenerator(obj: any, objLang: any) {
                 div({ class: "panel panel-default", style: "margin-right: 2.5px; width: 50%; height: 132px;" },
                     div({ class: "panel-heading" },
                         div({ style: "display: flex;" },
-                            input({ class: "propagationClass form-check-input", type: "radio", name: "choise", value: "1", match: "choise", checked: "" }),
+                            input({ class: "propagationClass form-check-input", type: "radio", name: "choise", value: "1", match: "choise", checked: true }),
                             span({ style: "margin-left: 10px;" },
                                 objLang.stepChoise,
                             ),
