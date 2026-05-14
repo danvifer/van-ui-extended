@@ -132,12 +132,12 @@ van.add(
           { key: "unit", label: "Unit" },
           { key: "status", label: "Status" },
         ],
-        data: [
+        data: van.state([
           { sensor: "Temperatura", value: 23.5, unit: "°C", status: "OK" },
           { sensor: "Humedad", value: 61, unit: "%", status: "OK" },
           { sensor: "Presión", value: 1013, unit: "hPa", status: "OK" },
           { sensor: "CO2", value: 412, unit: "ppm", status: "Warning" },
-        ],
+        ]),
         tableClass: "table-auto text-pretty overflow-auto border-collapse text-sm w-full",
       }),
 
