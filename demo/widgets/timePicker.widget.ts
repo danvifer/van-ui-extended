@@ -6,7 +6,7 @@ const { div, h3, p } = van.tags;
 export const timePickerWidget = (): HTMLElement => {
   const value = van.state("2026-05-26");
 
-  const pickerFactory = TimePickerComponent(
+  const picker = TimePickerComponent(
     "demo-timepicker",
     "Pick a date",
     "rounded-md border border-slate-300 px-3 py-2 text-sm",
@@ -16,7 +16,7 @@ export const timePickerWidget = (): HTMLElement => {
   return div(
     { class: "h-full w-full flex flex-col p-3 gap-2" },
     h3({ class: "text-sm font-semibold text-slate-700" }, "TimePickerComponent"),
-    div({ class: "flex-1" }, pickerFactory()),
+    div({ class: "flex-1" }, picker),
     p(
       { class: "text-xs text-slate-500 mt-auto" },
       () => `Selected: ${value.val}`,

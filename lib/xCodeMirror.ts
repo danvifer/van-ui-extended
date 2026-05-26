@@ -154,6 +154,25 @@ export const xCodeMirror = (
     parent: element,
     extensions: codemirrorExtension(),
   })
+
+  let disposed = false
+  const dispose = () => {
+    if (disposed) return
+    disposed = true
+    try {
+      editorView.destroy()
+    } catch {}
+    try {
+      observer.disconnect()
+    } catch {}
+  }
+  const observer = new MutationObserver(() => {
+    if (!document.contains(element)) dispose()
+  })
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  })
   element.format = async function format() {
     let parser = "babel"
     switch (language) {
