@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "gridstack/dist/gridstack.min.css";
+
+.x-dashboard-item-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(71 85 105);
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid rgb(226 232 240);
+  background: rgb(248 250 252);
+}
+
+.grid-stack-item-content {
+  background: #ffffff;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
