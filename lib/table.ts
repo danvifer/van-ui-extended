@@ -1,6 +1,16 @@
 import van, { State, ChildDom } from "vanjs-core";
 import { xButton } from "./xButton";
 
+export interface FilterCheck {
+  uuid: string;
+  value: State<boolean>;
+}
+
+export interface FilterChoice {
+  label: string;
+  value: State<boolean>;
+}
+
 const {
   table,
   thead,

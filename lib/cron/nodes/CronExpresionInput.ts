@@ -4,7 +4,7 @@ ceInputLangInternal = lang;
 import { CronComponent } from "./CronComponent";
 import { CronExpresionInputTemplateGenerator } from "../templates/CronExpresionInputTemplate";
 
-import cron from 'cron-validator'
+import { isValidCron } from 'cron-validator'
 import cronstrue from 'cronstrue';
 
 export class CronExpresionInput extends CronComponent {
@@ -123,7 +123,7 @@ export class CronExpresionInput extends CronComponent {
 
     if (
       (insideInput?.value?.length === 0 && this.required) ||
-      (insideInput?.value?.length !== 0 && !cron.isValidCron(insideInput.value))
+      (insideInput?.value?.length !== 0 && !isValidCron(insideInput.value))
     ) {
       error.classList.replace("hiden", "show")
       return false
