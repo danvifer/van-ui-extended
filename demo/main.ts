@@ -13,6 +13,7 @@ import {
   timePickerWidget,
   wizardWidget,
   cronWidget,
+  selectWidget,
 } from "./widgets";
 
 const { div, header, main, h1, p, a, nav } = van.tags;
@@ -73,7 +74,8 @@ const dashboard = xDashboard({
     { id: "timePicker", x: 6, y: 9, w: 6, h: 3, content: timePickerWidget },
     { id: "codeMirror", x: 0, y: 10, w: 6, h: 4, content: xCodeMirrorWidget },
     { id: "wizard", x: 6, y: 12, w: 6, h: 3, content: wizardWidget },
-    { id: "cron", x: 0, y: 14, w: 12, h: 3, content: cronWidget },
+    { id: "cron", x: 0, y: 14, w: 6, h: 3, content: cronWidget },
+    { id: "select-multi", x: 6, y: 15, w: 6, h: 4, content: selectWidget },
     { id: "widget", x: 0, y: 17, w: 12, h: 5, content: widgetWidget },
   ],
   onChange: (nodes) => {

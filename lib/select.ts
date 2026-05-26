@@ -1,7 +1,6 @@
 import van, { State, ChildDom } from "vanjs-core"
 const { div, button, img, span } = van.tags
 const { path, svg } = van.tags("http://www.w3.org/2000/svg")
-import * as vanX from "vanjs-ext"
 
 export type Value<T = string> = {
   img?: string
@@ -157,7 +156,7 @@ export const Select = <T extends string | number>({
           },
           div(
             { class: "max-h-150 overflow-auto" },
-            vanX.list(div, values, ({ val: value }) =>
+            values.map((value) =>
               div(
                 {
                   class:

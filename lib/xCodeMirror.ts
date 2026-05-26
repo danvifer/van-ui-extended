@@ -95,7 +95,7 @@ export const xCodeMirror = (
         "no-shadow-restricted-names": "error",
         "no-sparse-arrays": "error",
         "no-this-before-super": "error",
-        "no-undef": "warning",
+        "no-undef": "warn",
         "no-unexpected-multiline": "error",
         "no-unreachable": "error",
         "no-unsafe-finally": "error",
