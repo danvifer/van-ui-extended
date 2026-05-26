@@ -1,3 +1,12 @@
 export { xChartWidget } from "./xChart.widget";
 export { xButtonWidget } from "./xButton.widget";
 export { tableWidget } from "./table.widget";
+export { xLastValueWidget } from "./xLastValue.widget";
+export { xSelectWidget } from "./xSelect.widget";
+export { xCodeMirrorWidget } from "./xCodeMirror.widget";
+export { widgetWidget } from "./widget.widget";
+export { textareaWidget } from "./textarea.widget";
+export { timePickerWidget } from "./timePicker.widget";
+export { wizardWidget } from "./wizard.widget";
+export { cronWidget } from "./cron.widget";
+export { selectWidget } from "./select.widget";
