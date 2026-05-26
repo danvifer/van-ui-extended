@@ -9,6 +9,7 @@ A comprehensive library of reusable graphical components built on top of [VanJS]
 - **Third-party Integrations**:
   - **CodeMirror**: Full-featured code editor with JS, JSON, and Markdown support.
   - **ECharts**: Powerful charting and visualization.
+  - **GridStack**: Draggable / resizable dashboard layouts (via `xDashboard`).
   - **Leaflet**: Interactive maps.
   - **Pikaday**: Lightweight date picking.
 - **Tailwind CSS**: Styled using modern Utility-first CSS.
@@ -38,7 +39,10 @@ To start the project in development mode with hot-reload:
 npm run dev
 ```
 
-This will start a [Vite](https://vitejs.dev/) development server. You can access the demo page at `http://localhost:5173`. The entry point for the demo/testing is `lib/main.ts`.
+This will start a [Vite](https://vitejs.dev/) development server on `http://localhost:3030`. Demo pages live under `demo/`:
+
+- `/` — dashboard home (`demo/main.ts`) showcasing every component inside an `xDashboard`.
+- `/demo/pages/<component>/` — isolated demo per component.
 
 ### Build
 
@@ -71,6 +75,43 @@ The library exports the following components:
 - `xButton`: Extended button component.
 - `xLastValue`: Component for displaying historical data/values.
 - `xCodeMirror`: Integration with CodeMirror 6.
+- `xChart`: ECharts wrapper with reactive options.
+- `xDashboard`: Draggable / resizable dashboard grid powered by GridStack.
+
+### `xDashboard`
+
+Wrapper around [GridStack](https://gridstackjs.com/) following the VanJS reactive prop pattern. Each item carries its own `HTMLElement` (or factory), and the grid emits layout changes via `onChange`.
+
+`gridstack` is a **peer dependency** — install it in your app:
+
+```bash
+npm install gridstack
+```
+
+You must also import GridStack's CSS once at your app entry:
+
+```ts
+import "gridstack/dist/gridstack.min.css"
+```
+
+Minimal usage:
+
+```ts
+import van from "vanjs-core"
+import { xDashboard } from "van-ui-extended"
+
+const dashboard = xDashboard({
+  column: 12,
+  cellHeight: 80,
+  items: [
+    { id: "a", x: 0, y: 0, w: 6, h: 4, content: someChart() },
+    { id: "b", x: 6, y: 0, w: 6, h: 4, content: someTable() },
+  ],
+  onChange: (nodes) => console.log("layout", nodes),
+})
+
+van.add(document.body, dashboard)
+```
 
 ## Example Usage
 
