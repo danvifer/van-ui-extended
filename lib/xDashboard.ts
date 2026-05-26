@@ -126,8 +126,6 @@ const buildItemElement = (item: XDashboardItem): HTMLDivElement => {
   setGsAttr(wrapper, "gs-auto-position", item.autoPosition);
 
   const inner = div({ class: "grid-stack-item-content" });
-  const node =
-    typeof item.content === "function" ? item.content() : item.content;
 
   if (item.title) {
     const titleEl = div(
@@ -135,6 +133,20 @@ const buildItemElement = (item: XDashboardItem): HTMLDivElement => {
       item.title,
     );
     inner.append(titleEl);
+  }
+
+  let node: HTMLElement;
+  try {
+    node = typeof item.content === "function" ? item.content() : item.content;
+  } catch (err) {
+    console.error(`[xDashboard] item "${item.id ?? "?"}" failed to render`, err);
+    node = div(
+      {
+        class:
+          "h-full w-full flex items-center justify-center text-xs text-rose-600 p-2 text-center",
+      },
+      `Failed to render: ${err instanceof Error ? err.message : String(err)}`,
+    ) as HTMLDivElement;
   }
 
   inner.append(node);
