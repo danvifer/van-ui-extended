@@ -1,6 +1,5 @@
 import van, { ChildDom, State } from "vanjs-core";
-import { Modal } from "vanjs-ui"
-const { div, button, span, i } = van.tags;
+const { div, button, span } = van.tags;
 const { circle, path, svg } = van.tags("http://www.w3.org/2000/svg")
 
 export type Step = {
@@ -139,20 +138,22 @@ export const WizardComponent = (
     )
   })
 
-  van.add(
-    document.body,
-    Modal(
+  const overlay = div(
+    {
+      class:
+        "fixed inset-0 z-[10000] flex items-stretch justify-end bg-black/50",
+      style: () => (closed.val ? "display:none" : ""),
+      onclick: (e: MouseEvent) => {
+        if (e.target === e.currentTarget) {
+          closed.val = true
+          closeWizard()
+        }
+      },
+    },
+    div(
       {
-        closed: closed,
-        modalStyleOverrides: {
-          "background-color": "",
-          color: "",
-          width: "80%",
-          height: "100%",
-          padding: "0px",
-          "z-index": "1000 !important",
-        },
-        modalClass: "bg-stone-900 text-white absolute inset-y-0 right-0 z-40",
+        class:
+          "bg-stone-900 text-white w-4/5 h-full overflow-auto relative",
       },
       div(
         { class: "p-2" },
@@ -167,14 +168,12 @@ export const WizardComponent = (
       ),
       div(
         {
-          id: "appContainer",
           class:
-            "grid grid-cols-4 grid-rows-4 auto-rows-min md:grid-cols-6 lg:grid-cols-15 min-h-screen bg-neutral-900 text-white",
+            "grid grid-cols-4 grid-rows-4 auto-rows-min md:grid-cols-6 lg:grid-cols-15 min-h-[calc(100vh-2rem)] bg-neutral-900 text-white",
           style: "border-top: 1px solid oklch(.372 .044 257.287);",
         },
         div(
           {
-            id: "leftbarwrapper",
             class:
               "col-span-3 row-span-4 md:col-span-1 lg:col-span-3 text-white p-4 lg:block bg-stone-900",
             style: "border-right: 1px solid oklch(.372 .044 257.287);",
@@ -184,7 +183,6 @@ export const WizardComponent = (
         () =>
           div(
             {
-              id: "appMainWrapper",
               class:
                 "col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-stone-900",
             },
@@ -196,4 +194,6 @@ export const WizardComponent = (
       ),
     ),
   )
+
+  van.add(document.body, overlay)
 }
