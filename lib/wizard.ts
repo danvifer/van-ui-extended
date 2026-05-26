@@ -22,27 +22,22 @@ export const WizardComponent = (
   { steps, title, closeWizard, closed }: WizardProps,
   ..._children: readonly ChildDom[]
 ) => {
+  const loading = van.state(false)
+
   async function executeActions(
     preAction?: () => void | Promise<void>,
     postAction?: () => void | Promise<void>,
     close?: boolean,
   ) {
-    const spinner = document.getElementById("spinner")
-    const noSpinner = document.getElementById("no-spinner")
-
     if (postAction) {
-      spinner?.setAttribute("class", "inline")
-      noSpinner?.setAttribute("class", "hidden")
+      loading.val = true
       await postAction()
-      spinner?.setAttribute("class", "hidden")
-      noSpinner?.setAttribute("class", "inline")
+      loading.val = false
     }
     if (preAction) {
-      spinner?.setAttribute("class", "inline")
-      noSpinner?.setAttribute("class", "hidden")
+      loading.val = true
       await preAction()
-      spinner?.setAttribute("class", "hidden")
-      noSpinner?.setAttribute("class", "inline")
+      loading.val = false
     }
     if (close) {
       closed.val = true
@@ -99,7 +94,7 @@ export const WizardComponent = (
               closeWizard()
             },
           },
-          span({ id: "spinner", class: "hidden" },
+          span({ class: () => (loading.val ? "inline" : "hidden") },
             svg(
               { class: "mr-3 size-5 animate-spin inline", viewBox: "0 0 24 24" },
               circle({
@@ -118,7 +113,7 @@ export const WizardComponent = (
             ),
             "Loading",
           ),
-          span({ id: "no-spinner" }, "Create"),
+          span({ class: () => (loading.val ? "hidden" : "inline") }, "Create"),
         )
       : null,
   )

@@ -134,9 +134,7 @@ export const Select = <T extends string | number>({
   }
 
   return div(
-    { class: "flex w-screen h-screen justify-center items-center" },
-    div(
-      { class: selectClass },
+    { class: selectClass },
       div(
         { class: "relative w-full group" },
         button(
@@ -182,6 +180,5 @@ export const Select = <T extends string | number>({
           ),
         ),
       ),
-    ),
-  )
+    )
 }
