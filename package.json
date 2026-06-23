@@ -7,7 +7,7 @@
     "form",
     "ui-library"
   ],
-  "version": "0.0.31",
+  "version": "0.1.0",
   "author": {
     "name": "wisewolftech",
     "email": ""
@@ -17,6 +17,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md"
@@ -27,38 +28,70 @@
     "dev": "vite --force"
   },
   "peerDependencies": {
-    "esbuild": "^0.24.2",
-    "gridstack": "^12.0.0",
-    "typescript": "^5.7.3"
-  },
-  "dependencies": {
+    "@codemirror/lang-css": "^6.0.0",
+    "@codemirror/lang-html": "^6.0.0",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-markdown": "^6.5.0",
-    "@tailwindcss/postcss": "^4.0.8",
+    "@remoteoss/json-schema-form": "*",
     "@typescript-eslint/typescript-estree": "^8.53.1",
     "codemirror": "^6.0.2",
-    "cron-validator": "^1.3.1",
-    "cronstrue": "^2.59.0",
     "echarts": "^6.0.0",
     "eslint-linter-browserify": "^9.39.2",
     "globals": "^17.0.0",
+    "gridstack": "^12.0.0",
     "leaflet": "^1.9.4",
-    "pikaday": "^1.8.2",
-    "postcss": "^8.5.3",
     "prettier": "^3.8.1",
     "thememirror": "^2.0.1",
-    "typescript": "^5.7.3",
-    "uuid": "^13.0.0",
     "vanjs-core": "^1.5.3",
-    "vanjs-ext": "^0.6.2",
+    "vanjs-ext": "^0.6.2"
+  },
+  "peerDependenciesMeta": {
+    "@codemirror/lang-css": { "optional": true },
+    "@codemirror/lang-html": { "optional": true },
+    "@codemirror/lang-javascript": { "optional": true },
+    "@codemirror/lang-json": { "optional": true },
+    "@codemirror/lang-markdown": { "optional": true },
+    "@remoteoss/json-schema-form": { "optional": true },
+    "@typescript-eslint/typescript-estree": { "optional": true },
+    "codemirror": { "optional": true },
+    "echarts": { "optional": true },
+    "eslint-linter-browserify": { "optional": true },
+    "globals": { "optional": true },
+    "gridstack": { "optional": true },
+    "leaflet": { "optional": true },
+    "prettier": { "optional": true },
+    "thememirror": { "optional": true }
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.0.8",
+    "cron-validator": "^1.3.1",
+    "cronstrue": "^2.59.0",
+    "postcss": "^8.5.3",
+    "uuid": "^13.0.0",
     "vanjs-ui": "^0.11.10"
   },
   "devDependencies": {
+    "@codemirror/lang-css": "^6.0.0",
+    "@codemirror/lang-html": "^6.0.0",
+    "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@typescript-eslint/typescript-estree": "^8.53.1",
     "@types/leaflet": "^1.9.21",
-    "@types/pikaday": "^1.7.10",
+    "codemirror": "^6.0.2",
+    "echarts": "^6.0.0",
+    "esbuild": "^0.24.2",
+    "eslint-linter-browserify": "^9.39.2",
+    "globals": "^17.0.0",
     "gridstack": "^12.6.0",
+    "leaflet": "^1.9.4",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4.0.8",
+    "thememirror": "^2.0.1",
+    "typescript": "^5.7.3",
+    "vanjs-core": "^1.5.3",
+    "vanjs-ext": "^0.6.2",
     "vite": "^6.0.9"
   }
 }

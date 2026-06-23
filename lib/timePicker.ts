@@ -1,7 +1,11 @@
-import pikaday from "pikaday";
 import van, { State } from "vanjs-core"
-const { input, div, label, link } = van.tags
+const { input, div, label } = van.tags
 
+// TimePickerComponent renders a date picker over the browser-native
+// <input type="date">. This deliberately drops the Pikaday dependency (and the
+// CDN <link> it injected, which violated strict Content-Security-Policy): the
+// native control gives an accessible calendar UI, an ISO `YYYY-MM-DD` value,
+// and zero runtime dependencies. The exported signature is unchanged.
 export const TimePickerComponent = (
   name: string,
   labelString: string,
@@ -9,7 +13,8 @@ export const TimePickerComponent = (
   value: State<string>,
 ): HTMLElement => {
   const calendarInput = input({
-    type: "text",
+    type: "date",
+    name,
     class: classInput ? classInput : null,
     value: value.val,
     onchange: (e: Event) => {
@@ -17,37 +22,10 @@ export const TimePickerComponent = (
     },
   })
 
-  const el = div(
+  return div(
     label({ for: name, style: "margin-right: 5px;" }, labelString),
     calendarInput,
-    link({
-      rel: "stylesheet",
-      type: "text/css",
-      href: "https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css",
-    }),
   )
-
-  new pikaday({
-    field: calendarInput as HTMLInputElement,
-    format: "YYYY/MM/DD",
-    container: el as HTMLElement,
-    firstDay: 1,
-    toString(date) {
-      const day = date.getDate()
-      const month = date.getMonth() + 1
-      const year = date.getFullYear()
-      return `${year}-${("0" + month).slice(-2)}-${("0" + day).slice(-2)}`
-    },
-    parse(dateString) {
-      const parts = dateString.split("/")
-      const day = parseInt(parts[0], 10)
-      const month = parseInt(parts[1], 10) - 1
-      const year = parseInt(parts[2], 10)
-      return new Date(year, month, day)
-    },
-  })
-
-  return el as HTMLElement
 }
 
-export default TimePickerComponent 
+export default TimePickerComponent

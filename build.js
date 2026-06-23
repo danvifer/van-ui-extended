@@ -11,12 +11,25 @@ async function build() {
     sourcemap: true, // Genera mapas de fuente
     target: "esnext", // Soporte para navegadores modernos
     external: [
-      // Excluye las dependencias externas
+      // Externalised so the consumer's bundler resolves ONE shared copy
+      // (tree-shaking, real lazy chunks, no duplicate CodeMirror). The lib
+      // ships as a thin layer of component glue; heavy deps are peer deps.
       "@remoteoss/json-schema-form",
       "gridstack",
       "tailwindcss",
       "vanjs-core",
       "vanjs-ext",
+      // Heavy peers (the actual bundle-size offenders):
+      "echarts",
+      "codemirror",
+      "@codemirror/*",
+      "prettier",
+      "prettier/*",
+      "eslint-linter-browserify",
+      "globals",
+      "@typescript-eslint/typescript-estree",
+      "leaflet",
+      "thememirror",
     ],
   });
 
