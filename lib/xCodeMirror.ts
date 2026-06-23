@@ -13,7 +13,14 @@ import { markdown } from "@codemirror/lang-markdown"
 import { css } from "@codemirror/lang-css"
 import { html } from "@codemirror/lang-html"
 import * as eslint from "eslint-linter-browserify"
-import { lintGutter, linter, forEachDiagnostic } from "@codemirror/lint"
+import {
+  lintGutter,
+  linter,
+  forEachDiagnostic,
+  setDiagnostics,
+  type Diagnostic,
+} from "@codemirror/lint"
+import { EditorState } from "@codemirror/state"
 import { dracula } from "thememirror"
 import globals from "globals"
 const { div, span } = van.tags
@@ -22,12 +29,34 @@ export interface XCodemirrorProps {
   readonly value: any
   readonly language?: string
   readonly ownGlobals?: Record<string, unknown>
+  // Make the editor read-only (view stays selectable/copyable).
+  readonly readOnly?: boolean
+  // Called on every document change with the current text.
+  readonly onChange?: (value: string) => void
 }
+
+// A host-injected diagnostic (e.g. a widget runtime error from the worker),
+// in 1-based line/column terms. Mapped to a CodeMirror Diagnostic internally.
+export interface XCodeMirrorDiagnostic {
+  readonly line: number
+  readonly column: number
+  readonly message: string
+  readonly severity?: "error" | "warning" | "info"
+}
+
 interface XCodeMirrorElement extends HTMLElement {
   format: () => void
+  // Read the current editor text.
+  getValue: () => string
+  // Replace the whole document.
+  setValue: (value: string) => void
+  // Underline host-supplied diagnostics (clears previous host diagnostics).
+  setDiagnostics: (diags: XCodeMirrorDiagnostic[]) => void
+  // Tear down the editor + observer explicitly.
+  destroy: () => void
 }
 export const xCodeMirror = (
-  { value, language = "javascript", ownGlobals }: XCodemirrorProps,
+  { value, language = "javascript", ownGlobals, readOnly, onChange }: XCodemirrorProps,
 
   ...children: ChildDom[]
 ): XCodeMirrorElement => {
@@ -113,7 +142,17 @@ export const xCodeMirror = (
         "valid-typeof": "error",
       },
     }
-    const extensions = [dracula, basicSetup, lintGutter()]
+    const extensions: Array<any> = [dracula, basicSetup, lintGutter()]
+    if (readOnly) {
+      extensions.push(EditorState.readOnly.of(true))
+    }
+    if (typeof onChange === "function") {
+      extensions.push(
+        EditorView.updateListener.of((u) => {
+          if (u.docChanged) onChange(u.state.doc.toString())
+        }),
+      )
+    }
     switch (language) {
       case "json":
         extensions.push(json(), linter(jsonParseLinter()))
@@ -225,6 +264,38 @@ export const xCodeMirror = (
       })
     }
   }
+
+  element.getValue = () => editorView.state.doc.toString()
+
+  element.setValue = (next: string) => {
+    editorView.dispatch({
+      changes: { from: 0, to: editorView.state.doc.length, insert: next },
+    })
+  }
+
+  // Map 1-based line/column host diagnostics to CodeMirror's absolute offsets
+  // and underline them. Replaces any previously set host diagnostics.
+  element.setDiagnostics = (diags: XCodeMirrorDiagnostic[]) => {
+    const doc = editorView.state.doc
+    const cmDiags: Diagnostic[] = diags.map((d) => {
+      const lineNo = Math.min(Math.max(d.line || 1, 1), doc.lines)
+      const lineInfo = doc.line(lineNo)
+      const from = Math.min(
+        lineInfo.from + Math.max((d.column || 1) - 1, 0),
+        lineInfo.to,
+      )
+      const severity: Diagnostic["severity"] =
+        d.severity === "warning"
+          ? "warning"
+          : d.severity === "info"
+            ? "info"
+            : "error"
+      return { from, to: lineInfo.to, severity, message: d.message }
+    })
+    editorView.dispatch(setDiagnostics(editorView.state, cmDiags))
+  }
+
+  element.destroy = dispose
 
   return element
 }
