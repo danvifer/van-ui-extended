@@ -25,7 +25,8 @@
   "scripts": {
     "build": "node build.js",
     "types": "tsc",
-    "dev": "vite --force"
+    "dev": "vite --force",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "@codemirror/lang-css": "^6.0.0",
@@ -47,21 +48,51 @@
     "vanjs-ext": "^0.6.2"
   },
   "peerDependenciesMeta": {
-    "@codemirror/lang-css": { "optional": true },
-    "@codemirror/lang-html": { "optional": true },
-    "@codemirror/lang-javascript": { "optional": true },
-    "@codemirror/lang-json": { "optional": true },
-    "@codemirror/lang-markdown": { "optional": true },
-    "@remoteoss/json-schema-form": { "optional": true },
-    "@typescript-eslint/typescript-estree": { "optional": true },
-    "codemirror": { "optional": true },
-    "echarts": { "optional": true },
-    "eslint-linter-browserify": { "optional": true },
-    "globals": { "optional": true },
-    "gridstack": { "optional": true },
-    "leaflet": { "optional": true },
-    "prettier": { "optional": true },
-    "thememirror": { "optional": true }
+    "@codemirror/lang-css": {
+      "optional": true
+    },
+    "@codemirror/lang-html": {
+      "optional": true
+    },
+    "@codemirror/lang-javascript": {
+      "optional": true
+    },
+    "@codemirror/lang-json": {
+      "optional": true
+    },
+    "@codemirror/lang-markdown": {
+      "optional": true
+    },
+    "@remoteoss/json-schema-form": {
+      "optional": true
+    },
+    "@typescript-eslint/typescript-estree": {
+      "optional": true
+    },
+    "codemirror": {
+      "optional": true
+    },
+    "echarts": {
+      "optional": true
+    },
+    "eslint-linter-browserify": {
+      "optional": true
+    },
+    "globals": {
+      "optional": true
+    },
+    "gridstack": {
+      "optional": true
+    },
+    "leaflet": {
+      "optional": true
+    },
+    "prettier": {
+      "optional": true
+    },
+    "thememirror": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.8",
@@ -77,21 +108,23 @@
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-markdown": "^6.5.0",
-    "@typescript-eslint/typescript-estree": "^8.53.1",
     "@types/leaflet": "^1.9.21",
+    "@typescript-eslint/typescript-estree": "^8.53.1",
     "codemirror": "^6.0.2",
     "echarts": "^6.0.0",
     "esbuild": "^0.24.2",
     "eslint-linter-browserify": "^9.39.2",
     "globals": "^17.0.0",
     "gridstack": "^12.6.0",
+    "jsdom": "^25.0.1",
     "leaflet": "^1.9.4",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.0.8",
     "thememirror": "^2.0.1",
     "typescript": "^5.7.3",
-    "vanjs-core": "^1.5.3",
+    "vanjs-core": "1.6.0",
     "vanjs-ext": "^0.6.2",
-    "vite": "^6.0.9"
+    "vite": "^6.0.9",
+    "vitest": "^2.1.9"
   }
 }
