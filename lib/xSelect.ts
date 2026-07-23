@@ -134,7 +134,7 @@ export const xSelect = (
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900 " +
       "disabled:cursor-not-allowed disabled:opacity-50",
 
-    listClass = "fixed z-[9999] overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
+    listClass = "fixed z-[10001] overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
 
     optionClass = "",
     optionActiveClass = "bg-neutral-800",
@@ -171,7 +171,11 @@ export const xSelect = (
     .map((opt, idx) => (opt.selected ? idx : -1))
     .filter((idx) => idx >= 0)
 
-  if (!selectedIndexes.val.length && defaultSelectedIndexes.length) {
+  // Use `.rawVal` here (not `.val`): this read runs at construction time, which
+  // may happen inside a caller's reactive binding (e.g. `() => open ? … : xSelect(…)`).
+  // Reading `.val` would leak `selectedIndexes` into that binding's dependency set,
+  // causing the caller's whole subtree to rebuild whenever the selection changes.
+  if (!selectedIndexes.rawVal.length && defaultSelectedIndexes.length) {
     selectedIndexes.val = defaultSelectedIndexes
   }
 
@@ -474,7 +478,14 @@ export const xSelect = (
     disabled,
     class: readOnly + className,
     placeholder: searchable ? search_ph : placeholder,
-    value: multiple ? getSelectedSummary() : getSingleSelectedLabel(),
+    // Initial value computed from `.rawVal` (non-tracking): the reactive `van.derive`
+    // below keeps `inputEl.value` in sync afterwards. Reading `.val` here would leak
+    // `selectedIndexes` into a caller's enclosing binding (see note above).
+    value: multiple
+      ? selectedIndexes.rawVal.map(getOptionText).filter(Boolean).join(", ")
+      : selectedIndexes.rawVal.length
+        ? getOptionText(selectedIndexes.rawVal[0])
+        : "",
     readOnly: !searchable,
     role: "combobox",
     "aria-controls": listboxId,
@@ -634,8 +645,13 @@ export const xSelect = (
     if (isDropdownOpen.val) positionDropdown()
   })
 
-  renderListbox()
-  syncUi()
+  // NOTE: the initial render is performed by the `van.derive` above, which VanJS
+  // runs once immediately on creation with its own isolated dependency scope.
+  // We must NOT call `renderListbox()`/`syncUi()` directly here: at construction
+  // time `curDeps` may belong to a caller's enclosing reactive binding, so these
+  // reads of `isDropdownOpen`/`searchQuery`/`selectedIndexes`/`activeFilteredIndex`
+  // would leak into that binding — flipping the dropdown open would then rebuild
+  // the caller's whole subtree and destroy this instance before it can open.
 
   return rootEl
 }

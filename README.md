@@ -77,6 +77,7 @@ The library exports the following components:
 - `xCodeMirror`: Integration with CodeMirror 6.
 - `xChart`: ECharts wrapper with reactive options.
 - `xDashboard`: Draggable / resizable dashboard grid powered by GridStack.
+- `xTable`: Feature-rich data table — sorting, a collapsible per-column filter row, pagination, row selection, expandable rows, virtual scrolling and light/dark themes.
 
 ### `xDashboard`
 
@@ -112,6 +113,41 @@ const dashboard = xDashboard({
 
 van.add(document.body, dashboard)
 ```
+
+### `xTable`
+
+Feature-rich, reactive data table. Rows are a VanJS `State<T[]>`; columns declare their key, label, alignment and per-column sort/filter. It supports:
+
+- Client- or server-side **pagination** (a `pagination` state, or an `onRequest` hook for server mode). The pagination footer renders as a fixed bar **outside** the scroll region, so it never overlaps rows.
+- A collapsible **per-column filter row** below the headers (`filterCellByKey` + `filterCellsVisible`).
+- **Sorting**, **row selection**, **expandable rows** and **virtual scrolling** for large datasets.
+- Custom cell rendering via slots (`headerCellByKey` / `bodyCellByKey` / `slots`) and light/dark **themes**.
+
+The source lives under `lib/xTable/` (split into `xTable.body`, `xTable.filter`, `xTable.pagination`, `xTable.selection`, `xTable.themes`, `xTable.virtualScroll`, …); import the public component and its types from the package root.
+
+Minimal usage:
+
+```ts
+import van from "vanjs-core"
+import { xTable } from "van-ui-extended"
+import type { XColumn } from "van-ui-extended"
+
+type Row = { id: string; name: string; status: string }
+
+const rows = van.state<Row[]>([
+  { id: "1", name: "edge-01", status: "up" },
+  { id: "2", name: "nas-01", status: "down" },
+])
+
+const columns: XColumn<Row>[] = [
+  { key: "name", label: "Name", sortable: true },
+  { key: "status", label: "Status" },
+]
+
+van.add(document.body, xTable<Row>({ rows, columns, rowKey: (r) => r.id }))
+```
+
+An optional `scrollClass` prop overrides the inner scroll region's classes (default `"flex-1 min-h-0 overflow-auto"`).
 
 ## Example Usage
 

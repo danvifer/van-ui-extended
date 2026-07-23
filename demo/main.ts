@@ -5,6 +5,7 @@ import {
   xChartWidget,
   xButtonWidget,
   tableWidget,
+  xTableWidget,
   xLastValueWidget,
   xSelectWidget,
   xCodeMirrorWidget,
@@ -21,6 +22,7 @@ const { div, header, main, h1, p, a, nav } = van.tags;
 const isolatedPages: ReadonlyArray<{ label: string; href: string }> = [
   { label: "xDashboard", href: "/demo/pages/xDashboard/" },
   { label: "xChart", href: "/demo/pages/xChart/" },
+  { label: "xTable", href: "/demo/pages/xTable/" },
   { label: "xButton", href: "/demo/pages/xButton/" },
   { label: "xLastValue", href: "/demo/pages/xLastValue/" },
   { label: "xSelect", href: "/demo/pages/xSelect/" },
@@ -77,6 +79,7 @@ const dashboard = xDashboard({
     { id: "cron", x: 0, y: 14, w: 6, h: 3, content: cronWidget },
     { id: "select-multi", x: 6, y: 15, w: 6, h: 4, content: selectWidget },
     { id: "widget", x: 0, y: 17, w: 12, h: 5, content: widgetWidget },
+    { id: "xtable", x: 0, y: 22, w: 12, h: 6, content: xTableWidget },
   ],
   onChange: (nodes) => {
     console.log("[xDashboard] layout changed", nodes);
