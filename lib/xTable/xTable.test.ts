@@ -1086,3 +1086,97 @@ describe("xTable / filter", () => {
     expect(frozenCol.key).toBe("sensor");
   });
 });
+
+describe("xTable / per-column filter row", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("filterCellByKey — renders one filter <td> per column, keyed content aligned", () => {
+    const rows = van.state(sampleSensors);
+    van.add(
+      document.body,
+      xTable({
+        rows,
+        columns: sensorCols,
+        filterCellByKey: {
+          sensor: () => {
+            const i = document.createElement("input");
+            i.type = "text";
+            i.className = "sensor-filter";
+            return i;
+          },
+          status: () => "STATUS_FILTER",
+        },
+      }),
+    );
+
+    const theadRows = document.body.querySelectorAll("thead tr");
+    // header row + per-column filter row
+    expect(theadRows.length).toBe(2);
+
+    const filterCells = theadRows[1].querySelectorAll("td");
+    // one <td> per data column — aligned with the headers above
+    expect(filterCells.length).toBe(sensorCols.length);
+
+    // sensor (col 0) hosts the input; status (col 3) hosts the text
+    expect(filterCells[0].querySelector("input.sensor-filter")).not.toBeNull();
+    expect(filterCells[3].textContent).toContain("STATUS_FILTER");
+    // value (col 1) and unit (col 2) have no filter -> empty cells
+    expect(filterCells[1].textContent).toBe("");
+    expect(filterCells[2].textContent).toBe("");
+  });
+
+  it("filterCellByKey — no extra row when omitted (backward compatible)", () => {
+    const rows = van.state(sampleSensors);
+    van.add(document.body, xTable({ rows, columns: sensorCols }));
+    expect(document.body.querySelectorAll("thead tr").length).toBe(1);
+  });
+
+  it("filterCellsVisible — false hides the filter row, reactive to true", async () => {
+    const open = van.state(false);
+    const rows = van.state(sampleSensors);
+    van.add(
+      document.body,
+      xTable({
+        rows,
+        columns: sensorCols,
+        filterCellByKey: { sensor: () => "x" },
+        filterCellsVisible: () => open.val,
+      }),
+    );
+
+    const filterRow = document.body.querySelectorAll("thead tr")[1];
+    expect(filterRow.className).toContain("hidden");
+
+    open.val = true;
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(filterRow.className).not.toContain("hidden");
+  });
+
+  it("filterCellByKey — selection column adds a leading empty filter cell", () => {
+    const rows = van.state(sampleSensors);
+    const selected = van.state<Sensor[]>([]);
+    van.add(
+      document.body,
+      xTable({
+        rows,
+        columns: sensorCols,
+        selection: "multiple",
+        selected,
+        rowKey: "id",
+        filterCellByKey: { sensor: () => "x" },
+      }),
+    );
+
+    const filterRow = document.body.querySelectorAll("thead tr")[1];
+    const cells = filterRow.querySelectorAll("td");
+    // leading selection cell + one per data column
+    expect(cells.length).toBe(sensorCols.length + 1);
+    // first cell is the (empty) selection placeholder
+    expect(cells[0].textContent).toBe("");
+    // sensor filter now sits in the second cell
+    expect(cells[1].textContent).toBe("x");
+  });
+});

@@ -1,7 +1,7 @@
 import van, { type State } from "vanjs-core";
 import type { PaginationState, SelectionMode } from "./xTable.types";
 import type { Theme } from "./xTable.themes";
-import { xButton } from "./xButton";
+import { xButton } from "../xButton";
 import {
   checkIcon,
   chevronDownIcon,

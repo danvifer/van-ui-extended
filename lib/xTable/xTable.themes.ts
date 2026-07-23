@@ -65,7 +65,8 @@ const dark: Theme = {
   popoverWrap: "bg-stone-800 border border-stone-700 shadow-lg",
   popoverInput: "bg-stone-700 text-stone-100 focus:ring-1 focus:ring-teal-500",
   popoverActionHover: "hover:bg-stone-700 text-stone-200",
-  footerWrap: "text-stone-300 bg-transparent text-sm",
+  footerWrap:
+    "shrink-0 text-stone-300 bg-stone-900 border-t border-stone-700 text-sm",
   footerSelectedLabel: "text-stone-400",
   footerSelect: "bg-stone-800 border border-stone-700 text-stone-200",
   footerBtn: "rounded-md px-2 py-1 enabled:hover:bg-stone-700 text-stone-300",
@@ -89,7 +90,7 @@ const material: Theme = {
     "bg-white border border-slate-300 text-slate-800 focus:border-[var(--xtable-primary,#1976d2)] focus:ring-1 focus:ring-[var(--xtable-primary,#1976d2)]",
   popoverActionHover: "hover:bg-slate-100 text-slate-700",
   footerWrap:
-    "text-slate-600 bg-white border-t border-slate-200 text-[12px] leading-tight",
+    "shrink-0 text-slate-600 bg-white border-t border-slate-200 text-[12px] leading-tight",
   footerSelectedLabel: "text-slate-500",
   footerSelect:
     "bg-transparent border-0 text-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[var(--xtable-primary,#1976d2)]",

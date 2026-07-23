@@ -141,6 +141,11 @@ export interface BodyCellScope<T> {
   readonly value: unknown;
 }
 
+/** Scope passed to each `filterCellByKey` renderer. */
+export interface FilterCellScope<T> {
+  readonly col: XColumn<T>;
+}
+
 /** Shared scope passed to outer slots (`top`, `header`, `body`, `bottom`). */
 export interface TableScope<T> {
   readonly rows: State<T[]>;
@@ -239,6 +244,13 @@ export interface XTableProps<T> {
   readonly tableClass?: string;
   readonly tableHeaderClass?: string;
   readonly cardClass?: string;
+  /**
+   * Class for the inner scroll region (top slot + table + bottom slot). The
+   * pagination footer renders as a sibling OUTSIDE this element, so it stays a
+   * fixed bar at the bottom of the wrapper. Defaults to
+   * `"flex-1 min-h-0 overflow-auto"`.
+   */
+  readonly scrollClass?: string;
 
   // Sort
   readonly sortBy?: State<string | null>;
@@ -286,6 +298,26 @@ export interface XTableProps<T> {
    *   xTable({ rows, columns, filterRow: () => myFilterControls })
    */
   readonly filterRow?: () => ChildDom;
+
+  /**
+   * Per-column filter cell renderers, keyed by `XColumn.key`. When provided,
+   * xTable renders an extra `<tr>` inside the sticky `<thead>` where every
+   * column gets its own `<td>` aligned with its header cell, so filter controls
+   * line up with their columns (unlike `filterRow`, which is a single full-width
+   * `colspan` cell). Columns without an entry render an empty cell; leading
+   * empty cells are added for the selection/expander columns when present.
+   *
+   * @example
+   *   xTable({ rows, columns, filterCellByKey: { name: () => nameFilter } })
+   */
+  readonly filterCellByKey?: ByKey<FilterCellScope<T>>;
+
+  /**
+   * Optional reactive visibility for the per-column filter row. When it returns
+   * `false` the row carries `hidden` (`display:none`) but stays mounted, so its
+   * controls keep their state across toggles. Omit for an always-visible row.
+   */
+  readonly filterCellsVisible?: () => boolean;
 
   // Expansion
   readonly expanded?: State<RowKey[]>;

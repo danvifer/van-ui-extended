@@ -12,7 +12,7 @@ export { xCodeMirror } from "./xCodeMirror"
 export { xChart } from "./xChart"
 export { xDashboard } from "./xDashboard"
 export type { XDashboardProps, XDashboardItem, XDashboardItems } from "./xDashboard"
-export { xTable } from "./xTable"
+export { xTable } from "./xTable/xTable"
 export type {
   XColumn,
   XTableProps,
@@ -34,7 +34,8 @@ export type {
   BottomScope,
   HeaderCellScope,
   BodyCellScope,
+  FilterCellScope,
   ExpandedRowScope,
   PaginationSlotScope,
   ByKey,
-} from "./xTable.types"
+} from "./xTable/xTable.types"

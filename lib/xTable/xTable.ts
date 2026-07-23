@@ -82,6 +82,11 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   const binaryStateSort = props.binaryStateSort === true;
   const dense = props.dense === true, wrapCells = props.wrapCells === true;
   const tableClass = props.tableClass ?? "", tableHeaderClass = props.tableHeaderClass ?? "", cardClass = props.cardClass ?? "";
+  // Class for the inner scroll region (holds top slot + table + bottom slot). The
+  // pagination footer is rendered as a sibling OUTSIDE this element so it stays a
+  // fixed bar at the bottom of the (flex-column) wrapper instead of scrolling/
+  // overlapping. Callers can override; the default carries the scroll intent.
+  const scrollClass = props.scrollClass ?? "flex-1 min-h-0 overflow-auto";
   const rowsPerPageOptions = props.rowsPerPageOptions ?? DEFAULT_ROWS_PER_PAGE_OPTIONS;
   const virtualScrollOn = props.virtualScroll === true;
   const hidePagination = props.hidePagination === true || virtualScrollOn;
@@ -211,6 +216,9 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
     a === "right" ? "text-right" : a === "center" ? "text-center" : "text-left";
 
   const cellPad = dense ? "p-2" : "p-4";
+  // Filter-row cells: same horizontal padding as header/body cells (so controls
+  // line up with their column) but tighter vertically to keep the row compact.
+  const filterCellPad = dense ? "px-2 py-1" : "px-4 py-2";
   const cellWrap = wrapCells ? "" : "whitespace-nowrap";
 
   const isRowSelected = (row: T): boolean => {
@@ -453,6 +461,10 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
 
   const wrapperClass = [
     "xtable",
+    // Flex column so the inner scroll region takes the remaining height and the
+    // pagination footer pins to the bottom (outside the scroll). `min-h-0` lets it
+    // shrink inside a flex/grid parent instead of overflowing.
+    "flex flex-col min-h-0",
     cardClass,
     props.bordered === true ? `border ${t.borderWhenBordered}` : "",
     props.square === true ? "" : "rounded-md",
@@ -500,6 +512,41 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
             ),
           )
         : null,
+      // Optional per-column filter row: an extra <tr> inside the sticky <thead>
+      // with one <td> per column, so each filter control lines up with its
+      // header (unlike the full-width `filterRow` above). Leading empty cells
+      // mirror the selection/expander columns. A reactive `class` binding drives
+      // visibility (function in ATTRIBUTE position -> updates the class only, it
+      // never rebuilds the cells or their state).
+      props.filterCellByKey
+        ? tr(
+            {
+              class: () =>
+                props.filterCellsVisible && !props.filterCellsVisible()
+                  ? "hidden"
+                  : "",
+            },
+            selection !== "none"
+              ? td({ class: `${filterCellPad} ${t.filterRowBg}` })
+              : null,
+            hasExpander
+              ? td({ class: `${filterCellPad} ${t.filterRowBg}` })
+              : null,
+            ...columns.map((col) => {
+              const slot = props.filterCellByKey?.[col.key];
+              return td(
+                {
+                  class: [
+                    filterCellPad,
+                    alignClass(col.align),
+                    t.filterRowBg,
+                  ].join(" "),
+                },
+                slot ? slot({ col }) : null,
+              );
+            }),
+          )
+        : null,
     ),
     (): Element => tbody({ class: t.tbody }, ...renderBodyRows()),
   );
@@ -524,12 +571,25 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
     ? `--xtable-primary: ${props.primaryColor};`
     : "";
 
+  // Scroll region: top slot + table + bottom slot. The sticky <thead> lives here
+  // (its scroll ancestor), so header pinning keeps working. The pagination footer
+  // is deliberately OUTSIDE this element (a shrink-0 sibling below) so it is a
+  // fixed bar and never overlaps rows/actions when the viewport is short.
+  //
+  // In virtualScroll mode the tableHost is ALREADY its own overflow-auto viewport
+  // (and pagination is suppressed), so don't double-wrap it — keep it a direct
+  // child so the single scroll viewport stays the vs container.
   const wrapper = div(
     { class: wrapperClass, ...(wrapperStyle ? { style: wrapperStyle } : {}) },
-    renderTopSection(),
-    tableHost,
+    virtualScrollOn
+      ? [renderTopSection(), tableHost, renderBottomSection()]
+      : div(
+          { class: scrollClass },
+          renderTopSection(),
+          tableHost,
+          renderBottomSection(),
+        ),
     renderFooter(),
-    renderBottomSection(),
   );
 
   if (popoverStates.size > 0) {
