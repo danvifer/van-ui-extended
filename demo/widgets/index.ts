@@ -1,6 +1,7 @@
 export { xChartWidget } from "./xChart.widget";
 export { xButtonWidget } from "./xButton.widget";
 export { tableWidget } from "./table.widget";
+export { xTableWidget } from "./xTable.widget";
 export { xLastValueWidget } from "./xLastValue.widget";
 export { xSelectWidget } from "./xSelect.widget";
 export { xCodeMirrorWidget } from "./xCodeMirror.widget";
