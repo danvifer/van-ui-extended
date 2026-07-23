@@ -10,18 +10,52 @@ export type Step = {
   postAction?: () => void | Promise<void>
 }
 
+/** Tailwind color token, e.g. "sky-700" or "orange-500". */
+export type TailwindColorToken = `${string}-${number}`
+/** CSS color value: hex or rgb()/rgba() functional notation. */
+export type CssColorValue = `#${string}` | `rgb(${string})` | `rgba(${string})`
+
 export interface WizardProps {
   readonly steps: Step[]
   readonly title: string
   closed: State<boolean>
   readonly closeWizard: () => void
+  readonly prevLabel?: string
+  readonly nextLabel?: string
+  readonly createLabel?: string
+  readonly loadingLabel?: string
+  readonly primaryColor?: TailwindColorToken
+  readonly secondaryColor?: TailwindColorToken
+  readonly backgroundColor?: CssColorValue
+  readonly modalClass?: string
+  readonly customPrimaryButtonStyle?: string
+  readonly customSecondaryButtonStyle?: string
 }
 
 export const WizardComponent = (
-  { steps, title, closeWizard, closed }: WizardProps,
+  {
+    steps,
+    title,
+    closeWizard,
+    closed,
+    prevLabel = "prev",
+    nextLabel = "next",
+    createLabel = "Create",
+    loadingLabel = "Loading",
+    primaryColor = "sky-700",
+    secondaryColor = "sky-900",
+    backgroundColor,
+    modalClass = "bg-stone-900 text-white w-4/5 h-full overflow-auto relative",
+    customPrimaryButtonStyle = "",
+    customSecondaryButtonStyle = "cursor: pointer;",
+  }: WizardProps,
   ..._children: readonly ChildDom[]
 ) => {
   const loading = van.state(false)
+  // Consumers using non-default colors must ensure the resulting bg-*/hover:bg-*
+  // classes are reachable by their Tailwind build (e.g. @source inline).
+  const primaryButtonClass = `bg-${primaryColor} hover:bg-${secondaryColor} text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer`
+  const secondaryButtonClass = `bg-${primaryColor} hover:bg-${secondaryColor} text-white font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer`
 
   async function executeActions(
     preAction?: () => void | Promise<void>,
@@ -49,13 +83,12 @@ export const WizardComponent = (
     step.val > 0
       ? button(
           {
-            class:
-              "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer",
+            class: secondaryButtonClass,
             type: "submit",
-            style: "cursor: pointer;",
+            style: customSecondaryButtonStyle,
             onclick: () => step.val--,
           },
-          "prev",
+          prevLabel,
         )
       : "",
   )
@@ -64,9 +97,9 @@ export const WizardComponent = (
     step.val < steps.length - 1
       ? button(
           {
-            class:
-              "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+            class: primaryButtonClass,
             type: "submit",
+            style: customPrimaryButtonStyle,
             disabled: () => !steps[step.val].stepValid.val,
             onclick: () => {
               executeActions(
@@ -76,7 +109,7 @@ export const WizardComponent = (
               step.val++
             },
           },
-          "next",
+          nextLabel,
         )
       : "",
   )
@@ -85,8 +118,8 @@ export const WizardComponent = (
     step.val === steps.length - 1
       ? button(
           {
-            class:
-              "bg-sky-700 hover:bg-sky-900 text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+            class: primaryButtonClass,
+            style: customPrimaryButtonStyle,
             disabled: () => !steps[step.val].stepValid.val,
             onclick: () => {
               executeActions(undefined, steps[step.val].postAction, true)
@@ -110,9 +143,9 @@ export const WizardComponent = (
                 d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z",
               }),
             ),
-            "Loading",
+            loadingLabel,
           ),
-          span({ class: () => (loading.val ? "hidden" : "inline") }, "Create"),
+          span({ class: () => (loading.val ? "hidden" : "inline") }, createLabel),
         )
       : null,
   )
@@ -152,8 +185,8 @@ export const WizardComponent = (
     },
     div(
       {
-        class:
-          "bg-stone-900 text-white w-4/5 h-full overflow-auto relative",
+        class: modalClass,
+        style: backgroundColor ? `background-color: ${backgroundColor};` : "",
       },
       div(
         { class: "p-2" },
