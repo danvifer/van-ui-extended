@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "node build.js",
+    "prepare": "node build.js && tsc",
     "types": "tsc",
     "dev": "vite --force",
     "test": "vitest run"
