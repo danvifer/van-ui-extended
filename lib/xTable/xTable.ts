@@ -404,7 +404,11 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
 
   const renderDataRow = (row: T): Element =>
     tr(
-      { class: t.rowHover },
+      {
+        class: [t.rowHover, props.rowClass?.(row, keyOf(row))]
+          .filter(Boolean)
+          .join(" "),
+      },
       renderSelectionCell(row),
       renderExpanderCell(row),
       ...columns.map((col) => renderBodyCell(col, row)),

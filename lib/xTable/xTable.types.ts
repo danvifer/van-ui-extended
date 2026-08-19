@@ -251,6 +251,17 @@ export interface XTableProps<T> {
    * `"flex-1 min-h-0 overflow-auto"`.
    */
   readonly scrollClass?: string;
+  /**
+   * Extra classes for a body `<tr>`, derived from its row. Runs once per row per body
+   * render; return `""` for no extra class.
+   *
+   * The theme's `rowHover` is applied alongside it, not replaced. A hover background set on
+   * the `<tr>` paints BEHIND the cells, so a caller tinting the row opaquely will cover it —
+   * tint the cells instead (`"[&>td]:bg-…/10"`) and the hover shows through.
+   *
+   * @example rowClass: (row) => (row.severity === "critical" ? "[&>td]:bg-red-500/10" : "")
+   */
+  readonly rowClass?: (row: T, rowKey: RowKey) => string;
 
   // Sort
   readonly sortBy?: State<string | null>;

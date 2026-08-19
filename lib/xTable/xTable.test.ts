@@ -237,6 +237,29 @@ describe("xTable / DOM render", () => {
     expect(bodyRows[3].textContent).toContain("CO2");
   });
 
+  it("rowClass tags each body row without dropping the theme's hover", () => {
+    const rows = van.state(sampleSensors);
+    van.add(
+      document.body,
+      xTable({
+        rows,
+        columns: sensorCols,
+        rowKey: "id",
+        rowClass: (row, rowKey) =>
+          row.status === "Warning" ? `warn-${rowKey}` : "",
+      }),
+    );
+
+    const bodyRows = document.body.querySelectorAll("tbody tr");
+    expect(bodyRows[3].className).toContain("warn-4");
+    // The hover class survives alongside it — a caller tinting rows must not silently
+    // disable the table's own row feedback.
+    expect(bodyRows[3].className).toContain("hover:");
+    // An empty return adds nothing, not a stray separator.
+    expect(bodyRows[0].className).not.toContain("warn-");
+    expect(bodyRows[0].className.trim()).toBe(bodyRows[0].className);
+  });
+
   it("click on sortable header cycles asc → desc → none", () => {
     const rows = van.state(sampleSensors);
     const sortBy = van.state<string | null>(null);
