@@ -205,6 +205,20 @@ export interface XTableSlots<T> {
   readonly bottomRow?: (scope: BottomScope<T>) => ChildDom;
   /** Setting this slot enables the expander column. */
   readonly expandedRow?: (scope: ExpandedRowScope<T>) => ChildDom;
+  /**
+   * Content for the expander column's HEADER cell, which is otherwise empty.
+   *
+   * Lets a caller put a table-wide control (a filter toggle, say) in the gutter the
+   * expander already occupies, instead of adding a second gutter beside it and pushing
+   * every data column further right. Ignored when the expander column is off.
+   */
+  readonly expanderHeader?: () => ChildDom;
+  /**
+   * Content for the expander column's cell in the per-column filter row (`filterCellByKey`),
+   * which is otherwise empty. The natural home for a "clear all filters" control: it sits
+   * level with the filter inputs it clears. Ignored when the expander column is off.
+   */
+  readonly expanderFilterCell?: () => ChildDom;
 }
 
 /** Per-column slot override map. Keys must match `XColumn.key`. */

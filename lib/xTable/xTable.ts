@@ -495,7 +495,11 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
           partiallyVisibleSelected, toggleAllVisible,
           theme: t,
         }),
-        renderExpanderHeaderHelper(cellPad, hasExpander),
+        renderExpanderHeaderHelper(
+          cellPad,
+          hasExpander,
+          props.slots?.expanderHeader?.(),
+        ),
         ...columns.map(renderHeaderCell),
       ),
       // Optional filter row: a second full-width <tr> inside the sticky
@@ -534,7 +538,10 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
               ? td({ class: `${filterCellPad} ${t.filterRowBg}` })
               : null,
             hasExpander
-              ? td({ class: `${filterCellPad} ${t.filterRowBg}` })
+              ? td(
+                  { class: `${filterCellPad} ${t.filterRowBg}` },
+                  props.slots?.expanderFilterCell?.() ?? null,
+                )
               : null,
             ...columns.map((col) => {
               const slot = props.filterCellByKey?.[col.key];

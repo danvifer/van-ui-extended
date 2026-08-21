@@ -1,15 +1,23 @@
 import van, { type State } from "vanjs-core";
+import type { ChildDom } from "vanjs-core";
 import type { ExpandedRowScope, RowKey, XColumn } from "./xTable.types";
 import { chevronIcon } from "./xTable.icons";
 
 const { span, td, th, tr } = van.tags;
 
-/** Header placeholder for the expander column (empty cell). */
+/**
+ * Header cell for the expander column. Empty unless the caller fills it through the
+ * `expanderHeader` slot, which is there so a table-wide control can live in this gutter
+ * rather than in a second one next to it.
+ */
 export const renderExpanderHeader = (
   cellPad: string,
   hasExpander: boolean,
+  content?: ChildDom,
 ): Element | null =>
-  hasExpander ? th({ class: `${cellPad} w-10` }) : null;
+  hasExpander
+    ? th({ class: `${cellPad} w-10` }, content ?? null)
+    : null;
 
 /**
  * Per-row chevron cell. Rotates 90° when the row is expanded. Click toggles
