@@ -7,12 +7,20 @@
     "form",
     "ui-library"
   ],
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": {
     "name": "wisewolftech",
     "email": ""
   },
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danvifer/van-ui-extended.git"
+  },
+  "homepage": "https://github.com/danvifer/van-ui-extended#readme",
+  "bugs": {
+    "url": "https://github.com/danvifer/van-ui-extended/issues"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
