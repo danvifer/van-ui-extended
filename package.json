@@ -1,11 +1,23 @@
 {
   "name": "van-ui-extended",
-  "description": "A VanJS UI extended components library.",
+  "description": "Extended VanJS UI component library: data tables, dashboards, cron builder, wizards, searchable selects, and CodeMirror/ECharts/Leaflet integrations.",
   "keywords": [
     "vanjs",
     "vanjs-ui",
     "form",
-    "ui-library"
+    "ui-library",
+    "components",
+    "datatable",
+    "table",
+    "dashboard",
+    "gridstack",
+    "cron",
+    "wizard",
+    "codemirror",
+    "echarts",
+    "chart",
+    "leaflet",
+    "typescript"
   ],
   "version": "0.1.5",
   "author": {
@@ -28,6 +40,8 @@
   "sideEffects": false,
   "files": [
     "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*-demo.*",
     "README.md"
   ],
   "scripts": {
