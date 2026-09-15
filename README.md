@@ -15,13 +15,28 @@ A comprehensive library of reusable graphical components built on top of [VanJS]
 - **Tailwind CSS**: Styled using modern Utility-first CSS.
 - **TypeScript**: Fully typed for a better developer experience.
 
-## Getting Started
+## Installation
+
+```bash
+npm install van-ui-extended
+```
+
+Everything the components import at runtime ships as a direct dependency — no peer
+dependencies to install by hand.
+
+### Using it from Nuxt / Vue / SSR
+
+VanJS builds real DOM nodes at import time and has no server renderer. Mount these
+components client-side only (`<ClientOnly>`, a `.client.vue` component, or inside
+`onMounted`) or the server build will fail on `document is not defined`.
+
+## Local development
 
 ### Prerequisites
 
 Ensure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-### Installation
+### Building the library
 
 Clone the repository and install the dependencies:
 
