@@ -58,6 +58,12 @@ export interface XSelectProps {
   readonly iconCollapse?: string | ChildDom
   readonly iconCollapseClass?: string
   readonly disabled?: boolean
+  /**
+   * Reports a selection change with the option's `value` (else its `text`, else its `data`).
+   * Single mode: called with each option picked. Multiple mode: called once per option that
+   * enters or leaves the selection — by click, Enter, Backspace or the clear button alike —
+   * without saying which way it went, so a consumer mirroring the selection toggles the value.
+   */
   readonly onSelected?: (value: any) => void
   readonly multiple?: boolean
   readonly clearable?: boolean
@@ -197,6 +203,18 @@ export const xSelect = (
     return ""
   }
 
+  /** What `onSelected` reports for an option. */
+  const optionValue = (index: number) => {
+    const opt = optionItems[index]
+    return opt.value ?? opt.text ?? opt.data
+  }
+
+  // Options never change after construction, and the search filter runs several times per
+  // keystroke: normalize their texts once.
+  const searchTexts = searchable
+    ? optionItems.map((_, i) => normalizeText(getOptionText(i)))
+    : []
+
   const getSingleSelectedLabel = () =>
     selectedIndexes.val.length ? getOptionText(selectedIndexes.val[0]) : ""
 
@@ -212,9 +230,15 @@ export const xSelect = (
     const query = normalizeText(searchQuery.val)
     const baseIndexes = optionItems.map((_, i) => i)
     if (!searchable || !query) return baseIndexes
-    return baseIndexes.filter((i) =>
-      normalizeText(getOptionText(i)).includes(query)
-    )
+    // Exact matches first: Enter takes the first entry, so typing a whole option must not pick
+    // a longer one listed earlier that merely contains it ("cwe-20" landing on CWE-200).
+    const exact: number[] = []
+    const partial: number[] = []
+    for (const i of baseIndexes) {
+      if (searchTexts[i] === query) exact.push(i)
+      else if (searchTexts[i].includes(query)) partial.push(i)
+    }
+    return [...exact, ...partial]
   }
 
   const positionDropdown = () => {
@@ -278,15 +302,22 @@ export const xSelect = (
   }
 
   const clearSelection = () => {
+    const removed = selectedIndexes.val
     selectedIndexes.val = []
+    // Reported like clicks, one call per option: a consumer mirroring the selection through
+    // `onSelected` would otherwise keep filtering by values the trigger no longer shows.
+    removed.forEach((i) => onSelected?.(optionValue(i)))
     searchQuery.val = ""
     inputEl.value = ""
     queueMicrotask(() => inputEl.focus())
   }
 
   const removeLastSelected = () => {
-    if (!selectedIndexes.val.length) return
-    selectedIndexes.val = selectedIndexes.val.slice(0, -1)
+    const selected = selectedIndexes.val
+    if (!selected.length) return
+    selectedIndexes.val = selected.slice(0, -1)
+    // Same reason as clearSelection.
+    onSelected?.(optionValue(selected[selected.length - 1]))
 
     if (isDropdownOpen.val && searchable && multiple) {
       queueMicrotask(() => {
@@ -299,11 +330,7 @@ export const xSelect = (
   const toggleByRealIndex = (realIndex: number) => {
     if (optionItems[realIndex].disabled) return
 
-    const value =
-      optionItems[realIndex].value ??
-      optionItems[realIndex].text ??
-      optionItems[realIndex].data
-    onSelected?.(value)
+    onSelected?.(optionValue(realIndex))
     if (searchable) {
       searchQuery.val = optionItems[realIndex].text || ""
     }
