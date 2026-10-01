@@ -169,8 +169,10 @@ Per-column overrides (more specific, win over the fallback):
 
 ## Theming
 
-Two built-in themes: `"dark"` (default) and `"material"`. Selection accent and focus rings
-bind to `var(--xtable-primary, #1976d2)`. Two ways to override:
+Two built-in themes: `"dark"` (default) and `"material"`. In both, the selection accent and
+the focus rings bind to `var(--xtable-primary, …)`; the fallback is the theme's own accent
+(`#1976d2` in material, Tailwind's teal in dark — dark hardcoded that teal until 0.1.11 and
+ignored the variable). Two ways to override:
 
 ```ts
 // 1) Per instance

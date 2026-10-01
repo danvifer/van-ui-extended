@@ -10,6 +10,7 @@ import {
   sortRows,
 } from "./xTable.helpers";
 import type { XColumn } from "./xTable.types";
+import { resolveTheme } from "./xTable.themes";
 import { xTable } from "./xTable";
 
 interface Sensor {
@@ -1080,6 +1081,15 @@ describe("xTable / filter", () => {
     const style = wrapper?.getAttribute("style") ?? "";
     expect(style).not.toContain("--xtable-primary");
   });
+
+  it.each(["dark", "material"] as const)(
+    "%s theme — the focus ring and the selection accent follow --xtable-primary",
+    (name) => {
+      const theme = resolveTheme(name);
+      expect(theme.popoverInput).toContain("var(--xtable-primary");
+      expect(theme.selectAccent).toContain("var(--xtable-primary");
+    },
+  );
 
   it("mutation guard — frozen columns survive the popover lifecycle", async () => {
     const rows = van.state(sampleSensors);

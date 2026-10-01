@@ -63,14 +63,17 @@ const dark: Theme = {
   cellBorder: "border-b border-stone-700/40",
   emptyText: "text-stone-400",
   popoverWrap: "bg-stone-800 border border-stone-700 shadow-lg",
-  popoverInput: "bg-stone-700 text-stone-100 focus:ring-1 focus:ring-teal-500",
+  // Fallbacks are Tailwind v4's teal-500/600 as literals: a var() to --color-teal-* would
+  // only resolve in a consumer that happens to use those utilities itself.
+  popoverInput:
+    "bg-stone-700 text-stone-100 focus:ring-1 focus:ring-[color:var(--xtable-primary,oklch(70.4%_0.14_182.503))]",
   popoverActionHover: "hover:bg-stone-700 text-stone-200",
   footerWrap:
     "shrink-0 text-stone-300 bg-stone-900 border-t border-stone-700 text-sm",
   footerSelectedLabel: "text-stone-400",
   footerSelect: "bg-stone-800 border border-stone-700 text-stone-200",
   footerBtn: "rounded-md px-2 py-1 enabled:hover:bg-stone-700 text-stone-300",
-  selectAccent: "accent-teal-600",
+  selectAccent: "accent-[var(--xtable-primary,oklch(60%_0.118_184.704))]",
   expandedRow: "bg-stone-900 text-stone-300",
 };
 
