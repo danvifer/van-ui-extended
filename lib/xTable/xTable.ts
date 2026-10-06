@@ -60,6 +60,9 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   const selected: State<T[]> = props.selected ?? van.state<T[]>([]);
   const selection: SelectionMode = props.selection ?? "none";
   const selectedRowsLabel = props.selectedRowsLabel ?? ((n: number): string => `${n} selected`);
+  const rowsPerPageLabel = props.rowsPerPageLabel ?? "Records per page:";
+  const rangeLabel =
+    props.rangeLabel ?? ((first: number, last: number, total: number): string => `${first}–${last} of ${total}`);
   const rowKeyAccessor: RowKeyAccessor<T> = props.rowKey ?? ("id" as Extract<keyof T, string | number>);
   const expanded: State<RowKey[]> = props.expanded ?? van.state<RowKey[]>([]);
   const expandedRowSlot = props.slots?.expandedRow;
@@ -439,6 +442,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
     }
     return renderPaginationFooter<T>({
       pagination, selection, selected, selectedRowsLabel,
+      rowsPerPageLabel, rangeLabel,
       rowsPerPageOptions, pagesCount, totalCount,
       firstPage, prevPage, nextPage, lastPage, onRowsPerPageChange,
       theme: t,

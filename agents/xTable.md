@@ -70,6 +70,12 @@ interface XTableProps<T> {
   selected?: State<T[]>
   selectedRowsLabel?: (n: number) => string  // default: n => `${n} selected`
 
+  // Pagination footer text (localise the footer)
+  rowsPerPageLabel?: string          // default "Records per page:"
+  rangeLabel?: (first: number, last: number, total: number) => string
+                                     // default (f, l, t) => `${f}–${l} of ${t}`; re-run on every
+                                     // footer repaint, so it can read a reactive locale
+
   // Filter
   filter?: State<string>             // global substring filter
   filterMethod?: FilterMethod<T>     // bypasses the default substring matcher

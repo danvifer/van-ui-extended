@@ -864,6 +864,34 @@ describe("xTable / filter", () => {
     expect(footerText).toContain("41–50 of 1000");
   });
 
+  it("pagination footer — the label and the range speak the caller's language", () => {
+    const rows = van.state(sampleSensors);
+    const pagination = van.state({ page: 5, rowsPerPage: 10, rowsNumber: 1000 });
+    van.add(
+      document.body,
+      xTable({
+        rows,
+        columns: sensorCols,
+        pagination,
+        rowsPerPageLabel: "Filas por página:",
+        rangeLabel: (first, last, total) => `${first}–${last} de ${total}`,
+      }),
+    );
+    const footerText = document.body.textContent ?? "";
+    expect(footerText).toContain("Filas por página:");
+    expect(footerText).toContain("41–50 de 1000");
+    expect(footerText).not.toContain("Records per page:");
+  });
+
+  it("pagination footer — keeps the English defaults when no labels are given", () => {
+    const rows = van.state(sampleSensors);
+    const pagination = van.state({ page: 1, rowsPerPage: 10, rowsNumber: 0 });
+    van.add(document.body, xTable({ rows, columns: sensorCols, pagination }));
+    const footerText = document.body.textContent ?? "";
+    expect(footerText).toContain("Records per page:");
+    expect(footerText).toContain("0–0 of 0");
+  });
+
   it("pagination footer — rows-per-page dropdown opens and applies on click", async () => {
     const rows = van.state(sampleSensors);
     const pagination = van.state({ page: 1, rowsPerPage: 2 });

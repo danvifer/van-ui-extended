@@ -23,6 +23,10 @@ export interface PaginationFooterArgs<T> {
   readonly selection: SelectionMode;
   readonly selected: State<T[]>;
   readonly selectedRowsLabel: (n: number) => string;
+  /** Label before the rows-per-page selector (`XTableProps.rowsPerPageLabel`). */
+  readonly rowsPerPageLabel: string;
+  /** Range indicator text (`XTableProps.rangeLabel`). */
+  readonly rangeLabel: (first: number, last: number, total: number) => string;
   readonly rowsPerPageOptions: readonly number[];
   readonly pagesCount: () => number;
   /** Total row count (either client-side rows length or `rowsNumber` from the server). */
@@ -42,14 +46,19 @@ const pagBtnBase =
 /**
  * Quasar-style "1–25 of 100" range indicator. With `rowsPerPage === 0`
  * the table shows everything, so we display the full range. With
- * `total === 0` we still show a sensible "0–0 of 0".
+ * `total === 0` we still show a sensible "0–0 of 0". The words come from
+ * `label` (`XTableProps.rangeLabel`); this only computes the numbers.
  */
-const formatRange = (state: PaginationState, total: number): string => {
-  if (total === 0) return "0–0 of 0";
-  if (state.rowsPerPage <= 0) return `1–${total} of ${total}`;
+const formatRange = (
+  state: PaginationState,
+  total: number,
+  label: (first: number, last: number, total: number) => string,
+): string => {
+  if (total === 0) return label(0, 0, 0);
+  if (state.rowsPerPage <= 0) return label(1, total, total);
   const first = (state.page - 1) * state.rowsPerPage + 1;
   const last = Math.min(state.page * state.rowsPerPage, total);
-  return `${first}–${last} of ${total}`;
+  return label(first, last, total);
 };
 
 /**
@@ -155,11 +164,12 @@ export const renderPaginationFooter = <T>(
     ),
     div(
       { class: "flex items-center gap-3" },
-      span({ class: "text-inherit" }, "Records per page:"),
+      span({ class: "text-inherit" }, args.rowsPerPageLabel),
       renderRowsPerPageSelector(args),
       span(
         { class: "mx-2 tabular-nums" },
-        ((): string => formatRange(args.pagination.val, args.totalCount())),
+        ((): string =>
+          formatRange(args.pagination.val, args.totalCount(), args.rangeLabel)),
       ),
       () =>
         xButton({

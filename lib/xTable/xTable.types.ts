@@ -295,6 +295,18 @@ export interface XTableProps<T> {
   readonly selected?: State<T[]>;
   readonly selectedRowsLabel?: (n: number) => string;
 
+  // Pagination footer text. English by default; pass these to localise the footer.
+  /** Label before the rows-per-page selector. Default `"Records per page:"`. */
+  readonly rowsPerPageLabel?: string;
+  /**
+   * The range indicator, from the first and last row shown and the total. Default
+   * `` `${first}–${last} of ${total}` ``. Called on every repaint of the footer, so a function
+   * that reads a reactive locale follows it.
+   *
+   * @example rangeLabel: (first, last, total) => `${first}–${last} de ${total}`
+   */
+  readonly rangeLabel?: (first: number, last: number, total: number) => string;
+
   // Filter
   readonly filter?: State<string>;
   readonly filterMethod?: FilterMethod<T>;
