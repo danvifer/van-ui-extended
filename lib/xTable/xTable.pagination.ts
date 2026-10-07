@@ -158,11 +158,12 @@ export const renderPaginationFooter = <T>(
     ),
     div(
       { class: "vx-table__footer-nav" },
-      span("Records per page:"),
+      span(args.rowsPerPageLabel),
       renderRowsPerPageSelector(args),
       span(
         { class: "vx-table__range" },
-        ((): string => formatRange(args.pagination.val, args.totalCount())),
+        ((): string =>
+          formatRange(args.pagination.val, args.totalCount(), args.rangeLabel)),
       ),
       () =>
         xButton({
