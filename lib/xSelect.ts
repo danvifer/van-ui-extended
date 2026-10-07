@@ -9,7 +9,7 @@ const chevronDownIcon = svg(
     viewBox: "0 0 24 24",
     strokeWidth: "1.5",
     stroke: "currentColor",
-    class: "w-5 h-5",
+    class: "vx-select__chevron",
   },
   path({
     strokeLinecap: "round",
@@ -24,7 +24,7 @@ const chevronUpIcon = svg(
     viewBox: "0 0 24 24",
     strokeWidth: "1.5",
     stroke: "currentColor",
-    class: "w-5 h-5",
+    class: "vx-select__chevron",
   },
   path({
     strokeLinecap: "round",
@@ -39,7 +39,7 @@ const xMarkIcon = svg(
     viewBox: "0 0 24 24",
     strokeWidth: "1.8",
     stroke: "currentColor",
-    class: "w-4 h-4",
+    class: "vx-select__clear-icon",
   },
   path({
     strokeLinecap: "round",
@@ -67,17 +67,28 @@ export interface XSelectProps {
   readonly onSelected?: (value: any) => void
   readonly multiple?: boolean
   readonly clearable?: boolean
+  /** Classes of the `<input>`. Replaces the default `vx-select__control`; pass `"vx-select__control extra"` to extend it. A non-searchable select adds the fixed `vx-select__control--readonly`. */
   readonly className?: string
+  /** Classes of the option list, which is portaled to `<body>`. Replaces the default `vx-select__list`, the one that makes it `position: fixed`. */
   readonly listClass?: string
   readonly optionClass?: string
+  /** Added to the active option, after `optionClassName`. Replaces the default `vx-select__option--active`. */
   readonly optionActiveClass?: string
+  /** Classes of the "No results" row. Replaces the default `vx-select__empty`. */
   readonly noResultsClass?: string
+  /** Classes of the chevron toggle button. Replaces the default `vx-select__toggle`. */
   readonly iconButtonClass?: string
+  /** Classes of the clear button of a clearable multiple select. Replaces the default `vx-select__clear`. */
   readonly clearButtonClass?: string
+  /** Classes of the label wrapping each checkbox option (multiple mode). Replaces the default `vx-select__check-label`. */
   readonly checkboxLabelClass?: string
+  /** Classes of each option's checkbox (multiple mode). Replaces the default `vx-select__checkbox`. */
   readonly checkboxInputClass?: string
+  /** Classes of every option. Replaces the default `vx-select__option`. */
   readonly optionClassName?: string
+  /** Added to disabled options (the others get the fixed `vx-select__option--enabled`). Replaces the default `vx-select__option--disabled`. */
   readonly optionDisabledClass?: string
+  /** Added to the selected options. */
   readonly optionSelectedClass?: string
 }
 
@@ -135,37 +146,23 @@ export const xSelect = (
     multiple = false,
     clearable = false,
 
-    className = "relative w-full rounded-md border border-stone-800 bg-neutral-900 px-3 pr-10 py-2 text-sm " +
-      "text-white placeholder:text-stone-500 caret-white shadow-sm outline-none " +
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900 " +
-      "disabled:cursor-not-allowed disabled:opacity-50",
+    className = "vx-select__control",
 
-    listClass = "fixed z-[10001] overflow-auto max-h-60 rounded-md border border-stone-800 bg-neutral-900 shadow-lg",
+    listClass = "vx-select__list",
 
     optionClass = "",
-    optionActiveClass = "bg-neutral-800",
-    noResultsClass = "px-3 py-2 text-sm text-stone-400",
+    optionActiveClass = "vx-select__option--active",
+    noResultsClass = "vx-select__empty",
 
-    iconButtonClass = "absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded p-1 " +
-      "text-stone-300 hover:bg-neutral-800 hover:text-white " +
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900",
+    iconButtonClass = "vx-select__toggle",
 
-    clearButtonClass = "absolute right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center rounded p-1 " +
-      "cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 " +
-      "text-stone-300 hover:bg-neutral-800 hover:text-white " +
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-600 focus-visible:ring-offset-neutral-900",
+    clearButtonClass = "vx-select__clear",
 
-    checkboxLabelClass = "flex items-center gap-3 w-full cursor-pointer select-none",
+    checkboxLabelClass = "vx-select__check-label",
 
-    checkboxInputClass = "appearance-none h-4 w-4 shrink-0 rounded border border-stone-500 bg-neutral-900 " +
-      "grid place-content-center cursor-pointer " +
-      "focus-visible:ring-2 focus-visible:ring-stone-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 " +
-      "checked:bg-neutral-100 checked:border-neutral-100 " +
-      "before:content-[''] before:w-2 before:h-1 before:border-b-2 before:border-l-2 before:border-neutral-900 " +
-      "before:-rotate-45 before:opacity-0 checked:before:opacity-100 " +
-      "disabled:opacity-50 disabled:cursor-not-allowed",
-    optionClassName = "w-full text-left px-3 py-2 text-sm text-white hover:bg-neutral-800 focus:outline-none",
-    optionDisabledClass = "opacity-50 cursor-not-allowed " ,
+    checkboxInputClass = "vx-select__checkbox",
+    optionClassName = "vx-select__option",
+    optionDisabledClass = "vx-select__option--disabled",
     optionSelectedClass = "",
   }: XSelectProps,
   ...options: Array<ReturnType<typeof xOption>>
@@ -398,7 +395,7 @@ export const xSelect = (
 
         const activeStyle = activeOption ? optionActiveClass : ""
         const selectedStyle = selectedOption ? optionSelectedClass : ""
-        const disabledStyle = disabledOption ? optionDisabledClass : "cursor-pointer"
+        const disabledStyle = disabledOption ? optionDisabledClass : "vx-select__option--enabled"
 
         const optionClassFinal = [
           optionClassName,
@@ -496,9 +493,7 @@ export const xSelect = (
           xMarkIcon
         )
       : null
-  const readOnly = !searchable
-    ? "read-only:cursor-pointer read-only:caret-transparent "
-    : ""
+  const readOnly = !searchable ? "vx-select__control--readonly " : ""
   const inputEl = input({
     id: inputId,
     type: "text",
@@ -591,8 +586,8 @@ export const xSelect = (
   }) as HTMLInputElement
 
   const rootEl = div(
-    { class: "relative inline-block w-full" },
-    div({ class: "relative" }, inputEl, clearButtonEl, toggleButtonEl)
+    { class: "vx-select" },
+    div({ class: "vx-select__field" }, inputEl, clearButtonEl, toggleButtonEl)
   )
 
   document.body.appendChild(listboxEl)

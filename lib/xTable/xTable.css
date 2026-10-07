@@ -1,0 +1,547 @@
+/*
+ * xTable.
+ *
+ * The wrapper carries `vx-table` (plus `xtable`, kept as a public hook) and `data-vx-theme`
+ * ("dark" when omitted, or "material"). Every theme color is a `--vx-table-*` token declared on
+ * the wrapper at specificity 0 (:where), so a consumer rule on `.vx-table` (or on
+ * `.vx-table[data-vx-theme="material"]`) wins whatever the load order. Setting a token on
+ * `:root` does NOT work: the wrapper's own declaration beats an inherited one.
+ *
+ * Both token blocks target the wrapper at the same specificity, so SOURCE ORDER decides:
+ * the material block must stay below the dark one, and nothing below it may re-declare
+ * dark tokens.
+ *
+ * The few non-color differences of the material theme live in the last section as
+ * `[data-vx-theme="material"] .vx-table__*` rules (specificity 0,2,0).
+ *
+ * Focus ring and checkbox accent read `--xtable-primary` (what `primaryColor` writes
+ * inline) before falling back to the theme's own `--vx-table-ring` / `--vx-table-accent`.
+ */
+
+/* ---------------------------------------------------------------- tokens: dark */
+
+:where(.vx-table) {
+  /* Cell padding; header, body, select and expander cells use it, filter cells use half. */
+  --vx-table-cell-pad: 1rem;
+
+  --vx-table-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --vx-table-border: oklch(0.374 0.01 67.558);
+  --vx-table-line: color-mix(in oklab, oklch(0.374 0.01 67.558) 40%, transparent);
+
+  --vx-table-head-bg: oklch(0.216 0.006 56.043);
+  --vx-table-head-text: oklch(0.923 0.003 48.717);
+  --vx-table-body-bg: oklch(0.268 0.007 34.298);
+  --vx-table-body-text: oklch(0.923 0.003 48.717);
+  --vx-table-row-hover-bg: oklch(0.216 0.006 56.043);
+  --vx-table-empty-text: oklch(0.709 0.01 56.259);
+  --vx-table-expanded-bg: oklch(0.216 0.006 56.043);
+  --vx-table-expanded-text: oklch(0.869 0.005 56.366);
+
+  --vx-table-popover-bg: oklch(0.268 0.007 34.298);
+  /* `currentcolor` on `color` means "inherit": the dark popover sets no text color of its own. */
+  --vx-table-popover-text: currentcolor;
+  --vx-table-field-bg: oklch(0.374 0.01 67.558);
+  --vx-table-field-text: oklch(0.97 0.001 106.424);
+  --vx-table-action-text: oklch(0.923 0.003 48.717);
+  --vx-table-action-hover-bg: oklch(0.374 0.01 67.558);
+
+  --vx-table-footer-bg: oklch(0.216 0.006 56.043);
+  --vx-table-footer-text: oklch(0.869 0.005 56.366);
+  --vx-table-footer-label-text: oklch(0.709 0.01 56.259);
+  --vx-table-page-btn-text: oklch(0.869 0.005 56.366);
+  --vx-table-page-btn-hover-bg: oklch(0.374 0.01 67.558);
+
+  --vx-table-ring: oklch(70.4% 0.14 182.503);
+  --vx-table-accent: oklch(60% 0.118 184.704);
+}
+
+:where(.vx-table--dense) {
+  --vx-table-cell-pad: 0.5rem;
+}
+
+/* ------------------------------------------------------------- tokens: material */
+
+:where(.vx-table[data-vx-theme="material"]) {
+  /* Material elevation 1. */
+  --vx-table-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --vx-table-border: oklch(0.929 0.013 255.508);
+  --vx-table-line: oklch(0.968 0.007 247.896);
+
+  --vx-table-head-bg: #fff;
+  --vx-table-head-text: oklch(0.446 0.043 257.281);
+  --vx-table-body-bg: #fff;
+  /* The material body sets no text color of its own: it follows the host. */
+  --vx-table-body-text: currentcolor;
+  --vx-table-row-hover-bg: oklch(0.984 0.003 247.858);
+  --vx-table-empty-text: oklch(0.554 0.046 257.417);
+  --vx-table-expanded-bg: oklch(0.984 0.003 247.858);
+  --vx-table-expanded-text: oklch(0.372 0.044 257.287);
+
+  --vx-table-popover-bg: #fff;
+  --vx-table-popover-text: oklch(0.279 0.041 260.031);
+  --vx-table-field-bg: #fff;
+  --vx-table-field-text: oklch(0.279 0.041 260.031);
+  /* Material only: the dark popover field has no border. */
+  --vx-table-field-border: oklch(0.869 0.022 252.894);
+  --vx-table-action-text: oklch(0.372 0.044 257.287);
+  --vx-table-action-hover-bg: oklch(0.968 0.007 247.896);
+
+  --vx-table-footer-bg: #fff;
+  --vx-table-footer-text: oklch(0.446 0.043 257.281);
+  --vx-table-footer-label-text: oklch(0.554 0.046 257.417);
+  --vx-table-page-btn-text: oklch(0.372 0.044 257.287);
+  --vx-table-page-btn-hover-bg: oklch(0.968 0.007 247.896);
+
+  --vx-table-ring: #1976d2;
+  --vx-table-accent: #1976d2;
+}
+
+/* --------------------------------------------------------------------- wrapper */
+
+.vx-table {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-radius: 0.375rem;
+  box-shadow: var(--vx-table-shadow);
+}
+
+.vx-table--bordered {
+  border-width: 1px;
+  border-color: var(--vx-table-border);
+}
+
+.vx-table--square {
+  border-radius: 0;
+}
+
+.vx-table--flat {
+  box-shadow: none;
+}
+
+/* Inner scroll region: top slot, table and bottom slot. The footer is a sibling, outside it. */
+.vx-table__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Virtual scroll: the viewport takes the place of the scroll region (its height is inline). */
+.vx-table__viewport {
+  overflow: auto;
+}
+
+.vx-table__top,
+.vx-table__bottom {
+  padding: 0.5rem;
+}
+
+.vx-table__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+
+/* ----------------------------------------------------------------------- table */
+
+.vx-table__table {
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: calc(1.25 / 0.875);
+}
+
+.vx-table__head {
+  background-color: var(--vx-table-head-bg);
+  color: var(--vx-table-head-text);
+  text-transform: uppercase;
+}
+
+.vx-table__body {
+  background-color: var(--vx-table-body-bg);
+  color: var(--vx-table-body-text);
+}
+
+@media (hover: hover) {
+  .vx-table__row:hover {
+    background-color: var(--vx-table-row-hover-bg);
+  }
+}
+
+/* Header and body cells. The text-align modifiers are shared with the filter cells. */
+.vx-table__cell,
+.vx-table__select-cell,
+.vx-table__expander-cell {
+  padding: var(--vx-table-cell-pad);
+}
+
+.vx-table__cell {
+  border-bottom-width: 1px;
+  border-color: var(--vx-table-line);
+}
+
+.vx-table__cell--left {
+  text-align: left;
+}
+
+.vx-table__cell--center {
+  text-align: center;
+}
+
+.vx-table__cell--right {
+  text-align: right;
+}
+
+/* Body cells only, unless `wrapCells` is set. */
+.vx-table__cell--nowrap {
+  white-space: nowrap;
+}
+
+/* Sortable header label. */
+.vx-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ------------------------------------------------------ selection and expansion */
+
+.vx-table__select-cell,
+.vx-table__expander-cell {
+  width: 2.5rem;
+}
+
+.vx-table__checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: var(--xtable-primary, var(--vx-table-accent));
+}
+
+.vx-table__expander {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.vx-table__expanded-row {
+  background-color: var(--vx-table-expanded-bg);
+  color: var(--vx-table-expanded-text);
+}
+
+.vx-table__expanded-cell {
+  padding: 1rem;
+}
+
+/* -------------------------------------------------------------- empty / loading */
+
+.vx-table__empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--vx-table-empty-text);
+}
+
+.vx-table__loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* ----------------------------------------------------------------------- icons */
+
+.vx-table__icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.vx-table__icon--sm {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.vx-table__spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  animation: vx-spin 1s linear infinite;
+}
+
+/* ----------------------------------------------------------------- filter rows */
+
+/* Full-width row (`filterRow`): a single cell that owns its own padding. */
+.vx-table__filter-content {
+  padding: 0;
+  background-color: var(--vx-table-head-bg);
+}
+
+/* Per-column row (`filterCellByKey`): one cell per column. The row itself is unstyled; it is hidden through the native `hidden` attribute. */
+.vx-table__filter-cell {
+  padding-inline: var(--vx-table-cell-pad);
+  padding-block: calc(var(--vx-table-cell-pad) / 2);
+  background-color: var(--vx-table-head-bg);
+}
+
+/* ------------------------------------------------- column filter popover + menus */
+
+.vx-table__filter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+}
+
+.vx-table__filter-trigger {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.vx-table__filter-trigger:focus {
+  outline-style: none;
+}
+
+/* The column popover and the rows-per-page menu share one paint. */
+.vx-table__popover,
+.vx-table__rpp-menu {
+  background-color: var(--vx-table-popover-bg);
+  color: var(--vx-table-popover-text);
+  border-width: 1px;
+  border-color: var(--vx-table-border);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.vx-table__popover {
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  margin-top: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  min-width: 200px;
+}
+
+.vx-table__popover--left {
+  left: 0;
+}
+
+.vx-table__popover--right {
+  right: 0;
+}
+
+.vx-table__field {
+  display: block;
+  width: 100%;
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  border-radius: 0.25rem;
+  background-color: var(--vx-table-field-bg);
+  color: var(--vx-table-field-text);
+}
+
+.vx-table__field:focus {
+  outline-style: none;
+  box-shadow: 0 0 0 1px var(--xtable-primary, var(--vx-table-ring));
+}
+
+/* The "select" filter kind: browsers pad <option> by default (it sizes the native list); the Tailwind preflight used to zero it. */
+.vx-table__field option {
+  padding: 0;
+}
+
+.vx-table__popover-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.vx-table__popover-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.375rem;
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  font-size: 0.875rem;
+  line-height: calc(1.25 / 0.875);
+  cursor: pointer;
+}
+
+/* Every control that opens or lives in a popover shares the same text color and hover. */
+.vx-table__filter-trigger,
+.vx-table__popover-btn,
+.vx-table__rpp-trigger,
+.vx-table__rpp-option {
+  color: var(--vx-table-action-text);
+}
+
+@media (hover: hover) {
+  .vx-table__filter-trigger:hover,
+  .vx-table__popover-btn:hover,
+  .vx-table__rpp-trigger:hover,
+  .vx-table__rpp-option:hover {
+    background-color: var(--vx-table-action-hover-bg);
+  }
+}
+
+/* ---------------------------------------------------------------------- footer */
+
+.vx-table__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding-inline: 0.5rem;
+  padding-block: 0.375rem;
+  background-color: var(--vx-table-footer-bg);
+  color: var(--vx-table-footer-text);
+  border-top-width: 1px;
+  border-color: var(--vx-table-border);
+  font-size: 0.875rem;
+  line-height: calc(1.25 / 0.875);
+}
+
+.vx-table__footer-label {
+  color: var(--vx-table-footer-label-text);
+}
+
+.vx-table__footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vx-table__range {
+  margin-inline: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-table__page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  color: var(--vx-table-page-btn-text);
+}
+
+.vx-table__page-btn:enabled {
+  cursor: pointer;
+}
+
+.vx-table__page-btn:disabled {
+  opacity: 50%;
+}
+
+@media (hover: hover) {
+  .vx-table__page-btn:enabled:hover {
+    background-color: var(--vx-table-page-btn-hover-bg);
+  }
+}
+
+/* Rows-per-page selector. */
+
+.vx-table__rpp {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.vx-table__rpp-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-inline: 0.5rem;
+  padding-block: 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.vx-table__rpp-chevron {
+  display: inline-flex;
+  transition-property: transform, translate, scale, rotate;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.vx-table__rpp-chevron--open {
+  rotate: 180deg;
+}
+
+.vx-table__rpp-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 0.25rem;
+  padding-block: 0.25rem;
+  min-width: 88px;
+  border-radius: 0.25rem;
+}
+
+.vx-table__rpp-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 0.75rem;
+  padding-block: 0.375rem;
+  cursor: pointer;
+}
+
+.vx-table__rpp-option--active {
+  font-weight: 500;
+}
+
+.vx-table__rpp-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* -------------------------------------------------- material: non-color differences */
+
+[data-vx-theme="material"] .vx-table__head {
+  border-bottom-width: 1px;
+  border-color: var(--vx-table-border);
+  text-transform: none;
+  font-size: 0.75rem;
+  line-height: calc(1 / 0.75);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+[data-vx-theme="material"] .vx-table__footer {
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+[data-vx-theme="material"] .vx-table__page-btn {
+  border-radius: calc(infinity * 1px);
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+}
+
+[data-vx-theme="material"] .vx-table__field {
+  border-width: 1px;
+  border-color: var(--vx-table-field-border);
+}
+
+[data-vx-theme="material"] .vx-table__field:focus {
+  border-color: var(--xtable-primary, var(--vx-table-ring));
+}
+
+[data-vx-theme="material"] .vx-table__row,
+[data-vx-theme="material"] .vx-table__page-btn {
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}

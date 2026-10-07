@@ -13,8 +13,11 @@ export type Value<T = string> = {
 export interface SelectProps<T = string> {
   readonly values: Value<T>[]
   readonly selected?: T
+  /** Classes of the outer `<div>` and prefix of the trigger button. Replaces the default `vx-legacy-select`. */
   readonly selectClass?: string
+  /** Extra classes appended to the options menu. */
   readonly optionsClass?: string
+  /** Extra classes appended to every option. */
   readonly optionClass?: string
   readonly multiple?: boolean
   readonly footer?: ChildDom[]
@@ -24,7 +27,7 @@ export interface SelectProps<T = string> {
 export const Select = <T extends string | number>({
   values = [],
   selected,
-  selectClass = "w-[450px] text-gray-900",
+  selectClass = "vx-legacy-select",
   optionsClass = "",
   optionClass = "",
   multiple = false,
@@ -53,13 +56,12 @@ export const Select = <T extends string | number>({
       options.push(
         span(
           {
-            class:
-              "px-4 py-2 text-base rounded-full text-white bg-indigo-500 mx-1",
+            class: "vx-legacy-select__chip",
           },
           innerVal?.label,
           button(
             {
-              class: "bg-transparent hover cursor-pointer",
+              class: "vx-legacy-select__chip-remove",
               onclick: () => removeElement(innerVal?.value),
             },
             svg(
@@ -68,7 +70,7 @@ export const Select = <T extends string | number>({
                 width: "12",
                 height: "12",
                 fill: "currentColor",
-                class: "ml-4",
+                class: "vx-legacy-select__chip-icon",
                 viewBox: "0 0 1792 1792",
               },
               path({
@@ -96,7 +98,7 @@ export const Select = <T extends string | number>({
             innerVal.img
               ? img({
                   src: innerVal.img || "",
-                  class: "h-4 w-4 inline mr-2",
+                  class: "vx-legacy-select__img",
                 })
               : null,
             innerVal.label,
@@ -125,7 +127,7 @@ export const Select = <T extends string | number>({
         initialVal.img
           ? img({
               src: initialVal.img || "",
-              class: "h-4 w-4 inline mr-2",
+              class: "vx-legacy-select__img",
             })
           : null,
         initialVal.label,
@@ -136,46 +138,40 @@ export const Select = <T extends string | number>({
   return div(
     { class: selectClass },
       div(
-        { class: "relative w-full group" },
+        { class: "vx-legacy-select__wrap" },
         button(
           {
-            class:
-              selectClass +
-              " min-w-[100px] py-2.5 px-3 md:text-sm text-site bg-transparent border border-dimmed focus:border-brand focus:outline-none focus:ring-0 peer flex items-center justify-between rounded font-semibold cursor-pointer",
+            class: selectClass + " vx-legacy-select__trigger",
           },
           innerValue as unknown as ChildDom,
         ),
         div(
           {
             id: "select-father",
-            class:
-              "w-full absolute z-[99] top-[100%] left-[50%] translate-x-[-50%] rounded-md overflow-hidden shadow-lg min-w-[100px] peer-focus:visible peer-focus:opacity-100 opacity-0 invisible duration-200 p-1 bg-gray-100 border border-dimmed text-xs md:text-sm " +
-              optionsClass,
+            class: "vx-legacy-select__menu " + optionsClass,
           },
           div(
-            { class: "max-h-150 overflow-auto" },
+            { class: "vx-legacy-select__scroll" },
             values.map((value) =>
               div(
                 {
-                  class:
-                    "cursor-pointer w-full block hover:bg-white hover:text-link px-3 py-2 rounded-md" +
-                    optionClass,
+                  class: "vx-legacy-select__option " + optionClass,
                   onclick: () => setValue(value.value!, value.func),
                 },
                 value.img
                   ? img({
                       src: value.img || "",
-                      class: "h-4 w-4 inline mr-2",
+                      class: "vx-legacy-select__img",
                     })
                   : null,
                 value.label,
                 value.description
-                  ? div({ class: "text-xs text-gray-500" }, value.description)
+                  ? div({ class: "vx-legacy-select__desc" }, value.description)
                   : null,
               ),
             ),
             footer.length > 0
-              ? div({ class: "border-t px-0 py-0" }, footer)
+              ? div({ class: "vx-legacy-select__footer" }, footer)
               : null,
           ),
         ),

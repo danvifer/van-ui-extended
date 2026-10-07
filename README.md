@@ -12,7 +12,7 @@ A comprehensive library of reusable graphical components built on top of [VanJS]
   - **GridStack**: Draggable / resizable dashboard layouts (via `xDashboard`).
   - **Leaflet**: Interactive maps.
   - **Pikaday**: Lightweight date picking.
-- **Tailwind CSS**: Styled using modern Utility-first CSS.
+- **Own stylesheet**: stable `vx-*` classes, no CSS framework required — works with or without Tailwind.
 - **TypeScript**: Fully typed for a better developer experience.
 
 ## Installation
@@ -23,6 +23,85 @@ npm install van-ui-extended
 
 Everything the components import at runtime ships as a direct dependency — no peer
 dependencies to install by hand.
+
+Import the stylesheet once at your app entry:
+
+```ts
+import "van-ui-extended/style.css"
+```
+
+## Styling
+
+The components ship their own CSS; no Tailwind or other framework is needed. Without a
+bundler, link `node_modules/van-ui-extended/dist/van-ui.css` instead. Components inherit
+`font-family` and `line-height` from your page.
+
+- **Classes.** Every element carries a stable `vx-*` class
+  (`vx-<block>__<element>--<modifier>`, e.g. `vx-select__option--active`). Restyle by
+  overriding them in CSS loaded after the library's: `.vx-button { border-radius: 9999px; }`.
+- **`*Class` props** keep their 0.1.x behaviour. Most **replace** the default class — pass
+  `"vx-select__list my-extra"` to extend instead. These are **appended**: xTable's
+  (`tableClass`, `tableHeaderClass`, `cardClass`, `headerClass`, `bodyClass`, `rowClass`),
+  xDashboard's `className`, xButton's `iconClass` and the legacy Select's `optionsClass` /
+  `optionClass`. Replacing a default class also drops the library's reset for that element,
+  since the reset only targets `vx-*` classes.
+- **xTable themes** are sets of `--vx-table-*` custom properties (listed at the start of the
+  xTable section of `dist/van-ui.css`), selected by the `theme` prop through `data-vx-theme`
+  on the table wrapper. Override them on `.vx-table` (or `.vx-table[data-vx-theme="material"]`),
+  not on `:root`: the wrapper declares its own values. `--xtable-primary` still drives the
+  accent and focus ring, globally or per instance through `primaryColor`. `dense` works by
+  lowering `--vx-table-cell-pad` on `.vx-table--dense`: if you override that token, override
+  it there as well.
+- **Wizard buttons** take any CSS color through `primaryColor` / `secondaryColor`, or the
+  `--vx-wizard-btn-bg` / `--vx-wizard-btn-hover-bg` custom properties.
+
+### Class reference
+
+These are the class names the stylesheet defines (in the repository each component's rules
+live next to it, `lib/<component>.css`). `xtable` stays on xTable's wrapper as a hook, and xDashboard keeps GridStack's
+own `grid-stack*` classes and `x-dashboard-item-title`.
+
+| Component | Classes |
+| --- | --- |
+| xButton | `vx-button` · `__icon` |
+| xLastValue | `vx-last-value` (`--clickable`, `--hover`) · `__title` · `__subtitle` · `__row` · `__preicon` · `__main` · `__value-base` · `__value` · `__posticon` · `__children` |
+| xSelect | `vx-select` · `__field` · `__control` (`--readonly`) · `__toggle` · `__chevron` · `__clear` · `__clear-icon` · `__list` · `__option` (`--active`, `--enabled`, `--disabled`) · `__check-label` · `__checkbox` · `__empty` |
+| xTable | `vx-table` (`--bordered`, `--dense`, `--flat`, `--square`) · `__top` · `__toolbar` · `__bottom` · `__scroll` · `__viewport` · `__table` · `__head` · `__body` · `__row` · `__cell` (`--left`, `--center`, `--right`, `--nowrap`) · `__sort` · `__icon` (`--sm`) · `__select-cell` · `__checkbox` · `__expander-cell` · `__expander` · `__expanded-row` · `__expanded-cell` · `__filter-cell` · `__filter` · `__filter-content` · `__filter-trigger` · `__popover` (`--left`, `--right`) · `__field` · `__popover-actions` · `__popover-btn` · `__empty` · `__loading` · `__spinner` · `__footer` · `__footer-label` · `__footer-nav` · `__range` · `__page-btn` · `__rpp` · `__rpp-trigger` · `__rpp-chevron` (`--open`) · `__rpp-menu` · `__rpp-option` (`--active`) · `__rpp-check` |
+| WizardComponent | `vx-wizard` · `__panel` · `__header` · `__close` · `__title` · `__grid` · `__steps` · `__step` (`--active`) · `__step-num` (`--inactive`) · `__content` · `__actions` · `__btn` (`--primary`) · `__spinner` · `__spinner-track` · `__spinner-arc` |
+| TextAreaComponent | `vx-textarea` |
+| xDashboard | `vx-dashboard__error` |
+| Select (legacy) | `vx-legacy-select` · `__wrap` · `__trigger` · `__menu` · `__scroll` · `__option` · `__img` · `__desc` · `__footer` · `__chip` · `__chip-remove` · `__chip-icon` |
+| TableComponent (legacy) | `vx-legacy-table` · `__table` · `__head` · `__body` · `__row` · `__th` (`--condensed`) · `__td` · `__select-cell` · `__checkbox` · `__sort` · `__sort-icon` · `__icon` (`--sm`) · `__filter-btn` (`--active`) · `__popover` · `__popover-title` · `__popover-desc` · `__input` · `__check-row` · `__check` · `__check-label` · `__popover-btn` · `__menu-wrap` · `__menu-btn` · `__menu` · `__menu-item` · `__inline-actions` · `__action` · `__action-label` · `__empty` · `__rule` · `__pager` · `__pager-btn` · `__pager-label` · `__pager-rows` · `__pager-input` · `__pager-suffix` · `__pager-count` |
+
+### With Tailwind
+
+The library's rules are unlayered, so they beat Tailwind's preflight and also your
+utilities. If you want utilities passed through `className` & co. to override them, import
+the stylesheet into Tailwind's components layer:
+
+```css
+@import "tailwindcss";
+@import "van-ui-extended/style.css" layer(components);
+```
+
+### Migrating from 0.1.x
+
+0.2.0 removes Tailwind from the library.
+
+1. **Import `van-ui-extended/style.css`.** Without it every component renders unstyled —
+   `CronComponent` included, which used to pull in its own CSS.
+2. Drop the `@source` / `content` entry for `node_modules/van-ui-extended/dist` from your
+   Tailwind setup; nothing in the package needs scanning anymore.
+3. Default classes are `vx-*` classes instead of Tailwind utilities. `*Class` props behave
+   as before, so a full replacement you were passing still renders exactly as it did.
+4. `WizardComponent`'s `primaryColor` / `secondaryColor` take CSS colors (`"#0369a1"`), not
+   Tailwind tokens (`"sky-700"`); anything else logs a warning and falls back to the
+   default. The default buttons now actually show their sky-700 background.
+5. The `exports` map only exposes the package root and `./style.css`; deep imports into
+   `dist/` no longer resolve.
+6. Visual fixes: classes that never existed in the legacy `Select` / `TableComponent`
+   (`border-dimmed`, `border-brand`, `text-link`) now render — dimmed borders and teal
+   focus/hover accents — and the wizard's inactive step circles are dimmed as intended.
 
 ### Using it from Nuxt / Vue / SSR
 
@@ -162,7 +241,7 @@ const columns: XColumn<Row>[] = [
 van.add(document.body, xTable<Row>({ rows, columns, rowKey: (r) => r.id }))
 ```
 
-An optional `scrollClass` prop overrides the inner scroll region's classes (default `"flex-1 min-h-0 overflow-auto"`).
+An optional `scrollClass` prop replaces the inner scroll region's class (default `"vx-table__scroll"`).
 
 ## Example Usage
 

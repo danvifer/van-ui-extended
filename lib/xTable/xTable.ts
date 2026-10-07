@@ -37,7 +37,6 @@ import {
   renderSelectionHeader as renderSelectionHeaderHelper,
 } from "./xTable.selection";
 import { buildBodyRows } from "./xTable.body";
-import { resolveTheme, type Theme } from "./xTable.themes";
 
 const { div, table, thead, tbody, tr, th, td, span } = van.tags;
 
@@ -89,7 +88,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   // pagination footer is rendered as a sibling OUTSIDE this element so it stays a
   // fixed bar at the bottom of the (flex-column) wrapper instead of scrolling/
   // overlapping. Callers can override; the default carries the scroll intent.
-  const scrollClass = props.scrollClass ?? "flex-1 min-h-0 overflow-auto";
+  const scrollClass = props.scrollClass ?? "vx-table__scroll";
   const rowsPerPageOptions = props.rowsPerPageOptions ?? DEFAULT_ROWS_PER_PAGE_OPTIONS;
   const virtualScrollOn = props.virtualScroll === true;
   const hidePagination = props.hidePagination === true || virtualScrollOn;
@@ -101,7 +100,6 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   const vsStickyEnd = props.virtualScrollStickySizeEnd ?? 0;
   const vsContainerHeight = vsSliceSize * vsItemSize;
   const viewportScrollTop = van.state(0);
-  const t: Theme = resolveTheme(props.theme);
 
   const isServerSide = (): boolean =>
     props.onRequest != null || pagination.val.rowsNumber != null;
@@ -216,13 +214,15 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   };
 
   const alignClass = (a: ColumnAlign | undefined): string =>
-    a === "right" ? "text-right" : a === "center" ? "text-center" : "text-left";
+    a === "right"
+      ? "vx-table__cell--right"
+      : a === "center"
+        ? "vx-table__cell--center"
+        : "vx-table__cell--left";
 
-  const cellPad = dense ? "p-2" : "p-4";
-  // Filter-row cells: same horizontal padding as header/body cells (so controls
-  // line up with their column) but tighter vertically to keep the row compact.
-  const filterCellPad = dense ? "px-2 py-1" : "px-4 py-2";
-  const cellWrap = wrapCells ? "" : "whitespace-nowrap";
+  // Body cells never wrap unless `wrapCells` is set. Cell padding follows `dense` through
+  // the `--vx-table-cell-pad` token on the wrapper, so no per-cell class is needed.
+  const cellWrap = wrapCells ? "" : "vx-table__cell--nowrap";
 
   const isRowSelected = (row: T): boolean => {
     const k = keyOf(row);
@@ -274,13 +274,12 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
 
   const renderSelectionCell = (row: T): Element | null =>
     renderSelectionCellHelper({
-      selection, cellPad, row, isRowSelected, toggleRowSelection,
-      theme: t,
+      selection, row, isRowSelected, toggleRowSelection,
     });
 
   const renderExpanderCell = (row: T): Element | null =>
     renderExpanderCellHelper({
-      row, cellPad, hasExpander, isRowExpanded, toggleRowExpansion,
+      row, hasExpander, isRowExpanded, toggleRowExpansion,
     });
 
   const renderExpandedRow = (row: T): Element => {
@@ -292,7 +291,6 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       totalCol: totalColCount(),
       slot: expandedRowSlot,
       toggleRowExpansion,
-      expandedRowClass: t.expandedRow,
     });
   };
 
@@ -309,7 +307,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   const renderHeaderCell = (col: XColumn<T>, index: number): ChildDom => {
     const slot = headerCellSlotFor(col);
     const baseClass = [
-      cellPad, alignClass(col.align), t.cellBorder, col.headerClass ?? "",
+      "vx-table__cell", alignClass(col.align), col.headerClass ?? "",
     ].join(" ").trim();
     if (slot) {
       return th({ class: baseClass }, slot({
@@ -323,7 +321,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       col.sortable
         ? span(
             {
-              class: "inline-flex items-center gap-1 cursor-pointer select-none",
+              class: "vx-table__sort",
               onclick: () => toggleSort(col),
             },
             col.label as ChildDom,
@@ -341,10 +339,9 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
               col,
               st: popoverStates.get(col.key)!,
               distinctValues: () => distinctValuesFor(col),
-              theme: t,
               anchor: index === 0 ? "left" : "right",
             }
-          : { col, st: undefined, theme: t },
+          : { col, st: undefined },
       ),
     );
   };
@@ -362,8 +359,8 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   const renderBodyCell = (col: XColumn<T>, row: T): ChildDom => {
     const value = cellValue(col, row);
     const baseClass = [
-      cellPad, alignClass(col.align), cellWrap,
-      t.cellBorder, col.bodyClass ?? "",
+      "vx-table__cell", alignClass(col.align), cellWrap,
+      col.bodyClass ?? "",
     ].join(" ").trim();
     const slot = bodyCellSlotFor(col);
     if (slot) {
@@ -381,7 +378,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       td(
         {
           colSpan: String(totalColCount()),
-          class: `text-center p-6 ${t.emptyText}`,
+          class: "vx-table__empty",
         },
         content,
       ),
@@ -392,7 +389,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       props.slots?.loading
         ? (props.slots.loading({ label: loadingLabel }) as ChildDom)
         : div(
-            { class: "inline-flex items-center justify-center gap-3" },
+            { class: "vx-table__loading" },
             spinnerIcon(),
             span(loadingLabel),
           ),
@@ -408,7 +405,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   const renderDataRow = (row: T): Element =>
     tr(
       {
-        class: [t.rowHover, props.rowClass?.(row, keyOf(row))]
+        class: ["vx-table__row", props.rowClass?.(row, keyOf(row))]
           .filter(Boolean)
           .join(" "),
       },
@@ -445,15 +442,14 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       rowsPerPageLabel, rangeLabel,
       rowsPerPageOptions, pagesCount, totalCount,
       firstPage, prevPage, nextPage, lastPage, onRowsPerPageChange,
-      theme: t,
     });
   };
 
   const renderTopSection = (): ChildDom => {
-    if (props.slots?.top) return div({ class: "p-2" }, props.slots.top(tableScope));
+    if (props.slots?.top) return div({ class: "vx-table__top" }, props.slots.top(tableScope));
     if (props.slots?.topLeft || props.slots?.topRight) {
       return div(
-        { class: "flex items-center justify-between p-2" },
+        { class: "vx-table__toolbar" },
         div(props.slots?.topLeft ? props.slots.topLeft(tableScope) : ""),
         div(props.slots?.topRight ? props.slots.topRight(tableScope) : ""),
       );
@@ -462,30 +458,30 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
   };
 
   const renderBottomSection = (): ChildDom => {
-    if (props.slots?.bottom) return div({ class: "p-2" }, props.slots.bottom(tableScope));
-    if (props.slots?.bottomRow) return div({ class: "p-2" }, props.slots.bottomRow(tableScope));
+    if (props.slots?.bottom) return div({ class: "vx-table__bottom" }, props.slots.bottom(tableScope));
+    if (props.slots?.bottomRow) return div({ class: "vx-table__bottom" }, props.slots.bottomRow(tableScope));
     return null;
   };
 
+  // `vx-table` is a flex column so the inner scroll region takes the remaining height and
+  // the pagination footer pins to the bottom (outside the scroll). The modifiers cover the
+  // non-default looks; `xtable` stays as a public hook for consumers.
   const wrapperClass = [
-    "xtable",
-    // Flex column so the inner scroll region takes the remaining height and the
-    // pagination footer pins to the bottom (outside the scroll). `min-h-0` lets it
-    // shrink inside a flex/grid parent instead of overflowing.
-    "flex flex-col min-h-0",
+    "xtable vx-table",
     cardClass,
-    props.bordered === true ? `border ${t.borderWhenBordered}` : "",
-    props.square === true ? "" : "rounded-md",
-    props.flat === true ? "" : t.shadow,
+    props.bordered === true ? "vx-table--bordered" : "",
+    props.square === true ? "vx-table--square" : "",
+    props.flat === true ? "vx-table--flat" : "",
+    dense ? "vx-table--dense" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
-  const innerTableClass = ["w-full text-sm", tableClass]
+  const innerTableClass = ["vx-table__table", tableClass]
     .filter(Boolean)
     .join(" ");
 
-  const headerClass = [t.thead, tableHeaderClass]
+  const headerClass = ["vx-table__head", tableHeaderClass]
     .filter(Boolean)
     .join(" ");
 
@@ -495,12 +491,10 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       { class: headerClass },
       tr(
         renderSelectionHeaderHelper({
-          selection, cellPad, allVisibleSelected,
+          selection, allVisibleSelected,
           partiallyVisibleSelected, toggleAllVisible,
-          theme: t,
         }),
         renderExpanderHeaderHelper(
-          cellPad,
           hasExpander,
           props.slots?.expanderHeader?.(),
         ),
@@ -509,7 +503,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       // Optional filter row: a second full-width <tr> inside the sticky
       // <thead>, pinned directly under the column-header row. The <td> spans
       // every column (data + selection + expander via totalColCount) and takes
-      // the thead background so it reads as part of the pinned header; `p-0`
+      // the thead background so it reads as part of the pinned header; zero padding
       // keeps it full-bleed so the caller's content owns its own padding.
       // Omitted entirely (renders nothing) when `filterRow` is not provided —
       // the thunk is only invoked on render, keeping existing callers untouched.
@@ -518,7 +512,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
             td(
               {
                 colSpan: String(totalColCount()),
-                class: `p-0 ${t.filterRowBg}`,
+                class: "vx-table__filter-content",
               },
               props.filterRow(),
             ),
@@ -527,23 +521,21 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
       // Optional per-column filter row: an extra <tr> inside the sticky <thead>
       // with one <td> per column, so each filter control lines up with its
       // header (unlike the full-width `filterRow` above). Leading empty cells
-      // mirror the selection/expander columns. A reactive `class` binding drives
-      // visibility (function in ATTRIBUTE position -> updates the class only, it
+      // mirror the selection/expander columns. A reactive `hidden` binding drives
+      // visibility (function in ATTRIBUTE position -> updates the attribute only, it
       // never rebuilds the cells or their state).
       props.filterCellByKey
         ? tr(
             {
-              class: () =>
-                props.filterCellsVisible && !props.filterCellsVisible()
-                  ? "hidden"
-                  : "",
+              hidden: () =>
+                props.filterCellsVisible != null && !props.filterCellsVisible(),
             },
             selection !== "none"
-              ? td({ class: `${filterCellPad} ${t.filterRowBg}` })
+              ? td({ class: "vx-table__filter-cell" })
               : null,
             hasExpander
               ? td(
-                  { class: `${filterCellPad} ${t.filterRowBg}` },
+                  { class: "vx-table__filter-cell" },
                   props.slots?.expanderFilterCell?.() ?? null,
                 )
               : null,
@@ -551,11 +543,7 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
               const slot = props.filterCellByKey?.[col.key];
               return td(
                 {
-                  class: [
-                    filterCellPad,
-                    alignClass(col.align),
-                    t.filterRowBg,
-                  ].join(" "),
+                  class: ["vx-table__filter-cell", alignClass(col.align)].join(" "),
                 },
                 slot ? slot({ col }) : null,
               );
@@ -563,13 +551,13 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
           )
         : null,
     ),
-    (): Element => tbody({ class: t.tbody }, ...renderBodyRows()),
+    (): Element => tbody({ class: "vx-table__body" }, ...renderBodyRows()),
   );
 
   const tableHost = virtualScrollOn
     ? div(
         {
-          class: "overflow-auto",
+          class: "vx-table__viewport",
           style: `height:${vsContainerHeight}px`,
           onscroll: (e: Event) => {
             viewportScrollTop.val = (e.target as HTMLElement).scrollTop;
@@ -581,21 +569,25 @@ export const xTable = <T>(props: XTableProps<T>): ChildDom => {
 
   // Inline `--xtable-primary` only when caller pinned a color; otherwise
   // the CSS variable cascades from the document (or falls back to the
-  // value baked into each theme's `var(...)` expressions).
+  // theme's own `--vx-table-ring` / `--vx-table-accent` tokens).
   const wrapperStyle = props.primaryColor
     ? `--xtable-primary: ${props.primaryColor};`
     : "";
 
   // Scroll region: top slot + table + bottom slot. The sticky <thead> lives here
   // (its scroll ancestor), so header pinning keeps working. The pagination footer
-  // is deliberately OUTSIDE this element (a shrink-0 sibling below) so it is a
+  // is deliberately OUTSIDE this element (a non-shrinking sibling below) so it is a
   // fixed bar and never overlaps rows/actions when the viewport is short.
   //
-  // In virtualScroll mode the tableHost is ALREADY its own overflow-auto viewport
+  // In virtualScroll mode the tableHost is ALREADY its own scrolling viewport
   // (and pagination is suppressed), so don't double-wrap it — keep it a direct
   // child so the single scroll viewport stays the vs container.
   const wrapper = div(
-    { class: wrapperClass, ...(wrapperStyle ? { style: wrapperStyle } : {}) },
+    {
+      class: wrapperClass,
+      "data-vx-theme": props.theme ?? "dark",
+      ...(wrapperStyle ? { style: wrapperStyle } : {}),
+    },
     virtualScrollOn
       ? [renderTopSection(), tableHost, renderBottomSection()]
       : div(

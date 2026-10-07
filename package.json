@@ -19,7 +19,7 @@
     "leaflet",
     "typescript"
   ],
-  "version": "0.1.12",
+  "version": "0.2.0",
   "author": {
     "name": "wisewolftech",
     "email": ""
@@ -36,8 +36,19 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./style.css": "./dist/van-ui.css",
+    "./package.json": "./package.json"
+  },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "files": [
     "dist",
     "!dist/**/*.test.*",
@@ -45,7 +56,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "node build.js",
+    "build": "node build.js && tsc",
     "prepare": "node build.js && tsc",
     "types": "tsc",
     "dev": "vite --force",

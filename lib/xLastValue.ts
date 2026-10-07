@@ -9,12 +9,19 @@ export interface XLastValueProps {
   readonly title?: string
   readonly subtitle?: string
   readonly onClick?: (ev: MouseEvent) => void
+  /** Classes of the root. Replaces the default `vx-last-value`; pass `"vx-last-value extra"` to extend it. */
   readonly className?: string
+  /** Replaces the default `vx-last-value__title`. */
   readonly titleClass?: string
+  /** Replaces the default `vx-last-value__subtitle`. */
   readonly subtitleClass?: string
+  /** Replaces the default `vx-last-value__preicon`. */
   readonly preiconClass?: string
+  /** Replaces the default `vx-last-value__posticon`. */
   readonly posticonClass?: string
+  /** Replaces the default `vx-last-value__value`. The fixed `vx-last-value__value-base` (single line, ellipsis) stays. */
   readonly valueClass?: string
+  /** Hover look, only applied when `onClick` is set. Replaces the default `vx-last-value--hover`. */
   readonly hoverClass?: string
 }
 
@@ -26,19 +33,18 @@ export const xLastValue = (
     title = "",
     subtitle = "",
     onClick,
-    className = "w-full rounded-md border border-stone-800 bg-neutral-900 text-white select-none",
-    titleClass = "px-4 pt-3 text-sm text-stone-300",
-    subtitleClass = "px-4 pb-3 text-xs text-stone-400 truncate",
-    valueClass = "text-right font-light tabular-nums tracking-tight text-white " +
-      "text-[clamp(1.25rem,4vw,1.875rem)] sm:text-3xl md:text-4xl lg:text-5xl",
+    className = "vx-last-value",
+    titleClass = "vx-last-value__title",
+    subtitleClass = "vx-last-value__subtitle",
+    valueClass = "vx-last-value__value",
 
-    hoverClass = "hover:bg-neutral-800 hover:border-stone-700",
-    preiconClass = "shrink-0 flex items-center justify-center",
-    posticonClass = "shrink-0 flex items-center justify-center text-stone-400",
+    hoverClass = "vx-last-value--hover",
+    preiconClass = "vx-last-value__preicon",
+    posticonClass = "vx-last-value__posticon",
   }: XLastValueProps,
   ...children: ChildDom[]
 ) => {
-  const interactiveClasses = onClick ? `cursor-pointer ${hoverClass}` : ""
+  const interactiveClasses = onClick ? `vx-last-value--clickable ${hoverClass}` : ""
   const classes = `${className} ${interactiveClasses}`.trim()
 
   const preNode =
@@ -68,15 +74,15 @@ export const xLastValue = (
 
     div(
       {
-        class: "px-4 py-4 flex items-center gap-3 flex-nowrap justify-between",
+        class: "vx-last-value__row",
       },
 
       preNode ? div({ class: preiconClass }, preNode) : null,
 
       div(
-        { class: "flex-1 min-w-0" },
+        { class: "vx-last-value__main" },
         div(
-          { class: ["leading-none truncate", valueClass].join(" ").trim() },
+          { class: ["vx-last-value__value-base", valueClass].join(" ").trim() },
           displayValue
         )
       ),
@@ -87,7 +93,7 @@ export const xLastValue = (
     children.length
       ? div(
           {
-            class: "px-4 pb-3 flex flex-wrap items-center justify-center gap-3",
+            class: "vx-last-value__children",
           },
           ...children
         )

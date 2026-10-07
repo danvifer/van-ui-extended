@@ -10,8 +10,6 @@ export type Step = {
   postAction?: () => void | Promise<void>
 }
 
-/** Tailwind color token, e.g. "sky-700" or "orange-500". */
-export type TailwindColorToken = `${string}-${number}`
 /** CSS color value: hex or rgb()/rgba() functional notation. */
 export type CssColorValue = `#${string}` | `rgb(${string})` | `rgba(${string})`
 
@@ -24,12 +22,38 @@ export interface WizardProps {
   readonly nextLabel?: string
   readonly createLabel?: string
   readonly loadingLabel?: string
-  readonly primaryColor?: TailwindColorToken
-  readonly secondaryColor?: TailwindColorToken
+  /**
+   * Button background, any CSS color (`"#0369a1"`, `"oklch(0.5 0.13 242)"`). Sets
+   * `--vx-wizard-btn-bg` on the overlay. Anything the browser does not parse as a color
+   * logs a warning and keeps the default (sky-700).
+   */
+  readonly primaryColor?: string
+  /** Button background on hover, any CSS color. Sets `--vx-wizard-btn-hover-bg`; default sky-900. */
+  readonly secondaryColor?: string
   readonly backgroundColor?: CssColorValue
+  /** Classes of the panel. Replaces the default `vx-wizard__panel`. */
   readonly modalClass?: string
   readonly customPrimaryButtonStyle?: string
   readonly customSecondaryButtonStyle?: string
+}
+
+/**
+ * Inline declaration of a color token, or "" when the prop was not passed or is not a CSS
+ * color: the stylesheet then falls back to its default instead of painting transparent
+ * buttons. Without `CSS` (jsdom, SSR) the value cannot be checked and is trusted.
+ */
+const colorToken = (token: string, prop: string, value: string | undefined): string => {
+  if (value === undefined) return ""
+  // `;{}` would escape the inline declaration; reject it even where CSS.supports is missing.
+  const invalid =
+    value.trim() === "" ||
+    /[;{}]/.test(value) ||
+    (typeof CSS !== "undefined" && CSS.supports?.("color", value) === false)
+  if (invalid) {
+    console.warn(`WizardComponent: ${prop} "${value}" is not a CSS color; using the default.`)
+    return ""
+  }
+  return `${token}: ${value};`
 }
 
 export const WizardComponent = (
@@ -42,20 +66,21 @@ export const WizardComponent = (
     nextLabel = "next",
     createLabel = "Create",
     loadingLabel = "Loading",
-    primaryColor = "sky-700",
-    secondaryColor = "sky-900",
+    primaryColor,
+    secondaryColor,
     backgroundColor,
-    modalClass = "bg-stone-900 text-white w-4/5 h-full overflow-auto relative",
+    modalClass = "vx-wizard__panel",
     customPrimaryButtonStyle = "",
     customSecondaryButtonStyle = "cursor: pointer;",
   }: WizardProps,
   ..._children: readonly ChildDom[]
 ) => {
   const loading = van.state(false)
-  // Consumers using non-default colors must ensure the resulting bg-*/hover:bg-*
-  // classes are reachable by their Tailwind build (e.g. @source inline).
-  const primaryButtonClass = `bg-${primaryColor} hover:bg-${secondaryColor} text-white font-bold py-2 px-4 mt-2 mb-2 rounded mx-2 disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer`
-  const secondaryButtonClass = `bg-${primaryColor} hover:bg-${secondaryColor} text-white font-bold py-2 px-4 mt-2 mb-2 rounded cursor-pointer`
+  const colorTokens =
+    colorToken("--vx-wizard-btn-bg", "primaryColor", primaryColor) +
+    colorToken("--vx-wizard-btn-hover-bg", "secondaryColor", secondaryColor)
+  const primaryButtonClass = "vx-wizard__btn vx-wizard__btn--primary"
+  const secondaryButtonClass = "vx-wizard__btn"
 
   async function executeActions(
     preAction?: () => void | Promise<void>,
@@ -126,11 +151,11 @@ export const WizardComponent = (
               closeWizard()
             },
           },
-          span({ class: () => (loading.val ? "inline" : "hidden") },
+          span({ hidden: () => !loading.val },
             svg(
-              { class: "mr-3 size-5 animate-spin inline", viewBox: "0 0 24 24" },
+              { class: "vx-wizard__spinner", viewBox: "0 0 24 24" },
               circle({
-                class: "opacity-25",
+                class: "vx-wizard__spinner-track",
                 cx: "12",
                 cy: "12",
                 r: "10",
@@ -138,14 +163,14 @@ export const WizardComponent = (
                 "stroke-width": "4",
               }),
               path({
-                class: "opacity-75",
+                class: "vx-wizard__spinner-arc",
                 fill: "white",
                 d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z",
               }),
             ),
             loadingLabel,
           ),
-          span({ class: () => (loading.val ? "hidden" : "inline") }, createLabel),
+          span({ hidden: () => loading.val }, createLabel),
         )
       : null,
   )
@@ -156,13 +181,12 @@ export const WizardComponent = (
   steps.forEach((val, index) => {
     stepsInfo.push(() =>
       div(
-        { class: `flex my-2 ${index === step.val ? "text-[#658b8a]" : ""}` },
+        { class: `vx-wizard__step${index === step.val ? " vx-wizard__step--active" : ""}` },
         span(
           {
-            class: "mr-2",
+            class: `vx-wizard__step-num${index !== step.val ? " vx-wizard__step-num--inactive" : ""}`,
             style:
-              "width:28px; height: 28px;border: thin solid; border-width: medium;border-radius: 50%;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;border-color: rgb(101, 139, 138)" +
-              (index !== step.val ? "opacity-75 text-[#658b8a]" : ""),
+              "width:28px; height: 28px;border: thin solid; border-width: medium;border-radius: 50%;flex: none;align-items: center;justify-content: center;line-height: normal;overflow: hidden;position: relative;text-align: center;vertical-align: middle;border-color: rgb(101, 139, 138)",
           },
           index + 1,
         ),
@@ -173,9 +197,8 @@ export const WizardComponent = (
 
   const overlay = div(
     {
-      class:
-        "fixed inset-0 z-[10000] flex items-stretch justify-end bg-black/50",
-      style: () => (closed.val ? "display:none" : ""),
+      class: "vx-wizard",
+      style: () => (closed.val ? "display:none;" : "") + colorTokens,
       onclick: (e: MouseEvent) => {
         if (e.target === e.currentTarget) {
           closed.val = true
@@ -189,38 +212,33 @@ export const WizardComponent = (
         style: backgroundColor ? `background-color: ${backgroundColor};` : "",
       },
       div(
-        { class: "p-2" },
+        { class: "vx-wizard__header" },
         button({
-          class: "cursor-pointer og ogiconclose",
+          class: "vx-wizard__close og ogiconclose",
           onclick: () => {
             closed.val = true
             closeWizard()
           },
         }),
-        span({ class: "inline text-xl ml-2" }, title),
+        span({ class: "vx-wizard__title" }, title),
       ),
       div(
         {
-          class:
-            "grid grid-cols-4 grid-rows-4 auto-rows-min md:grid-cols-6 lg:grid-cols-15 min-h-[calc(100vh-2rem)] bg-neutral-900 text-white",
+          class: "vx-wizard__grid",
           style: "border-top: 1px solid oklch(.372 .044 257.287);",
         },
         div(
           {
-            class:
-              "col-span-3 row-span-4 md:col-span-1 lg:col-span-3 text-white p-4 lg:block bg-stone-900",
+            class: "vx-wizard__steps",
             style: "border-right: 1px solid oklch(.372 .044 257.287);",
           },
           stepsInfo,
         ),
         () =>
           div(
-            {
-              class:
-                "col-span-5 row-span-4 md:col-span-5 lg:col-span-12 p-6 bg-stone-900",
-            },
+            { class: "vx-wizard__content" },
             currentStep.val,
-            div({ class: "absolute right-0 bottom-0" }, () =>
+            div({ class: "vx-wizard__actions" }, () =>
               span(prevButton.val, nextButton.val, saveButton.val),
             ),
           ),

@@ -1,0 +1,224 @@
+/* xSelect. The list is portaled to <body>, so its rules cannot depend on an ancestor. */
+
+.vx-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.vx-select__field {
+  position: relative;
+}
+
+/* The input. Default of `className`, which replaces it as a whole. */
+.vx-select__control {
+  position: relative;
+  width: 100%;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  border-color: oklch(0.268 0.007 34.298);
+  background-color: oklch(0.205 0 0);
+  padding-inline: 0.75rem;
+  padding-right: 2.5rem;
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+  line-height: calc(1.25 / 0.875);
+  color: #fff;
+  caret-color: #fff;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  outline-style: none;
+}
+
+.vx-select__control::placeholder {
+  color: oklch(0.553 0.013 58.071);
+}
+
+/* Fixed on a non-searchable input. Keep it above :disabled: same specificity, the later rule wins. */
+.vx-select__control--readonly:read-only {
+  cursor: pointer;
+  caret-color: transparent;
+}
+
+.vx-select__control:focus {
+  outline-style: none;
+}
+
+.vx-select__control:focus-visible {
+  box-shadow: 0 0 0 2px oklch(0.205 0 0), 0 0 0 4px oklch(0.444 0.011 73.639),
+    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.vx-select__control:disabled {
+  cursor: not-allowed;
+  opacity: 50%;
+}
+
+/* The option list. Default of `listClass`. `position: fixed`: positionDropdown writes viewport coordinates. */
+.vx-select__list {
+  position: fixed;
+  z-index: 10001;
+  overflow: auto;
+  max-height: 15rem;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  border-color: oklch(0.268 0.007 34.298);
+  background-color: oklch(0.205 0 0);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Default of `optionClassName`. */
+.vx-select__option {
+  width: 100%;
+  text-align: left;
+  padding-inline: 0.75rem;
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+  line-height: calc(1.25 / 0.875);
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .vx-select__option:hover {
+    background-color: oklch(0.269 0 0);
+  }
+}
+
+.vx-select__option:focus {
+  outline-style: none;
+}
+
+/* Default of `optionActiveClass`. */
+.vx-select__option--active {
+  background-color: oklch(0.269 0 0);
+}
+
+/* Default of `optionDisabledClass`. */
+.vx-select__option--disabled {
+  opacity: 50%;
+  cursor: not-allowed;
+}
+
+/* Fixed on every option that is not disabled. */
+.vx-select__option--enabled {
+  cursor: pointer;
+}
+
+/* The "No results" row. Default of `noResultsClass`. */
+.vx-select__empty {
+  padding-inline: 0.75rem;
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+  line-height: calc(1.25 / 0.875);
+  color: oklch(0.709 0.01 56.259);
+}
+
+/* Chevron toggle (default of `iconButtonClass`) and clear button (default of `clearButtonClass`). */
+.vx-select__toggle,
+.vx-select__clear {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  color: oklch(0.869 0.005 56.366);
+}
+
+.vx-select__toggle {
+  right: 0.5rem;
+}
+
+.vx-select__clear {
+  right: 2rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .vx-select__toggle:hover,
+  .vx-select__clear:hover {
+    background-color: oklch(0.269 0 0);
+    color: #fff;
+  }
+}
+
+.vx-select__toggle:focus,
+.vx-select__clear:focus {
+  outline-style: none;
+}
+
+.vx-select__toggle:focus-visible,
+.vx-select__clear:focus-visible {
+  box-shadow: 0 0 0 2px oklch(0.205 0 0), 0 0 0 4px oklch(0.444 0.011 73.639);
+}
+
+.vx-select__clear:disabled {
+  cursor: not-allowed;
+  opacity: 50%;
+}
+
+/* Multiple mode: label wrapping the checkbox and the option content. Default of `checkboxLabelClass`. */
+.vx-select__check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Default of `checkboxInputClass`. The tick is its ::before. */
+.vx-select__checkbox {
+  appearance: none;
+  height: 1rem;
+  width: 1rem;
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  border-color: oklch(0.553 0.013 58.071);
+  background-color: oklch(0.205 0 0);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.vx-select__checkbox::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.25rem;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-color: oklch(0.205 0 0);
+  rotate: -45deg;
+  opacity: 0%;
+}
+
+.vx-select__checkbox:focus-visible {
+  box-shadow: 0 0 0 2px oklch(0.205 0 0), 0 0 0 4px oklch(0.444 0.011 73.639);
+}
+
+.vx-select__checkbox:checked {
+  background-color: oklch(0.97 0 0);
+  border-color: oklch(0.97 0 0);
+}
+
+.vx-select__checkbox:checked::before {
+  opacity: 100%;
+}
+
+.vx-select__checkbox:disabled {
+  opacity: 50%;
+  cursor: not-allowed;
+}
+
+.vx-select__chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.vx-select__clear-icon {
+  width: 1rem;
+  height: 1rem;
+}

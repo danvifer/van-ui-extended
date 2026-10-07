@@ -1,6 +1,5 @@
 import van, { type State } from "vanjs-core";
 import type { PaginationState, SelectionMode } from "./xTable.types";
-import type { Theme } from "./xTable.themes";
 import { xButton } from "../xButton";
 import {
   checkIcon,
@@ -36,12 +35,7 @@ export interface PaginationFooterArgs<T> {
   readonly nextPage: () => void;
   readonly lastPage: () => void;
   readonly onRowsPerPageChange: (rpp: number) => void;
-  readonly theme: Theme;
 }
-
-/** Theme-agnostic structural classes — shape/padding live in `theme.footerBtn`. */
-const pagBtnBase =
-  "inline-flex items-center justify-center enabled:cursor-pointer disabled:opacity-50";
 
 /**
  * Quasar-style "1–25 of 100" range indicator. With `rowsPerPage === 0`
@@ -74,25 +68,26 @@ const formatRange = (
 const renderRowsPerPageSelector = <T>(
   args: PaginationFooterArgs<T>,
 ): Element => {
-  const t = args.theme;
   const open = van.state(false);
 
   const optionItem = (n: number): Element =>
     div(
       {
         class: () =>
-          `flex items-center gap-2 px-3 py-1.5 cursor-pointer ${t.popoverActionHover} ${
-            args.pagination.val.rowsPerPage === n ? "font-medium" : ""
-          }`,
+          args.pagination.val.rowsPerPage === n
+            ? "vx-table__rpp-option vx-table__rpp-option--active"
+            : "vx-table__rpp-option",
         onclick: () => {
           args.onRowsPerPageChange(n);
           open.val = false;
         },
       },
       span(
-        { class: "w-3 h-3 inline-flex items-center justify-center" },
+        { class: "vx-table__rpp-check" },
         (): Element =>
-          args.pagination.val.rowsPerPage === n ? checkIcon("size-3") : span(),
+          args.pagination.val.rowsPerPage === n
+            ? checkIcon("vx-table__icon vx-table__icon--sm")
+            : span(),
       ),
       span(n === 0 ? "All" : String(n)),
     );
@@ -100,18 +95,18 @@ const renderRowsPerPageSelector = <T>(
   const optionsList = (): Element =>
     div(
       {
-        class: `absolute bottom-full right-0 mb-1 py-1 min-w-[88px] rounded ${t.popoverWrap}`,
+        class: "vx-table__rpp-menu",
         onclick: (e: MouseEvent) => e.stopPropagation(),
       },
       ...args.rowsPerPageOptions.map(optionItem),
     );
 
   const wrapper = span(
-    { class: "relative inline-flex items-center" },
+    { class: "vx-table__rpp" },
     button(
       {
         type: "button",
-        class: `inline-flex items-center gap-1 px-2 py-1 rounded cursor-pointer ${t.popoverActionHover}`,
+        class: "vx-table__rpp-trigger",
         onclick: (e: MouseEvent) => {
           e.stopPropagation();
           open.val = !open.val;
@@ -126,9 +121,11 @@ const renderRowsPerPageSelector = <T>(
       span(
         {
           class: () =>
-            `inline-flex transition-transform ${open.val ? "rotate-180" : ""}`,
+            open.val
+              ? "vx-table__rpp-chevron vx-table__rpp-chevron--open"
+              : "vx-table__rpp-chevron",
         },
-        chevronDownIcon("size-3"),
+        chevronDownIcon(),
       ),
     ),
     (): Element => (open.val ? optionsList() : span()),
@@ -149,27 +146,23 @@ const renderRowsPerPageSelector = <T>(
 export const renderPaginationFooter = <T>(
   args: PaginationFooterArgs<T>,
 ): Element => {
-  const t = args.theme;
-  const btnClass = `${pagBtnBase} ${t.footerBtn}`;
+  const btnClass = "vx-table__page-btn";
   return div(
-    {
-      class: `flex items-center justify-between gap-2 px-2 py-1.5 ${t.footerWrap}`,
-    },
+    { class: "vx-table__footer" },
     span(
-      { class: t.footerSelectedLabel },
+      { class: "vx-table__footer-label" },
       ((): string =>
         args.selection !== "none" && args.selected.val.length > 0
           ? args.selectedRowsLabel(args.selected.val.length)
           : ""),
     ),
     div(
-      { class: "flex items-center gap-3" },
-      span({ class: "text-inherit" }, args.rowsPerPageLabel),
+      { class: "vx-table__footer-nav" },
+      span("Records per page:"),
       renderRowsPerPageSelector(args),
       span(
-        { class: "mx-2 tabular-nums" },
-        ((): string =>
-          formatRange(args.pagination.val, args.totalCount(), args.rangeLabel)),
+        { class: "vx-table__range" },
+        ((): string => formatRange(args.pagination.val, args.totalCount())),
       ),
       () =>
         xButton({

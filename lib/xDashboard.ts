@@ -141,10 +141,7 @@ const buildItemElement = (item: XDashboardItem): HTMLDivElement => {
   } catch (err) {
     console.error(`[xDashboard] item "${item.id ?? "?"}" failed to render`, err);
     node = div(
-      {
-        class:
-          "h-full w-full flex items-center justify-center text-xs text-rose-600 p-2 text-center",
-      },
+      { class: "vx-dashboard__error" },
       `Failed to render: ${err instanceof Error ? err.message : String(err)}`,
     ) as HTMLDivElement;
   }

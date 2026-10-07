@@ -1,44 +1,26 @@
-//const esbuild = require("esbuild");
 import esbuild from "esbuild";
+import { rmSync } from "node:fs";
 
+// JS and .d.ts come from `tsc` (one module per file, so consumers' bundlers can tree-shake
+// per component). This script only bundles the stylesheet: lib/van-ui.css and its
+// @imports become dist/van-ui.css, published as `van-ui-extended/style.css`.
 async function build() {
+  const watch = process.argv.includes("--watch");
+  // Start clean so files from older layouts never reach the tarball.
+  if (!watch) rmSync("dist", { recursive: true, force: true });
+
   const ctx = await esbuild.context({
-    entryPoints: ["lib/index.ts"], // Punto de entrada principal
-    outfile: "dist/index.js", // Archivo de salida
-    bundle: true, // Empaqueta todos los archivos en uno
-    format: "esm", // Usa el formato de módulos ES
-    platform: "browser", // Plataforma objetivo: navegadores
-    sourcemap: true, // Genera mapas de fuente
-    target: "esnext", // Soporte para navegadores modernos
-    external: [
-      // Externalised so the consumer's bundler resolves ONE shared copy
-      // (tree-shaking, real lazy chunks, no duplicate CodeMirror). The lib
-      // ships as a thin layer of component glue; heavy deps are peer deps.
-      "@remoteoss/json-schema-form",
-      "gridstack",
-      "tailwindcss",
-      "vanjs-core",
-      "vanjs-ext",
-      // Heavy peers (the actual bundle-size offenders):
-      "echarts",
-      "codemirror",
-      "@codemirror/*",
-      "prettier",
-      "prettier/*",
-      "eslint-linter-browserify",
-      "globals",
-      "@typescript-eslint/typescript-estree",
-      "leaflet",
-      "thememirror",
-    ],
+    entryPoints: ["lib/van-ui.css"],
+    outfile: "dist/van-ui.css",
+    bundle: true,
+    sourcemap: true,
+    target: "esnext",
   });
 
-  // Activa el modo watch si se pasa el flag "--watch"
-  if (process.argv.includes("--watch")) {
+  if (watch) {
     console.log("Watching for changes...");
     await ctx.watch();
   } else {
-    // Ejecuta una compilación única
     await ctx.rebuild();
     ctx.dispose();
   }

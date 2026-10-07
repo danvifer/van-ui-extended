@@ -5,8 +5,8 @@
 
 ## TL;DR
 
-`van-ui-extended` is a collection of UI components built on top of **VanJS**, styled with
-**Tailwind CSS v4**, distributed as an ES-module bundle.
+`van-ui-extended` is a collection of UI components built on top of **VanJS**, distributed as
+ES modules plus one stylesheet of its own. No Tailwind (or any CSS framework) is required.
 
 ```bash
 yarn add van-ui-extended vanjs-core
@@ -15,6 +15,7 @@ yarn add van-ui-extended vanjs-core
 ```ts
 import van from "vanjs-core"
 import { xTable, xSelect, xOption } from "van-ui-extended"
+import "van-ui-extended/style.css"
 
 van.add(document.body, xTable({
   rows: van.state([{ id: 1, name: "Ada" }]),
@@ -28,26 +29,22 @@ van.add(document.body, xTable({
 | Requirement   | Why                                                                      |
 | ------------- | ------------------------------------------------------------------------ |
 | `vanjs-core` (≥1.5.3, peer)  | All components are VanJS factories. Caller-owned `State<T>` everywhere. |
-| Tailwind CSS v4              | Components emit utility classes (`bg-stone-900`, `text-slate-600`, ...). Without Tailwind, the UI renders unstyled. |
+| `van-ui-extended/style.css`  | Components emit `vx-*` classes styled by this stylesheet. Import it once; without it the UI renders unstyled. |
 | Modern browser, ESM          | Bundle target is `esnext`. No SSR — some helpers touch `document` at construction (e.g. xTable's outside-click delegate). |
 
-### Tailwind content glob
+### Stylesheet
 
-The bundle ships with utility classes inlined as strings, so Tailwind's JIT scanner must
-see them or they get purged:
-
-```ts
-// tailwind.config.{ts,js}
-export default {
-  content: [
-    "./src/**/*.{ts,tsx,js,jsx,html}",
-    "./node_modules/van-ui-extended/dist/**/*.{js,mjs}",
-  ],
-}
-```
-
-(Tailwind v4 `@source "../node_modules/van-ui-extended/dist/**/*.js";` inside your CSS
-works equivalently.)
+- Every element carries a stable `vx-*` class (BEM: `vx-<block>__<element>--<modifier>`);
+  restyle by overriding those classes in CSS loaded after the library's.
+- `*Class` props keep their 0.1.x semantics: most **replace** the default `vx-*` class (pass
+  `"vx-select__list extra"` to extend it); xTable's, xDashboard's, xButton's `iconClass` and
+  the legacy Select's `optionsClass`/`optionClass` are **appended**.
+- The rules are unlayered, so they beat Tailwind's preflight and utilities. Tailwind hosts
+  that want their utilities to win import the sheet into a layer:
+  `@import "van-ui-extended/style.css" layer(components);`
+- Components inherit `font-family` and `line-height` from the host page.
+- See the README's "Styling" section for tokens (xTable themes, wizard colors) and the
+  0.1.x → 0.2.0 migration notes.
 
 ## VanJS conventions used everywhere
 
@@ -91,14 +88,23 @@ TypeScript types are the source of truth.
 - TypeScript strict mode. Public APIs (exported functions, factories) must have explicit
   parameter and return types. Internal helpers can rely on inference.
 - File organisation: many small files (< 400 LOC typical). xTable is split into
-  `xTable.ts` + `xTable.<concern>.ts` (themes, filter, pagination, selection, expansion,
+  `xTable.ts` + `xTable.<concern>.ts` (filter, pagination, selection, expansion,
   helpers, body, icons, virtualScroll, outsideClick, types).
+- Styles: no Tailwind. Each component has a co-located stylesheet (`lib/xSelect.css`,
+  `lib/xTable/xTable.css`, …) with unlayered single-class `vx-*` rules; `lib/base.css` holds
+  the reset scoped to `vx-*` elements and the shared keyframes; `lib/van-ui.css` imports them
+  all. Custom properties only where something varies (xTable themes, wizard colors).
+  `lib/styles.test.ts` fails if a `vx-*` class is used but not defined, or if a component
+  emits a class that is not `vx-*`.
 - Tests live next to source (`xTable.test.ts`). Vitest + jsdom.
-- Build: `node build.js` → esbuild ESM bundle to `dist/index.js`. Externals: `vanjs-core`,
-  `vanjs-ext`, `tailwindcss`. Types via `tsc` → `dist/*.d.ts`.
+- Build: `yarn build` → `node build.js` bundles `lib/van-ui.css` into `dist/van-ui.css`
+  (published as `van-ui-extended/style.css`), then `tsc` emits JS + `.d.ts` per module.
 - Dev server: `yarn dev` → Vite on **port 3030**. Showcase pages live at:
-  - `/` — main demo (entry `lib/main.ts`)
-  - `/xtable.html` — xTable showcase (entry `lib/xTable-demo.ts`)
+  - `/` — main demo (entry `demo/main.ts`)
+  - `/xtable.html` — xTable showcase (entry `lib/xTable/xTable-demo.ts`)
+  - `/demo/pages/_parity/` — every component with default props (with the demo's Tailwind);
+    `/demo/pages/_parity/bare.html` — the same without Tailwind, the visual check that the
+    library needs nothing but its own stylesheet.
 
 ## Pointers
 

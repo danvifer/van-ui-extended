@@ -11,12 +11,11 @@ const { span, td, th, tr } = van.tags;
  * rather than in a second one next to it.
  */
 export const renderExpanderHeader = (
-  cellPad: string,
   hasExpander: boolean,
   content?: ChildDom,
 ): Element | null =>
   hasExpander
-    ? th({ class: `${cellPad} w-10` }, content ?? null)
+    ? th({ class: "vx-table__expander-cell" }, content ?? null)
     : null;
 
 /**
@@ -25,17 +24,16 @@ export const renderExpanderHeader = (
  */
 export const renderExpanderCell = <T>(args: {
   readonly row: T;
-  readonly cellPad: string;
   readonly hasExpander: boolean;
   readonly isRowExpanded: (row: T) => boolean;
   readonly toggleRowExpansion: (row: T) => void;
 }): Element | null => {
   if (!args.hasExpander) return null;
   return td(
-    { class: `${args.cellPad} w-10` },
+    { class: "vx-table__expander-cell" },
     span(
       {
-        class: "inline-flex items-center justify-center cursor-pointer p-1",
+        class: "vx-table__expander",
         onclick: () => args.toggleRowExpansion(args.row),
       },
       (): Element => {
@@ -61,16 +59,14 @@ export const renderExpandedRow = <T>(args: {
   readonly totalCol: number;
   readonly slot: (scope: ExpandedRowScope<T>) => Parameters<typeof td>[1];
   readonly toggleRowExpansion: (row: T) => void;
-  /** Theme token controlling the expanded row's background + text color. */
-  readonly expandedRowClass: string;
 }): Element => {
   const expandState = van.state(true);
   return tr(
-    { class: args.expandedRowClass },
+    { class: "vx-table__expanded-row" },
     td(
       {
         colSpan: String(args.totalCol),
-        class: "p-4",
+        class: "vx-table__expanded-cell",
       },
       args.slot({
         row: args.row,

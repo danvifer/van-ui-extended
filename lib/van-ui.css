@@ -1,0 +1,16 @@
+/*
+ * van-ui-extended stylesheet. Ships as `van-ui-extended/style.css`; import it once.
+ * Tailwind hosts that want their utilities to override these rules can import it into
+ * a layer: @import "van-ui-extended/style.css" layer(components);
+ */
+@import "./base.css";
+@import "./cron.css";
+@import "./xButton.css";
+@import "./xLastValue.css";
+@import "./xSelect.css";
+@import "./textarea.css";
+@import "./xDashboard.css";
+@import "./wizard.css";
+@import "./select.css";
+@import "./table.css";
+@import "./xTable/xTable.css";

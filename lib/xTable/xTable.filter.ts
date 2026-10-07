@@ -1,6 +1,5 @@
 import van, { type State } from "vanjs-core";
 import type { XColumn } from "./xTable.types";
-import type { Theme } from "./xTable.themes";
 import { xButton } from "../xButton";
 import {
   checkIcon,
@@ -36,7 +35,6 @@ export interface PopoverCtx {
 export interface ColumnFilterArgs<T> {
   readonly col: XColumn<T>;
   readonly st: PopoverCtx;
-  readonly theme: Theme;
   /**
    * Lazy accessor for the distinct values rendered as `<option>`s by the
    * `"select"` filter kind. Implemented by the xTable factory which knows
@@ -54,25 +52,16 @@ export interface ColumnFilterArgs<T> {
   readonly anchor?: "left" | "right";
 }
 
-const popoverWrapperBase =
-  "absolute z-50 top-full mt-1 p-3 rounded-md min-w-[200px]";
-
-const fieldBase = "block w-full px-2 py-1 rounded focus:outline-none";
-
-const actionBtnBase =
-  "inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm cursor-pointer";
-
 /** Text input variant — case-insensitive substring match downstream. */
 const renderBasicControl = <T>(
   col: XColumn<T>,
   st: PopoverCtx,
-  theme: Theme,
 ): Element =>
   input({
     type: "text",
     placeholder:
       typeof col.label === "string" ? col.label : `Filter ${col.key}`,
-    class: `${fieldBase} ${theme.popoverInput}`,
+    class: "vx-table__field",
     value: () => st.draftValue.val,
     oninput: (e: Event) => {
       st.draftValue.val = (e.target as HTMLInputElement).value;
@@ -93,12 +82,11 @@ const renderSelectControl = <T>(
   _col: XColumn<T>,
   st: PopoverCtx,
   distinctValues: () => readonly string[],
-  theme: Theme,
 ): Element => {
   const opts = distinctValues();
   return select(
     {
-      class: `${fieldBase} ${theme.popoverInput}`,
+      class: "vx-table__field",
       onchange: (e: Event) => {
         st.draftValue.val = (e.target as HTMLSelectElement).value;
       },
@@ -123,21 +111,22 @@ const renderSelectControl = <T>(
  * popover while the user is interacting with it.
  */
 const renderPopover = <T>(args: ColumnFilterArgs<T>): Element => {
-  const { col, st, theme } = args;
-  const anchorClass = args.anchor === "left" ? "left-0" : "right-0";
+  const { col, st } = args;
+  const anchorClass =
+    args.anchor === "left" ? "vx-table__popover--left" : "vx-table__popover--right";
   const control =
     col.columnFilter === "select" && args.distinctValues
-      ? renderSelectControl(col, st, args.distinctValues, theme)
-      : renderBasicControl(col, st, theme);
-  const actionBtn = `${actionBtnBase} ${theme.popoverActionHover}`;
+      ? renderSelectControl(col, st, args.distinctValues)
+      : renderBasicControl(col, st);
+  const actionBtn = "vx-table__popover-btn";
   return div(
     {
-      class: `${popoverWrapperBase} ${anchorClass} ${theme.popoverWrap}`,
+      class: `vx-table__popover ${anchorClass}`,
       onclick: (e: MouseEvent) => e.stopPropagation(),
     },
     control,
     div(
-      { class: "flex justify-between mt-2 gap-2" },
+      { class: "vx-table__popover-actions" },
       xButton({
         label: "Clear",
         icon: xIcon(),
@@ -167,13 +156,13 @@ const renderPopover = <T>(args: ColumnFilterArgs<T>): Element => {
  * the feature so the header cell remains untouched.
  */
 export const renderColumnFilterButton = <T>(
-  args: ColumnFilterArgs<T> | { col: XColumn<T>; st: undefined; theme: Theme },
+  args: ColumnFilterArgs<T> | { col: XColumn<T>; st: undefined },
 ): Element | null => {
   if (!args.st) return null;
   const st = args.st;
-  const triggerClass = `p-1 rounded cursor-pointer ${args.theme.popoverActionHover} focus:outline-none`;
+  const triggerClass = "vx-table__filter-trigger";
   return span(
-    { class: "relative inline-flex items-center ml-2" },
+    { class: "vx-table__filter" },
     xButton({
       icon: (): Element => (st.appliedValue.val ? filteredIcon() : filterIcon()),
       onClick: (e: MouseEvent) => {

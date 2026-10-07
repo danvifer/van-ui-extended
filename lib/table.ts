@@ -38,7 +38,7 @@ const descIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "vx-legacy-table__icon",
   },
   path({
     "stroke-linecap": "round",
@@ -54,7 +54,7 @@ const ascIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "vx-legacy-table__icon",
   },
   path({
     "stroke-linecap": "round",
@@ -70,7 +70,7 @@ const filteredIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "vx-legacy-table__icon",
   },
   path({
     "stroke-linecap": "round",
@@ -86,7 +86,7 @@ const filterIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "vx-legacy-table__icon",
   },
   path({
     "stroke-linecap": "round",
@@ -102,7 +102,7 @@ const actionsIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-6",
+    class: "vx-legacy-table__icon",
   },
   path({
     "stroke-linecap": "round",
@@ -118,7 +118,7 @@ const xIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-1 ",
+    class: "vx-legacy-table__icon vx-legacy-table__icon--sm",
   },
   path({
     "stroke-linecap": "round",
@@ -134,7 +134,7 @@ const checkIcon = svg(
     viewBox: "0 0 24 24",
     "stroke-width": "1.5",
     stroke: "currentColor",
-    class: "size-1",
+    class: "vx-legacy-table__icon vx-legacy-table__icon--sm",
   },
   path({
     "stroke-linecap": "round",
@@ -175,6 +175,7 @@ export interface Column {
   readonly order?: boolean;
   readonly filter?: FilterKind;
   readonly filterValues?: State<any>;
+  /** Classes of this column's body cells. Replaces the default `vx-legacy-table__td`. */
   readonly tdClass?: string;
   filterModal?: State<boolean>;
 }
@@ -216,13 +217,17 @@ export interface TableProps<
   readonly RowFormatterClass?: (item: T) => string;
   readonly condensed?: boolean;
   readonly actionsLabel?: string;
+  /** Classes of the wrapper `<div>`. Replaces the default `vx-legacy-table`. */
   readonly tableClass?: string;
+  /** Classes of the `<thead>`. Replaces the default `vx-legacy-table__head`. */
   readonly theadClass?: string;
+  /** Classes of the `<tbody>`. Replaces the default `vx-legacy-table__body`. */
   readonly tbodyClass?: string;
   readonly filterLabel?: string;
   readonly clearLabel?: string;
   readonly applyLabel?: string;
   readonly filterDescriptionLabel?: string;
+  /** Classes of every body row, before `RowFormatterClass`. Replaces the default `vx-legacy-table__row`. */
   readonly tbodyhoverClass?: string;
   readonly noDataLabel?: string;
   readonly filters?: Record<string, unknown>;
@@ -254,14 +259,14 @@ export const TableComponent = <
   RowFormatterClass = () => "",
   condensed = false,
   actionsLabel = "actions",
-  tableClass = "table-auto overflow-auto border-collapse text-sm w-full",
-  theadClass = "text-center bg-stone-900 border-t border-b border-stone-700 dark:border-stone-600 text-stone-400 dark:text-stone-200 uppercase w-full",
-  tbodyClass = "bg-stone-800",
+  tableClass = "vx-legacy-table",
+  theadClass = "vx-legacy-table__head",
+  tbodyClass = "vx-legacy-table__body",
   filterLabel = "Filter",
   clearLabel = "Clear",
   applyLabel = "Apply",
   filterDescriptionLabel = "Use the controls below to filter the data",
-  tbodyhoverClass = "hover:bg-stone-900",
+  tbodyhoverClass = "vx-legacy-table__row",
   noDataLabel = "No data",
   filters = {},
   funcOrder = () => {},
@@ -304,7 +309,7 @@ export const TableComponent = <
       div(
         { id: "", class: tableClass },
         table(
-          { id: "", class: "w-full" },
+          { id: "", class: "vx-legacy-table__table" },
           thead(
             { class: theadClass },
             tr(
@@ -312,11 +317,12 @@ export const TableComponent = <
               addMultiSelect
                 ? th(
                     {
-                      class: condensed ? "font-medium p-2" : "font-medium p-4",
+                      class: condensed
+                        ? "vx-legacy-table__th vx-legacy-table__th--condensed"
+                        : "vx-legacy-table__th",
                     },
                     input({
-                      class:
-                        "accent-teal-600 w-5 h-5 text-teal-600 accent-teal-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 ",
+                      class: "vx-legacy-table__checkbox",
                       type: "checkbox",
                     }),
                   )
@@ -329,12 +335,14 @@ export const TableComponent = <
                 return () =>
                   th(
                     {
-                      class: condensed ? "font-medium p-2" : "font-medium p-4",
+                      class: condensed
+                        ? "vx-legacy-table__th vx-legacy-table__th--condensed"
+                        : "vx-legacy-table__th",
                     },
                     col.order
                       ? span(
                           {
-                            class: "cursor-pointer flex",
+                            class: "vx-legacy-table__sort",
                             onclick: () => {
                               if (orderCol.val === col.key) {
                                 orderBy.val =
@@ -350,7 +358,7 @@ export const TableComponent = <
                           },
                           col.label as ChildDom,
                           span(
-                            { class: "ml-1" },
+                            { class: "vx-legacy-table__sort-icon" },
                             orderCol.val === col.key
                               ? orderBy.val === "asc"
                                 ? ascIcon
@@ -363,8 +371,9 @@ export const TableComponent = <
                       ? xButton({
                           id: "filter-father-" + index,
                           className:
-                            ((filters as any)[col.key] ? "underline " : "") +
-                            "uppercase cursor-pointer rounded-md mx-2 text-white hover:bg-gray-600 focus:outline-none ",
+                            ((filters as any)[col.key]
+                              ? "vx-legacy-table__filter-btn--active "
+                              : "") + "vx-legacy-table__filter-btn",
                           icon: (filters as any)[col.key]
                             ? filteredIcon
                             : filterIcon,
@@ -381,17 +390,16 @@ export const TableComponent = <
                             id: "filter-" + index,
                             class:
                               (col.filter === "select" ? "" : "") +
-                              "absolute z-100 rounded-md overflow-y-auto shadow-lg min-w-[150px] opacity-100 opacity-0 p-1 dark:bg-stone-800  border border-dimmed text-xs md:text-sm",
+                              "vx-legacy-table__popover",
                           },
-                          span({ class: "flex text-xl" }, filterLabel),
+                          span({ class: "vx-legacy-table__popover-title" }, filterLabel),
                           div(
-                            { class: "text-sm mb-2" },
+                            { class: "vx-legacy-table__popover-desc" },
                             filterDescriptionLabel,
                           ),
                           col.filter === "basic"
                             ? input({
-                                class:
-                                  "p-2 bg-stone-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800",
+                                class: "vx-legacy-table__input",
                                 type: "text",
                                 placeholder: col.label as string,
                                 value: filterValue,
@@ -408,23 +416,20 @@ export const TableComponent = <
                                   (uuid) =>
                                     label(
                                       {
-                                        class:
-                                          "flex items-center mb-3 space-x-3",
+                                        class: "vx-legacy-table__check-row",
                                       },
                                       input({
                                         type: "checkbox",
                                         name: "checked-demo",
                                         checked: () => uuid.value.val,
-                                        class:
-                                          "accent-orange-400 bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-yellow-500 checked:border-transparent focus:outline-none",
+                                        class: "vx-legacy-table__check",
                                         oninput: () => {
                                           uuid.value.val = !uuid.value.val;
                                         },
                                       }),
                                       span(
                                         {
-                                          class:
-                                            "font-normal text-gray-700 dark:text-white",
+                                          class: "vx-legacy-table__check-label",
                                         },
                                         uuid.uuid,
                                       ),
@@ -437,23 +442,20 @@ export const TableComponent = <
                                     (val) =>
                                       label(
                                         {
-                                          class:
-                                            "flex items-center mb-3 space-x-3",
+                                          class: "vx-legacy-table__check-row",
                                         },
                                         input({
                                           type: "checkbox",
                                           name: "checked-demo",
                                           checked: () => val.value.val,
-                                          class:
-                                            "accent-orange-400 bg-white bg-check h-6 w-6 border border-gray-300 rounded-md checked:bg-yellow-500 checked:border-transparent focus:outline-none",
+                                          class: "vx-legacy-table__check",
                                           oninput: () => {
                                             val.value.val = !val.value.val;
                                           },
                                         }),
                                         span(
                                           {
-                                            class:
-                                              "font-normal text-gray-700 dark:text-white",
+                                            class: "vx-legacy-table__check-label",
                                           },
                                           val.label,
                                         ),
@@ -464,8 +466,7 @@ export const TableComponent = <
                             { class: "" },
                             col.filter === "basic"
                               ? xButton({
-                                  className:
-                                    "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none left-0",
+                                  className: "vx-legacy-table__popover-btn",
                                   icon: xIcon,
                                   label: clearLabel,
                                   onClick: () => {
@@ -476,8 +477,7 @@ export const TableComponent = <
                                 })
                               : null,
                             xButton({
-                              className:
-                                "uppercase cursor-pointer rounded-md px-5 py-2 mt-2 text-white hover:bg-gray-600 focus:outline-none disabled:opacity-75 right-0",
+                              className: "vx-legacy-table__popover-btn",
                               icon: checkIcon,
                               label: applyLabel,
                               onClick: () => {
@@ -512,7 +512,9 @@ export const TableComponent = <
               actionsColumn.length > 0
                 ? th(
                     {
-                      class: condensed ? "font-medium p-2" : "font-medium p-4",
+                      class: condensed
+                        ? "vx-legacy-table__th vx-legacy-table__th--condensed"
+                        : "vx-legacy-table__th",
                     },
                     actionsLabel,
                   )
@@ -530,12 +532,10 @@ export const TableComponent = <
                 addMultiSelect
                   ? td(
                       {
-                        class:
-                          "text-center border-b border-stone-100 dark:border-stone-700 p-4",
+                        class: "vx-legacy-table__select-cell",
                       },
                       input({
-                        class:
-                          "accent-teal-600 w-5 h-5 text-teal-600 accent-teal-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 ",
+                        class: "vx-legacy-table__checkbox",
                         type: "checkbox",
                       }),
                     )
@@ -543,9 +543,7 @@ export const TableComponent = <
                 ...columns.map((col) =>
                   td(
                     {
-                      class:
-                        col.tdClass ||
-                        "text-center border-b border-stone-100 dark:border-stone-700 p-4 text-stone-500 dark:text-stone-400",
+                      class: col.tdClass || "vx-legacy-table__td",
                     },
                     item[col.key],
                   ),
@@ -554,20 +552,17 @@ export const TableComponent = <
                   ? () =>
                       td(
                         {
-                          class:
-                            "text-center border-b border-stone-100 dark:border-stone-700 p-4 text-stone-500 dark:text-stone-400",
+                          class: "vx-legacy-table__td",
                         },
                         !item.noActions
                           ? actionsColumn.length > 4
                             ? div(
                                 {
-                                  class:
-                                    "grid relative group justify-items-center",
+                                  class: "vx-legacy-table__menu-wrap",
                                 },
                                 xButton({
                                   id: "select-father-" + index,
-                                  className:
-                                    "uppercase cursor-pointer rounded-md px-2 py-2 mx-2 text-white hover:bg-gray-600 focus:outline-none ",
+                                  className: "vx-legacy-table__menu-btn",
                                   icon: actionsIcon,
                                   onClick: () =>
                                     (item.actions.val = !item.actions.val),
@@ -576,8 +571,7 @@ export const TableComponent = <
                                   ? div(
                                       {
                                         id: "",
-                                        class:
-                                          "inline absolute z-10 top-[-100%] left-[25%] translate-x-[-90%] rounded-md overflow-hidden shadow-lg min-w-[200px] opacity-100 opacity-0 duration-200 p-1 dark:bg-stone-800  border border-dimmed text-xs md:text-sm",
+                                        class: "vx-legacy-table__menu",
                                       },
                                       ...actionsColumn.map((action) =>
                                         (action.condition &&
@@ -585,8 +579,7 @@ export const TableComponent = <
                                         !action.condition
                                           ? div(
                                               {
-                                                class:
-                                                  "cursor-pointer hover:bg-white dark:hover:bg-stone-900 dark:bg-stone-800 hover:text-link px-2 py-2 rounded-md flex justify-start items-start gap-3 ",
+                                                class: "vx-legacy-table__menu-item",
                                                 onclick: () => {
                                                   action.func(item as T);
                                                   item.actions.val =
@@ -609,7 +602,7 @@ export const TableComponent = <
                               )
                             : div(
                                 {
-                                  class: "flex justify-end",
+                                  class: "vx-legacy-table__inline-actions",
                                 },
                                 ...actionsColumn.map((action) =>
                                   (action.condition &&
@@ -617,8 +610,7 @@ export const TableComponent = <
                                   !action.condition
                                     ? button(
                                         {
-                                          class:
-                                            " mt-1 mr-3 ml-3 py-2 px-3 md:text-sm text-white border border-dimmed enabled:hover:bg-stone-500 enabled:hover:border-brand enabled:hover:outline-none enabled:hover:ring-0  focus:border-brand focus:outline-none focus:ring-0 flex justify-between rounded font-semibold cursor-pointer border-none disabled:cursor-not-allowed disabled:opacity-75 ",
+                                          class: "vx-legacy-table__action",
                                           disabled: () =>
                                             action.disable
                                               ? !action.disable(item as T)
@@ -635,7 +627,7 @@ export const TableComponent = <
                                               ? span({ class: action.icon })
                                               : "",
                                         span(
-                                          { class: "ml-2" },
+                                          { class: "vx-legacy-table__action-label" },
                                           action.label as ChildDom,
                                         ),
                                       )
@@ -652,7 +644,7 @@ export const TableComponent = <
                   td(
                     {
                       colSpan: "12",
-                      class: "w-full text-center h-20 text-xl",
+                      class: "vx-legacy-table__empty",
                     },
                     noDataLabel,
                   ),
@@ -661,18 +653,16 @@ export const TableComponent = <
           ),
         ),
       ),
-    hr({ class: "border-stone-700" }),
+    hr({ class: "vx-legacy-table__rule" }),
     () =>
       pagination.selectFunc
         ? div(
             {
-              class:
-                "block flex items-center justify-between p-2 bg-white dark:bg-neutral-900",
+              class: "vx-legacy-table__pager",
             },
             button(
               {
-                class:
-                  "hover:bg-stone-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+                class: "vx-legacy-table__pager-btn",
                 disabled: pagination.page?.val === 1,
                 onclick: () => {
                   pagination.firstFunc?.();
@@ -684,8 +674,7 @@ export const TableComponent = <
             ),
             button(
               {
-                class:
-                  "hover:bg-stone-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+                class: "vx-legacy-table__pager-btn",
                 disabled: pagination.page?.val === 1,
                 onclick: () => {
                   pagination.prevFunc?.();
@@ -696,7 +685,7 @@ export const TableComponent = <
               pagination?.prevLabel,
             ),
             div(
-              { class: "mb-1 ml-5 text-gray-700 dark:text-gray-400" },
+              { class: "vx-legacy-table__pager-label" },
               (pagination?.pageLabel ?? "") + " ",
               b(
                 data.val.length > 0 ? (pagination.page?.val ?? 0) : 0,
@@ -706,8 +695,7 @@ export const TableComponent = <
             ),
             button(
               {
-                class:
-                  "hover:bg-stone-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+                class: "vx-legacy-table__pager-btn",
                 disabled: pagination.page?.val === pagination.pages?.val,
                 onclick: () => {
                   pagination.nextFunc?.();
@@ -719,8 +707,7 @@ export const TableComponent = <
             ),
             button(
               {
-                class:
-                  "hover:bg-stone-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+                class: "vx-legacy-table__pager-btn",
                 disabled: pagination.page?.val === pagination.pages?.val,
                 onclick: () => {
                   pagination.lastFunc?.();
@@ -732,15 +719,14 @@ export const TableComponent = <
               " >>",
             ),
             span(
-              { class: "text-gray-700 dark:text-gray-400" },
+              { class: "vx-legacy-table__pager-rows" },
               div(
                 { class: "" },
                 !editRows.val
                   ? [
                       button(
                         {
-                          class:
-                            "hover:bg-stone-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+                          class: "vx-legacy-table__pager-btn",
                           onclick: () => {
                             editRows.val = true;
                           },
@@ -751,6 +737,9 @@ export const TableComponent = <
                     ]
                   : [
                       input({
+                        // No rule of its own: the class opts it into base.css's reset,
+                        // which Tailwind's preflight used to give it.
+                        class: "vx-legacy-table__pager-input",
                         type: "number",
                         value: rows,
                         oninput: (e: Event) =>
@@ -758,8 +747,7 @@ export const TableComponent = <
                       }),
                       button(
                         {
-                          class:
-                            "hover:bg-stone-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75 disabled:cursor-not-allowed !important cursor-pointer",
+                          class: "vx-legacy-table__pager-btn",
                           onclick: () => {
                             editRows.val = false;
                             pagination?.selectFunc?.(rows);
@@ -768,11 +756,11 @@ export const TableComponent = <
                         "Save",
                       ),
                     ],
-                span({ class: "ml-1" }, pagination?.paginationLabel),
+                span({ class: "vx-legacy-table__pager-suffix" }, pagination?.paginationLabel),
               ),
             ),
             span(
-              { class: "ml-2 text-gray-700 dark:text-gray-400" },
+              { class: "vx-legacy-table__pager-count" },
               pagination?.elements?.val?.toString() ?? "",
               " ",
               pagination?.elementsLabel,

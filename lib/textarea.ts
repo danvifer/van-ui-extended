@@ -4,6 +4,7 @@ const { textarea } = van.tags
 export interface TextAreaOptions {
   readonly readOnly?: boolean
   readonly id?: string
+  /** Classes of the `<textarea>`. Replaces the default `vx-textarea`; pass `"vx-textarea extra"` to extend it. */
   readonly className?: string
   readonly placeholder?: string
 }
@@ -15,7 +16,7 @@ export const TextAreaComponent = (
 ): HTMLTextAreaElement => {
   const el = textarea({
     style: `width:100%;height:${height}px;resize:none;border:none;cursor:text;`,
-    class: options.className ?? "bg-zinc-950 p-3 text-white",
+    class: options.className ?? "vx-textarea",
     readOnly: options.readOnly ?? false,
     oninput: (e: Event) => {
       inputValue.val = (e.target as HTMLTextAreaElement).value

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "gridstack/dist/gridstack.min.css";
+@import "../lib/van-ui.css";
 
 .x-dashboard-item-title {
   font-size: 0.75rem;

@@ -27,6 +27,7 @@ export type {
   ColumnAlign,
   ColumnFilterKind,
   FilterMethod,
+  ThemeName,
   TableScope,
   TopScope,
   HeaderScope,

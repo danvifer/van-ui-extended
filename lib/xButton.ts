@@ -9,8 +9,10 @@ export interface ButtonProps {
   readonly icon?: string | ChildDom
   readonly onClick?: (ev: MouseEvent) => void
   readonly disabled?: boolean
+  /** Classes of the `<button>`. Replaces the default `vx-button`; pass `"vx-button my-extra"` to extend it. */
   readonly className?: string
   readonly labelClass?: string
+  /** Extra classes for the icon wrapper, appended after the fixed `vx-button__icon`. */
   readonly iconClass?: string
 }
 
@@ -20,10 +22,10 @@ export const xButton = ({
   icon,
   onClick,
   disabled = false,
-  className = "inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 mr-2 text-sm font-medium select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 enabled:cursor-pointer enabled:hover:bg-gray-600 enabled:hover:opacity-90 focus-visible:ring-stone-400 disabled:cursor-not-allowed disabled:opacity-50 ",
+  className = "vx-button",
   labelClass = "",
   id = "",
-  iconClass = "text-current",
+  iconClass = "",
 }: ButtonProps) => {
   const classes = className.trim()
 
@@ -33,7 +35,7 @@ export const xButton = ({
       : span(
           {
             class: [
-              "inline-flex items-center justify-center shrink-0",
+              "vx-button__icon",
               iconClass,
             ]
               .join(" ")

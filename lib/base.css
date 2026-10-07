@@ -1,0 +1,82 @@
+/*
+ * Shared base for every van-ui component.
+ *
+ * The components used to borrow these resets from Tailwind's preflight. They are scoped to
+ * elements carrying a `vx-*` class so the host page is left alone. Font family and
+ * line-height are inherited from the host on purpose.
+ *
+ * The reset lives in the `base` cascade layer — Tailwind's name for resets — because an
+ * unlayered rule beats every layered one whatever its specificity: unlayered, `margin: 0`
+ * here would cancel a host's `mt-4` or `space-y-3` on our elements. In a Tailwind host this
+ * block joins preflight under `components` and `utilities`, in either load order; elsewhere
+ * it is a layer of its own. Browser defaults lose to it either way, and the component rules,
+ * unlayered, override it.
+ */
+
+@layer base {
+  :where([class^="vx-"], [class*=" vx-"]),
+  :where([class^="vx-"], [class*=" vx-"])::before,
+  :where([class^="vx-"], [class*=" vx-"])::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+
+  :where(button, input, select, textarea):where([class^="vx-"], [class*=" vx-"]) {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+
+  :where(button):where([class^="vx-"], [class*=" vx-"]) {
+    appearance: button;
+  }
+
+  :where(input, textarea):where([class^="vx-"], [class*=" vx-"])::placeholder {
+    opacity: 1;
+    color: color-mix(in oklab, currentColor 50%, transparent);
+  }
+
+  :where(table):where([class^="vx-"], [class*=" vx-"]) {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+
+  :where(ul):where([class^="vx-"], [class*=" vx-"]) {
+    list-style: none;
+  }
+
+  :where(svg, img):where([class^="vx-"], [class*=" vx-"]) {
+    display: block;
+    vertical-align: middle;
+  }
+
+  :where(img):where([class^="vx-"], [class*=" vx-"]) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  :where(hr):where([class^="vx-"], [class*=" vx-"]) {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+
+  /* Visibility toggles use the native `hidden` attribute; no component rule may override it. */
+  :where([class^="vx-"], [class*=" vx-"])[hidden] {
+    display: none !important;
+  }
+}
+
+@keyframes vx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

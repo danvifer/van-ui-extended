@@ -1,0 +1,14 @@
+/* xDashboard. Only the render-error fallback is ours; grid-stack* classes belong to GridStack. */
+
+.vx-dashboard__error {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  line-height: calc(1 / 0.75);
+  color: oklch(0.586 0.253 17.585);
+  padding: 0.5rem;
+  text-align: center;
+}

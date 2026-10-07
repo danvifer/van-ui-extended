@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest";
 import van from "vanjs-core";
 import { computeWindow } from "./xTable.virtualScroll";
@@ -10,8 +11,9 @@ import {
   sortRows,
 } from "./xTable.helpers";
 import type { XColumn } from "./xTable.types";
-import { resolveTheme } from "./xTable.themes";
 import { xTable } from "./xTable";
+// Read as text rather than through node:fs, which would need @types/node.
+import xTableCss from "./xTable.css?raw";
 
 interface Sensor {
   readonly id: number;
@@ -253,9 +255,9 @@ describe("xTable / DOM render", () => {
 
     const bodyRows = document.body.querySelectorAll("tbody tr");
     expect(bodyRows[3].className).toContain("warn-4");
-    // The hover class survives alongside it — a caller tinting rows must not silently
-    // disable the table's own row feedback.
-    expect(bodyRows[3].className).toContain("hover:");
+    // The row class (which carries the hover style) survives alongside it — a caller tinting
+    // rows must not silently disable the table's own row feedback.
+    expect(bodyRows[3].className).toContain("vx-table__row");
     // An empty return adds nothing, not a stray separator.
     expect(bodyRows[0].className).not.toContain("warn-");
     expect(bodyRows[0].className.trim()).toBe(bodyRows[0].className);
@@ -700,7 +702,7 @@ describe("xTable / filter", () => {
       }),
     );
 
-    const viewport = document.body.querySelector<HTMLDivElement>("div.overflow-auto");
+    const viewport = document.body.querySelector<HTMLDivElement>(".vx-table__viewport");
     if (!viewport) throw new Error("virtual scroll viewport missing");
 
     // Initial render: first data row should be S0
@@ -728,8 +730,7 @@ describe("xTable / filter", () => {
       }),
     );
     // pagination footer renders an empty span when hidden
-    const footer = document.body.querySelector("div.flex.items-center.justify-between");
-    expect(footer).toBeNull();
+    expect(document.body.querySelector(".vx-table__footer")).toBeNull();
   });
 
   it("slots.bodyCell overrides default cell render for ALL columns", () => {
@@ -920,7 +921,7 @@ describe("xTable / filter", () => {
     const fourOption = Array.from(document.body.querySelectorAll("div")).find(
       (d) =>
         d.textContent?.trim() === "4" &&
-        d.getAttribute("class")?.includes("cursor-pointer"),
+        d.classList.contains("vx-table__rpp-option"),
     );
     if (!fourOption) throw new Error("option '4' missing from open dropdown");
 
@@ -942,7 +943,7 @@ describe("xTable / filter", () => {
     );
     const svgEl = document.body.querySelector("tbody svg");
     expect(svgEl).not.toBeNull();
-    expect(svgEl?.getAttribute("class") ?? "").toContain("animate-spin");
+    expect(svgEl?.getAttribute("class") ?? "").toContain("vx-table__spinner");
   });
 
   it("server-side — rowsNumber without onRequest still bypasses pipeline silently", () => {
@@ -1059,7 +1060,7 @@ describe("xTable / filter", () => {
     expect(document.activeElement).toBe(firstInput);
   });
 
-  it("theme 'material' — applies material classes on key surfaces", () => {
+  it("theme 'material' — marks the wrapper with data-vx-theme", () => {
     const rows = van.state(sampleSensors);
     van.add(
       document.body,
@@ -1069,18 +1070,19 @@ describe("xTable / filter", () => {
         theme: "material",
       }),
     );
-    const thead = document.body.querySelector("thead");
-    expect(thead?.className).toContain("bg-white");
-    expect(thead?.className).toContain("text-slate-600");
-    const tbody = document.body.querySelector("tbody");
-    expect(tbody?.className).toContain("bg-white");
+    const wrapper = document.body.querySelector<HTMLElement>("div.xtable");
+    expect(wrapper?.getAttribute("data-vx-theme")).toBe("material");
+    // Colors are tokens in CSS, so the surfaces carry the same classes in every theme.
+    expect(wrapper?.classList.contains("vx-table")).toBe(true);
+    expect(document.body.querySelector("thead")?.className).toContain("vx-table__head");
+    expect(document.body.querySelector("tbody")?.className).toContain("vx-table__body");
   });
 
   it("theme defaults to 'dark' when not provided", () => {
     const rows = van.state(sampleSensors);
     van.add(document.body, xTable({ rows, columns: sensorCols }));
-    const thead = document.body.querySelector("thead");
-    expect(thead?.className).toContain("bg-stone-900");
+    const wrapper = document.body.querySelector<HTMLElement>("div.xtable");
+    expect(wrapper?.getAttribute("data-vx-theme")).toBe("dark");
   });
 
   it("primaryColor — pins the --xtable-primary CSS variable on the wrapper", () => {
@@ -1110,14 +1112,43 @@ describe("xTable / filter", () => {
     expect(style).not.toContain("--xtable-primary");
   });
 
-  it.each(["dark", "material"] as const)(
-    "%s theme — the focus ring and the selection accent follow --xtable-primary",
-    (name) => {
-      const theme = resolveTheme(name);
-      expect(theme.popoverInput).toContain("var(--xtable-primary");
-      expect(theme.selectAccent).toContain("var(--xtable-primary");
-    },
-  );
+  // jsdom does no cascade for custom properties through @media/:where, so the theme contract
+  // is checked on the stylesheet text: the declaration block that starts at `selector`.
+  const cssBlock = (selector: string): string => {
+    const at = xTableCss.indexOf(`\n${selector} {`);
+    return at < 0 ? "" : xTableCss.slice(at, xTableCss.indexOf("}", at));
+  };
+  const DARK_TOKENS = ":where(.vx-table)";
+  const MATERIAL_TOKENS = ':where(.vx-table[data-vx-theme="material"])';
+
+  it.each([
+    ["dark", DARK_TOKENS],
+    ["material", MATERIAL_TOKENS],
+  ] as const)("%s theme — declares the ring and accent fallbacks", (_name, selector) => {
+    expect(cssBlock(selector)).toMatch(/--vx-table-ring:\s*\S/);
+    expect(cssBlock(selector)).toMatch(/--vx-table-accent:\s*\S/);
+  });
+
+  it("the focus ring and the selection accent follow --xtable-primary before the theme tokens", () => {
+    expect(cssBlock(".vx-table__field:focus")).toContain(
+      "var(--xtable-primary, var(--vx-table-ring))",
+    );
+    expect(cssBlock('[data-vx-theme="material"] .vx-table__field:focus')).toContain(
+      "var(--xtable-primary, var(--vx-table-ring))",
+    );
+    expect(cssBlock(".vx-table__checkbox")).toContain(
+      "var(--xtable-primary, var(--vx-table-accent))",
+    );
+  });
+
+  it("the material tokens come after the dark ones, which nothing re-declares below", () => {
+    // Both blocks target the same element at specificity 0, so source order is the contract.
+    const dark = xTableCss.indexOf(`\n${DARK_TOKENS} {`);
+    const material = xTableCss.indexOf(`\n${MATERIAL_TOKENS} {`);
+    expect(dark).toBeGreaterThan(-1);
+    expect(material).toBeGreaterThan(dark);
+    expect(xTableCss.indexOf(`\n${DARK_TOKENS} {`, material)).toBe(-1);
+  });
 
   it("mutation guard — frozen columns survive the popover lifecycle", async () => {
     const rows = van.state(sampleSensors);
@@ -1207,13 +1238,13 @@ describe("xTable / per-column filter row", () => {
       }),
     );
 
-    const filterRow = document.body.querySelectorAll("thead tr")[1];
-    expect(filterRow.className).toContain("hidden");
+    const filterRow = document.body.querySelectorAll<HTMLElement>("thead tr")[1];
+    expect(filterRow.hidden).toBe(true);
 
     open.val = true;
     await Promise.resolve();
     await Promise.resolve();
-    expect(filterRow.className).not.toContain("hidden");
+    expect(filterRow.hidden).toBe(false);
   });
 
   it("filterCellByKey — selection column adds a leading empty filter cell", () => {
@@ -1240,4 +1271,141 @@ describe("xTable / per-column filter row", () => {
     // sensor filter now sits in the second cell
     expect(cells[1].textContent).toBe("x");
   });
+});
+
+describe("xTable / class contract", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  const mount = (props: Partial<Parameters<typeof xTable<Sensor>>[0]> = {}) => {
+    van.add(
+      document.body,
+      xTable<Sensor>({ rows: van.state(sampleSensors), columns: sensorCols, rowKey: "id", ...props }),
+    );
+    return document.body.querySelector<HTMLElement>("div.xtable")!;
+  };
+
+  it("the wrapper carries xtable + vx-table and no modifier by default", () => {
+    const wrapper = mount();
+    expect([...wrapper.classList]).toEqual(["xtable", "vx-table"]);
+  });
+
+  it("dense, flat, bordered and square are modifiers on the wrapper", () => {
+    const wrapper = mount({ dense: true, flat: true, bordered: true, square: true });
+    expect([...wrapper.classList]).toEqual([
+      "xtable",
+      "vx-table",
+      "vx-table--bordered",
+      "vx-table--square",
+      "vx-table--flat",
+      "vx-table--dense",
+    ]);
+  });
+
+  it("cardClass, tableClass and tableHeaderClass are appended to the defaults", () => {
+    const wrapper = mount({ cardClass: "my-card", tableClass: "my-table", tableHeaderClass: "my-head" });
+    expect(wrapper.className).toBe("xtable vx-table my-card");
+    expect(wrapper.querySelector("table")?.className).toBe("vx-table__table my-table");
+    expect(wrapper.querySelector("thead")?.className).toBe("vx-table__head my-head");
+  });
+
+  it("scrollClass defaults to vx-table__scroll and replaces it when given", () => {
+    expect(mount().querySelector("table")?.parentElement?.className).toBe("vx-table__scroll");
+    document.body.innerHTML = "";
+    expect(mount({ scrollClass: "my-scroll" }).querySelector("table")?.parentElement?.className).toBe(
+      "my-scroll",
+    );
+  });
+
+  it("scrollClass is ignored under virtualScroll, whose viewport is the scroll region", () => {
+    const wrapper = mount({ virtualScroll: true, scrollClass: "my-scroll" });
+    expect(wrapper.querySelector(".my-scroll")).toBeNull();
+    expect(wrapper.querySelector("table")?.parentElement?.className).toBe("vx-table__viewport");
+  });
+
+  it("column align picks a text-align modifier on header and body cells", () => {
+    const wrapper = mount();
+    const headers = [...wrapper.querySelectorAll("thead th")].map((th) => th.className);
+    expect(headers[0]).toContain("vx-table__cell--left");
+    expect(headers[1]).toContain("vx-table__cell--right");
+    expect(wrapper.querySelector("tbody td:nth-child(2)")?.className).toContain("vx-table__cell--right");
+  });
+
+  it("headerClass and bodyClass are appended to their cells", () => {
+    const wrapper = mount({
+      columns: [{ key: "sensor", label: "Sensor", headerClass: "my-th", bodyClass: "my-td" }],
+    });
+    expect(wrapper.querySelector("thead th")?.className.split(" ")).toContain("my-th");
+    expect(wrapper.querySelector("tbody td")?.className.split(" ")).toContain("my-td");
+  });
+
+  it("body cells do not wrap unless wrapCells is set, and header cells never carry the flag", () => {
+    const nowrap = "vx-table__cell--nowrap";
+    const plain = mount();
+    expect(plain.querySelector("tbody td")?.classList.contains(nowrap)).toBe(true);
+    expect(plain.querySelector("thead th")?.classList.contains(nowrap)).toBe(false);
+    document.body.innerHTML = "";
+    expect(mount({ wrapCells: true }).querySelector("tbody td")?.classList.contains(nowrap)).toBe(false);
+  });
+
+  it("selection and expander cells use their own classes, with no row rule", () => {
+    const wrapper = mount({
+      selection: "multiple",
+      slots: { expandedRow: () => "detail" },
+    });
+    const headRow = wrapper.querySelector("thead tr")!;
+    expect(headRow.children[0].className).toBe("vx-table__select-cell");
+    expect(headRow.children[1].className).toBe("vx-table__expander-cell");
+    expect(wrapper.querySelector("tbody tr")?.children[0].className).toBe("vx-table__select-cell");
+  });
+
+  it("the full-width filterRow is never hidden", () => {
+    const wrapper = mount({ filterRow: () => "controls" });
+    const filterRow = wrapper.querySelectorAll<HTMLElement>("thead tr")[1];
+    expect(filterRow.hidden).toBe(false);
+    expect(filterRow.firstElementChild?.className).toBe("vx-table__filter-content");
+  });
+
+  it.each(["dark", "material"] as const)(
+    "%s theme — every vx-table class the render emits is styled by xTable.css",
+    async (theme) => {
+      const wrapper = mount({
+        theme,
+        bordered: true,
+        selection: "multiple",
+        selected: van.state([sampleSensors[0]]),
+        expanded: van.state([1]),
+        slots: { expandedRow: () => "detail", topLeft: () => "l", bottom: () => "b" },
+        columns: [
+          { key: "sensor", label: "Sensor", sortable: true, columnFilter: "basic" },
+          { key: "unit", label: "Unit", columnFilter: "select" },
+        ],
+        sortBy: van.state("sensor"),
+        filterCellByKey: { sensor: () => "f" },
+        filterCellsVisible: () => false,
+        pagination: van.state({ page: 1, rowsPerPage: 2 }),
+      });
+      for (const trigger of wrapper.querySelectorAll<HTMLButtonElement>("thead th button")) trigger.click();
+      const rpp = [...wrapper.querySelectorAll<HTMLButtonElement>("button")].find((b) =>
+        b.textContent?.trim().startsWith("2"),
+      );
+      rpp?.click();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const emitted = new Set(
+        [...wrapper.querySelectorAll("[class]"), wrapper].flatMap((el) =>
+          [...el.classList].filter((c) => c.startsWith("vx-table")),
+        ),
+      );
+      expect(emitted.size).toBeGreaterThan(20);
+      // Whole class tokens from real selectors: no prefix matches, nothing from comments.
+      const defined = new Set(
+        [...xTableCss.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/\.(vx-table[\w-]*)/g)].map((m) => m[1]),
+      );
+      const unstyled = [...emitted].filter((c) => !defined.has(c));
+      expect(unstyled).toEqual([]);
+    },
+  );
 });

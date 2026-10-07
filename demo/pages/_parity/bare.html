@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parity — defaults without Tailwind</title>
+    <!-- A host app's own base: the same font stack and line-height Tailwind's preflight sets. -->
+    <style>
+      html { font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; line-height: 1.5; }
+      body { margin: 0; }
+      /* Host styling the demo gives GridStack cards (demo/styles.css), not library CSS. */
+      .x-dashboard-item-title { font-size: 0.75rem; font-weight: 600; color: rgb(71 85 105); padding: 0.25rem 0.5rem; border-bottom: 1px solid rgb(226 232 240); background: rgb(248 250 252); }
+      .grid-stack-item-content { background: #ffffff; border: 1px solid rgb(226 232 240); border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column; }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="./bare.ts"></script>
+  </body>
+</html>

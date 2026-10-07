@@ -41,15 +41,15 @@ interface XTableProps<T> {
   rows: State<T[]>                 // required
   columns: readonly XColumn<T>[]   // required
   rowKey?: RowKeyAccessor<T>       // default: "id" (cast). MUST yield string|number; uniqueness is the caller's responsibility
-  dense?: boolean                  // default false  → cell padding p-2 vs p-4
-  flat?: boolean                   // default false  → drop the wrapper shadow
-  bordered?: boolean               // default false  → adds the bordered class
-  square?: boolean                 // default false  → drops rounded-md
+  dense?: boolean                  // default false  → .vx-table--dense (half the cell padding)
+  flat?: boolean                   // default false  → .vx-table--flat (no wrapper shadow)
+  bordered?: boolean               // default false  → .vx-table--bordered
+  square?: boolean                 // default false  → .vx-table--square (no rounded corners)
   separator?: Separator            // accepted but cosmetic; layout never branches on it
-  wrapCells?: boolean              // default false  → toggles whitespace-nowrap on body cells
-  tableClass?: string              // appended to <table>
-  tableHeaderClass?: string        // appended to <thead>
-  cardClass?: string               // appended to outer wrapper
+  wrapCells?: boolean              // default false  → body cells drop .vx-table__cell--nowrap
+  tableClass?: string              // extra classes, appended to <table>
+  tableHeaderClass?: string        // extra classes, appended to <thead>
+  cardClass?: string               // extra classes, appended to the outer wrapper
 
   // Sort
   sortBy?: State<string | null>
@@ -118,8 +118,8 @@ interface XColumn<T> {
   sortable?: boolean                   // header becomes clickable
   sort?: (a, b, rowA, rowB) => number  // custom comparator; values are AFTER `value` derivation
   align?: "left" | "center" | "right"  // default "left"
-  headerClass?: string                 // extra Tailwind on <th>
-  bodyClass?: string                   // extra Tailwind on <td>
+  headerClass?: string                 // extra classes on <th>
+  bodyClass?: string                   // extra classes on <td>
   columnFilter?: "basic" | "select"    // opt-in per-column popover
 }
 ```
@@ -175,18 +175,28 @@ Per-column overrides (more specific, win over the fallback):
 
 ## Theming
 
-Two built-in themes: `"dark"` (default) and `"material"`. In both, the selection accent and
-the focus rings bind to `var(--xtable-primary, …)`; the fallback is the theme's own accent
-(`#1976d2` in material, Tailwind's teal in dark — dark hardcoded that teal until 0.1.11 and
-ignored the variable). Two ways to override:
+Styles come from the library stylesheet (`import "van-ui-extended/style.css"`); no Tailwind
+needed. Two built-in themes, `"dark"` (default) and `"material"`: the `theme` prop writes
+`data-vx-theme` on the `.vx-table` wrapper, and each theme is a set of `--vx-table-*`
+custom properties declared at the start of the xTable section of `dist/van-ui.css`
+(source: `lib/xTable/xTable.css`).
 
-```ts
-// 1) Per instance
-xTable({ rows, columns, theme: "material", primaryColor: "#7c3aed" })
-
-// 2) Globally via CSS
-// :root { --xtable-primary: #7c3aed; }
-```
+- **Brand color.** The selection accent and the focus rings read `var(--xtable-primary, …)`,
+  falling back to the theme's own accent (`#1976d2` in material, teal in dark):
+  ```ts
+  xTable({ rows, columns, theme: "material", primaryColor: "#7c3aed" }) // per instance
+  // :root { --xtable-primary: #7c3aed; }                               // globally
+  ```
+- **Other colors.** Override the `--vx-table-*` tokens on the wrapper, not on `:root` (the
+  wrapper declares its own values, which beat inherited ones):
+  ```css
+  .vx-table { --vx-table-head-bg: #0f172a; }
+  .vx-table[data-vx-theme="material"] { --vx-table-row-hover-bg: #eef2ff; }
+  ```
+- **Anything else.** Every element has a `vx-table__*` class (`__head`, `__row`, `__cell`,
+  `__footer`, `__page-btn`, `__popover`, …). Material's non-color tweaks are
+  `[data-vx-theme="material"] .vx-table__*` rules, so overriding those needs the same
+  specificity.
 
 ## Confirmed behavior (visually verified)
 
@@ -200,8 +210,8 @@ xTable({ rows, columns, theme: "material", primaryColor: "#7c3aed" })
 | Virtual scroll      | 10k rows → ≤ `2 × sliceSize + 2` trs in DOM. Scroll updates slice based on `scrollTop / itemSize`. |
 | Server-side         | `onRequest` fires on pagination/filter changes AFTER the initial run; receives `{ pagination, filter, getCellValue }`. Internal sort/filter/paginate bypassed. |
 | Expansion           | Setting `slots.expandedRow` adds a leftmost chevron column; chevron click toggles `rowKey` in `expanded.val`. Expanded row spans every visible column. |
-| Primary color       | `primaryColor` writes inline `style="--xtable-primary: <color>"` on the `.xtable` wrapper. |
-| Loading             | Swaps tbody to a single full-width row. Default is `animate-spin` SVG; `slots.loading` overrides. |
+| Primary color       | `primaryColor` writes inline `style="--xtable-primary: <color>"` on the wrapper (`.vx-table`, also `.xtable`). |
+| Loading             | Swaps tbody to a single full-width row. Default is a spinning SVG (`.vx-table__spinner`); `slots.loading` overrides. |
 | Outside click       | A single document-level click delegate closes any open popovers (column filter + rows-per-page). |
 
 ## Cookbook
@@ -376,8 +386,9 @@ xTable({
 - **Outside-click delegate is global.** Mount/unmount cleanup is best-effort via
   `MutationObserver`; in environments without it, callbacks accumulate (bounded leak — by
   design).
-- **Tailwind v4 is required.** Without it, the table renders unstyled. See
-  [../AGENTS.md](../AGENTS.md) for the content-glob snippet.
+- **The library stylesheet is required** (`import "van-ui-extended/style.css"`). Without it
+  the table renders unstyled. The examples in this file use Tailwind classes for the
+  consumer's own markup only; the table itself does not need Tailwind.
 - **`columns` is read once at construction.** Adding or removing columns at runtime
   requires re-creating the table (re-call `xTable(...)`).
 - **`expanded` / `selected` arrays grow with use.** They are caller-owned; if you persist

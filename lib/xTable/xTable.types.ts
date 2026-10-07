@@ -1,7 +1,10 @@
 import type { State, ChildDom } from "vanjs-core";
-import type { ThemeName } from "./xTable.themes";
 
-export type { ThemeName } from "./xTable.themes";
+/**
+ * Built-in visual themes. The name lands on the wrapper as `data-vx-theme`; the colors
+ * come from the `--vx-table-*` tokens in `xTable.css`.
+ */
+export type ThemeName = "dark" | "material";
 
 /**
  * Stable identity used by xTable for selection and expansion bookkeeping.
@@ -71,9 +74,9 @@ export interface XColumn<T> {
   readonly sort?: (a: unknown, b: unknown, rowA: T, rowB: T) => number;
   /** Cell text alignment. Default `"left"`. */
   readonly align?: ColumnAlign;
-  /** Extra Tailwind classes appended to the header cell `<th>`. */
+  /** Extra classes appended to the header cell `<th>`. */
   readonly headerClass?: string;
-  /** Extra Tailwind classes appended to body cells `<td>`. */
+  /** Extra classes appended to body cells `<td>`. */
   readonly bodyClass?: string;
   /** Opt-in per-column popover filter. */
   readonly columnFilter?: ColumnFilterKind;
@@ -255,25 +258,31 @@ export interface XTableProps<T> {
   readonly square?: boolean;
   readonly separator?: Separator;
   readonly wrapCells?: boolean;
+  /** Extra classes appended to the inner `<table>`. */
   readonly tableClass?: string;
+  /** Extra classes appended to `<thead>`. */
   readonly tableHeaderClass?: string;
+  /** Extra classes appended to the outer wrapper. */
   readonly cardClass?: string;
   /**
-   * Class for the inner scroll region (top slot + table + bottom slot). The
+   * Classes for the inner scroll region (top slot + table + bottom slot). The
    * pagination footer renders as a sibling OUTSIDE this element, so it stays a
-   * fixed bar at the bottom of the wrapper. Defaults to
-   * `"flex-1 min-h-0 overflow-auto"`.
+   * fixed bar at the bottom of the wrapper. Defaults to `"vx-table__scroll"`.
+   *
+   * Replaces the default as a whole: pass `"vx-table__scroll my-extra"` to extend it.
+   * Ignored under `virtualScroll`, where the table's own viewport is the scroll region.
    */
   readonly scrollClass?: string;
   /**
    * Extra classes for a body `<tr>`, derived from its row. Runs once per row per body
    * render; return `""` for no extra class.
    *
-   * The theme's `rowHover` is applied alongside it, not replaced. A hover background set on
-   * the `<tr>` paints BEHIND the cells, so a caller tinting the row opaquely will cover it —
-   * tint the cells instead (`"[&>td]:bg-…/10"`) and the hover shows through.
+   * The row's own hover style is applied alongside it, not replaced. A hover background set
+   * on the `<tr>` paints BEHIND the cells, so a caller tinting the row opaquely will cover it —
+   * tint the cells instead (give your class a `td` rule: `.is-critical > td { … }`) and the
+   * hover shows through.
    *
-   * @example rowClass: (row) => (row.severity === "critical" ? "[&>td]:bg-red-500/10" : "")
+   * @example rowClass: (row) => (row.severity === "critical" ? "is-critical" : "")
    */
   readonly rowClass?: (row: T, rowKey: RowKey) => string;
 
@@ -367,12 +376,20 @@ export interface XTableProps<T> {
   readonly virtualScrollStickySizeEnd?: number;
 
   // Theming
-  /** Visual theme. Defaults to `"dark"` to preserve the original look. */
+  /**
+   * Visual theme. Defaults to `"dark"` to preserve the original look.
+   *
+   * It is written to the wrapper as `data-vx-theme`, and every theme color is a
+   * `--vx-table-*` token declared on that wrapper. To retheme, override the tokens on
+   * `.vx-table` (or on `.vx-table[data-vx-theme="material"]` for material), not on
+   * `:root`: the wrapper's own declaration beats an inherited one.
+   */
   readonly theme?: ThemeName;
   /**
    * CSS color to bind to `--xtable-primary` on this instance's wrapper.
-   * Overrides any inherited value. The Material theme uses this variable
-   * for selection accents and focus rings.
+   * Overrides any inherited value. Both themes read this variable for the
+   * focus ring and the selection checkbox accent, and fall back to their own
+   * `--vx-table-ring` / `--vx-table-accent` tokens when it is not set.
    *
    * @example
    *   xTable({ rows, columns, theme: "material", primaryColor: "#7c3aed" })
