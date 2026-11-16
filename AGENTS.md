@@ -30,7 +30,7 @@ van.add(document.body, xTable({
 | ------------- | ------------------------------------------------------------------------ |
 | `vanjs-core` (≥1.5.3, peer)  | All components are VanJS factories. Caller-owned `State<T>` everywhere. |
 | `van-ui-extended/style.css`  | Components emit `vx-*` classes styled by this stylesheet. Import it once; without it the UI renders unstyled. |
-| Modern browser, ESM          | Bundle target is `esnext`. No SSR — some helpers touch `document` at construction (e.g. xTable's outside-click delegate). |
+| Modern browser, ESM          | Bundle target is `esnext`. No SSR rendering — components touch `document` when called (e.g. xTable's outside-click delegate). Importing the package without a DOM is safe. |
 
 ### Stylesheet
 
@@ -87,6 +87,10 @@ TypeScript types are the source of truth.
 
 - TypeScript strict mode. Public APIs (exported functions, factories) must have explicit
   parameter and return types. Internal helpers can rely on inference.
+- ESM as Node resolves it (`moduleResolution: NodeNext`): relative imports name their file
+  (`./xButton.js`, `../cultures/index.js`), and `tsc` rejects extensionless ones.
+- No DOM at module scope: build nodes inside the component call (icons are factories, as in
+  `xTable/xTable.icons.ts`). `lib/index.test.ts` imports the package without a DOM.
 - File organisation: many small files (< 400 LOC typical). xTable is split into
   `xTable.ts` + `xTable.<concern>.ts` (filter, pagination, selection, expansion,
   helpers, body, icons, virtualScroll, outsideClick, types).

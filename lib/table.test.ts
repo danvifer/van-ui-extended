@@ -89,3 +89,23 @@ describe("TableComponent (legacy) classes", () => {
     )
   })
 })
+
+describe("TableComponent (legacy) icons", () => {
+  beforeEach(() => {
+    document.body.innerHTML = ""
+  })
+
+  it("keeps the sort icon of every sorted table when several are mounted", async () => {
+    const sortable = { columns: [{ key: "name", label: "Name", order: true }] }
+    const sortByName = async (host: HTMLElement) => {
+      host.querySelector<HTMLElement>(".vx-legacy-table__sort")?.click()
+      await tick()
+    }
+    const first = mount(sortable)
+    const second = mount(sortable)
+    await sortByName(first)
+    await sortByName(second)
+    expect(first.querySelector(".vx-legacy-table__sort-icon svg")).not.toBeNull()
+    expect(second.querySelector(".vx-legacy-table__sort-icon svg")).not.toBeNull()
+  })
+})

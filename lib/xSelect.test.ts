@@ -106,3 +106,22 @@ describe("xSelect / Enter with a search query", () => {
     expect(s.calls).toEqual(["CWE-200"]);
   });
 });
+
+describe("xSelect / icons", () => {
+  beforeEach(() => document.body.replaceChildren());
+
+  it("gives every clearable multi-select its own clear icon", () => {
+    const mount = () => {
+      const root = xSelect(
+        { multiple: true, clearable: true },
+        xOption({ value: "a", text: "a", data: "a", selected: true }),
+      );
+      document.body.append(root);
+      return root;
+    };
+    const first = mount();
+    const second = mount();
+    expect(first.querySelector(".vx-select__clear svg")).not.toBeNull();
+    expect(second.querySelector(".vx-select__clear svg")).not.toBeNull();
+  });
+});
