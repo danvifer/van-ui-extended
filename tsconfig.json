@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",               // Compila para navegadores modernos
-    "module": "ESNext",               // Usa módulos ES
+    // WHY: NodeNext resolves like the consumers' Node/TS ESM loaders do, so a relative import
+    // without its file extension fails here instead of in the published dist (issue #22).
+    "module": "NodeNext",
     "allowJs": true,
-    "moduleResolution": "node",       // Resolución de módulos al estilo Node.js
+    "moduleResolution": "NodeNext",
     "declaration": true,              // Genera definiciones de tipos
     "emitDeclarationOnly": false,     // Emite tanto JS como .d.ts
     "outDir": "./dist",               // Carpeta de salida

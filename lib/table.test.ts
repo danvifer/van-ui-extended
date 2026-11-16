@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import van, { type ChildDom } from "vanjs-core"
-import { TableComponent, type TableProps } from "./table"
+import { TableComponent, type TableProps } from "./table.js"
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -87,5 +87,25 @@ describe("TableComponent (legacy) classes", () => {
     expect(host.querySelector("thead button")?.className).toBe(
       "vx-legacy-table__filter-btn--active vx-legacy-table__filter-btn",
     )
+  })
+})
+
+describe("TableComponent (legacy) icons", () => {
+  beforeEach(() => {
+    document.body.innerHTML = ""
+  })
+
+  it("keeps the sort icon of every sorted table when several are mounted", async () => {
+    const sortable = { columns: [{ key: "name", label: "Name", order: true }] }
+    const sortByName = async (host: HTMLElement) => {
+      host.querySelector<HTMLElement>(".vx-legacy-table__sort")?.click()
+      await tick()
+    }
+    const first = mount(sortable)
+    const second = mount(sortable)
+    await sortByName(first)
+    await sortByName(second)
+    expect(first.querySelector(".vx-legacy-table__sort-icon svg")).not.toBeNull()
+    expect(second.querySelector(".vx-legacy-table__sort-icon svg")).not.toBeNull()
   })
 })

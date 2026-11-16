@@ -3,7 +3,10 @@ import van, { ChildDom } from "vanjs-core"
 const { div, input, ul, li, button, span, label } = van.tags
 const { path, svg } = van.tags("http://www.w3.org/2000/svg")
 
-const chevronDownIcon = svg(
+// WHY: icons are factories, not module-level nodes. A shared node can only be mounted once, so
+// the clear icon vanished from every other select, and building nodes at import time made the
+// module throw without a DOM (issue #23).
+const chevronDownIcon = (): Element => svg(
   {
     fill: "none",
     viewBox: "0 0 24 24",
@@ -18,7 +21,7 @@ const chevronDownIcon = svg(
   })
 )
 
-const chevronUpIcon = svg(
+const chevronUpIcon = (): Element => svg(
   {
     fill: "none",
     viewBox: "0 0 24 24",
@@ -33,7 +36,7 @@ const chevronUpIcon = svg(
   })
 )
 
-const xMarkIcon = svg(
+const xMarkIcon = (): Element => svg(
   {
     fill: "none",
     viewBox: "0 0 24 24",
@@ -136,9 +139,9 @@ export const xSelect = (
     search_ph = "Search...",
     search_autofocus = false,
 
-    iconDown = chevronDownIcon,
+    iconDown = chevronDownIcon(),
     iconDownClass = "",
-    iconCollapse = chevronUpIcon,
+    iconCollapse = chevronUpIcon(),
     iconCollapseClass = "",
 
     disabled = false,
@@ -490,7 +493,7 @@ export const xSelect = (
             },
             "aria-label": "Clear selection",
           },
-          xMarkIcon
+          xMarkIcon()
         )
       : null
   const readOnly = !searchable ? "vx-select__control--readonly " : ""

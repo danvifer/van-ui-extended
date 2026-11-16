@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest";
 import van from "vanjs-core";
-import { computeWindow } from "./xTable.virtualScroll";
+import { computeWindow } from "./xTable.virtualScroll.js";
 import {
   defaultCompare,
   filterRows,
@@ -9,9 +9,9 @@ import {
   paginateRows,
   resolveRowKey,
   sortRows,
-} from "./xTable.helpers";
-import type { XColumn } from "./xTable.types";
-import { xTable } from "./xTable";
+} from "./xTable.helpers.js";
+import type { XColumn } from "./xTable.types.js";
+import { xTable } from "./xTable.js";
 // Read as text rather than through node:fs, which would need @types/node.
 import xTableCss from "./xTable.css?raw";
 

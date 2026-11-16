@@ -1,5 +1,5 @@
 import van, { State, ChildDom } from "vanjs-core";
-import { xButton } from "./xButton";
+import { xButton } from "./xButton.js";
 
 export interface FilterCheck {
   uuid: string;
@@ -31,7 +31,10 @@ const { svg, path } = van.tags("http://www.w3.org/2000/svg");
 /* ────────────────────────────────────────────────────────────────────────
  * Icons
  * ──────────────────────────────────────────────────────────────────────── */
-const descIcon = svg(
+// WHY: icons are factories, not module-level nodes. A DOM node has a single parent, so a shared
+// icon moved out of every other table showing it, and building nodes at import time made the
+// module throw without a DOM (issue #23). Same approach as xTable.icons.ts.
+const descIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -47,7 +50,7 @@ const descIcon = svg(
   }),
 );
 
-const ascIcon = svg(
+const ascIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -63,7 +66,7 @@ const ascIcon = svg(
   }),
 );
 
-const filteredIcon = svg(
+const filteredIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -79,7 +82,7 @@ const filteredIcon = svg(
   }),
 );
 
-const filterIcon = svg(
+const filterIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -95,7 +98,7 @@ const filterIcon = svg(
   }),
 );
 
-const actionsIcon = svg(
+const actionsIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -111,7 +114,7 @@ const actionsIcon = svg(
   }),
 );
 
-const xIcon = svg(
+const xIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -127,7 +130,7 @@ const xIcon = svg(
   }),
 );
 
-const checkIcon = svg(
+const checkIcon = (): Element => svg(
   {
     xmlns: "http://www.w3.org/2000/svg",
     fill: "none",
@@ -361,8 +364,8 @@ export const TableComponent = <
                             { class: "vx-legacy-table__sort-icon" },
                             orderCol.val === col.key
                               ? orderBy.val === "asc"
-                                ? ascIcon
-                                : descIcon
+                                ? ascIcon()
+                                : descIcon()
                               : null,
                           ),
                         )
@@ -375,8 +378,8 @@ export const TableComponent = <
                               ? "vx-legacy-table__filter-btn--active "
                               : "") + "vx-legacy-table__filter-btn",
                           icon: (filters as any)[col.key]
-                            ? filteredIcon
-                            : filterIcon,
+                            ? filteredIcon()
+                            : filterIcon(),
                           onClick: () => {
                             if (!col.filterModal)
                               col.filterModal = van.state(false);
@@ -467,7 +470,7 @@ export const TableComponent = <
                             col.filter === "basic"
                               ? xButton({
                                   className: "vx-legacy-table__popover-btn",
-                                  icon: xIcon,
+                                  icon: xIcon(),
                                   label: clearLabel,
                                   onClick: () => {
                                     filterValue.val = "";
@@ -478,7 +481,7 @@ export const TableComponent = <
                               : null,
                             xButton({
                               className: "vx-legacy-table__popover-btn",
-                              icon: checkIcon,
+                              icon: checkIcon(),
                               label: applyLabel,
                               onClick: () => {
                                 if (col.filterModal)
@@ -563,7 +566,7 @@ export const TableComponent = <
                                 xButton({
                                   id: "select-father-" + index,
                                   className: "vx-legacy-table__menu-btn",
-                                  icon: actionsIcon,
+                                  icon: actionsIcon(),
                                   onClick: () =>
                                     (item.actions.val = !item.actions.val),
                                 }),

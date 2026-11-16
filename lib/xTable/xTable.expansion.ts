@@ -1,7 +1,7 @@
 import van, { type State } from "vanjs-core";
 import type { ChildDom } from "vanjs-core";
-import type { ExpandedRowScope, RowKey, XColumn } from "./xTable.types";
-import { chevronIcon } from "./xTable.icons";
+import type { ExpandedRowScope, RowKey, XColumn } from "./xTable.types.js";
+import { chevronIcon } from "./xTable.icons.js";
 
 const { span, td, th, tr } = van.tags;
 

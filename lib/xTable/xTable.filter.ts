@@ -1,12 +1,12 @@
 import van, { type State } from "vanjs-core";
-import type { XColumn } from "./xTable.types";
-import { xButton } from "../xButton";
+import type { XColumn } from "./xTable.types.js";
+import { xButton } from "../xButton.js";
 import {
   checkIcon,
   filterIcon,
   filteredIcon,
   xIcon,
-} from "./xTable.icons";
+} from "./xTable.icons.js";
 
 const { div, input, option, select, span } = van.tags;
 

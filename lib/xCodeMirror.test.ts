@@ -2,7 +2,7 @@
 import { describe, it, expect, vi } from "vitest"
 import { EditorView } from "codemirror"
 import { forEachDiagnostic } from "@codemirror/lint"
-import { xCodeMirror } from "./xCodeMirror"
+import { xCodeMirror } from "./xCodeMirror.js"
 // Read as text rather than through node:fs, which would need @types/node.
 import source from "./xCodeMirror.ts?raw"
 

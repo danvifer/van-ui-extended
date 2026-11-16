@@ -1,5 +1,5 @@
 import van from "vanjs-core";
-import { computeWindow } from "./xTable.virtualScroll";
+import { computeWindow } from "./xTable.virtualScroll.js";
 
 const { td, tr } = van.tags;
 
