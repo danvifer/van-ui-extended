@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest"
 import van from "vanjs-core"
-import { Select, type SelectProps } from "./select"
+import { Select, type SelectProps } from "./select.js"
 import selectCss from "./select.css?raw"
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))

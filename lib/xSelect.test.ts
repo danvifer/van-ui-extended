@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { xOption, xSelect } from "./xSelect";
-import type { XSelectProps } from "./xSelect";
+import { xOption, xSelect } from "./xSelect.js";
+import type { XSelectProps } from "./xSelect.js";
 
 interface Opt {
   readonly value: string;

@@ -3,7 +3,7 @@ import type {
   RowKey,
   RowKeyAccessor,
   FilterMethod,
-} from "./xTable.types";
+} from "./xTable.types.js";
 
 /**
  * Resolve a row's stable identity. Falls back to `String(value)` only when

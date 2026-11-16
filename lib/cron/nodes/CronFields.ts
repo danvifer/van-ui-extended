@@ -1,11 +1,11 @@
 var ceInputLangInternal = {};
-import lang from "../cultures";
+import lang from "../cultures/index.js";
 ceInputLangInternal = lang;
 import van from "vanjs-core";
 const { div, input, label, span } = van.tags
-import { CronComponent } from "./CronComponent";
-import { CronFieldTemplateGenerator } from "../templates/CronFieldTemplate";
-import { EspesificOptionTemplateGenerator } from "../templates/EspesificOptionTemplate";
+import { CronComponent } from "./CronComponent.js";
+import { CronFieldTemplateGenerator } from "../templates/CronFieldTemplate.js";
+import { EspesificOptionTemplateGenerator } from "../templates/EspesificOptionTemplate.js";
 
 export class CronFields extends CronComponent {
     every: number | undefined;

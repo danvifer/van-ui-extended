@@ -1,15 +1,15 @@
 /// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest"
 import van, { type ChildDom } from "vanjs-core"
-import { xButton } from "./xButton"
-import { xLastValue } from "./xLastValue"
-import { xSelect, xOption } from "./xSelect"
-import { xTable } from "./xTable/xTable"
-import type { XColumn, XTableProps } from "./xTable/xTable.types"
-import { WizardComponent } from "./wizard"
-import { TextAreaComponent } from "./textarea"
-import { Select } from "./select"
-import { TableComponent } from "./table"
+import { xButton } from "./xButton.js"
+import { xLastValue } from "./xLastValue.js"
+import { xSelect, xOption } from "./xSelect.js"
+import { xTable } from "./xTable/xTable.js"
+import type { XColumn, XTableProps } from "./xTable/xTable.types.js"
+import { WizardComponent } from "./wizard.js"
+import { TextAreaComponent } from "./textarea.js"
+import { Select } from "./select.js"
+import { TableComponent } from "./table.js"
 
 /*
  * Guards the Tailwind-free styling contract:

@@ -1,5 +1,5 @@
 import van, { State, ChildDom } from "vanjs-core";
-import { xButton } from "./xButton";
+import { xButton } from "./xButton.js";
 
 export interface FilterCheck {
   uuid: string;

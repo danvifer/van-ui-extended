@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import van from "vanjs-core"
-import { WizardComponent, type WizardProps } from "./wizard"
+import { WizardComponent, type WizardProps } from "./wizard.js"
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 

@@ -11,7 +11,7 @@ import type {
   TableScope,
   BodyCellScope,
   HeaderCellScope,
-} from "./xTable.types";
+} from "./xTable.types.js";
 import {
   applyPopoverFilters,
   filterRows,
@@ -19,24 +19,24 @@ import {
   resolveRowKey,
   sortRows,
   paginateRows,
-} from "./xTable.helpers";
-import { ascIcon, descIcon, spinnerIcon } from "./xTable.icons";
+} from "./xTable.helpers.js";
+import { ascIcon, descIcon, spinnerIcon } from "./xTable.icons.js";
 import {
   renderExpandedRow as renderExpandedRowHelper,
   renderExpanderCell as renderExpanderCellHelper,
   renderExpanderHeader as renderExpanderHeaderHelper,
-} from "./xTable.expansion";
+} from "./xTable.expansion.js";
 import {
   renderColumnFilterButton,
   type PopoverCtx,
-} from "./xTable.filter";
-import { renderPaginationFooter } from "./xTable.pagination";
-import { registerOutsideClick } from "./xTable.outsideClick";
+} from "./xTable.filter.js";
+import { renderPaginationFooter } from "./xTable.pagination.js";
+import { registerOutsideClick } from "./xTable.outsideClick.js";
 import {
   renderSelectionCell as renderSelectionCellHelper,
   renderSelectionHeader as renderSelectionHeaderHelper,
-} from "./xTable.selection";
-import { buildBodyRows } from "./xTable.body";
+} from "./xTable.selection.js";
+import { buildBodyRows } from "./xTable.body.js";
 
 const { div, table, thead, tbody, tr, th, td, span } = van.tags;
 

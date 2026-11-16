@@ -1,8 +1,8 @@
 var ceInputLangInternal = {};
-import lang from "../cultures";
+import lang from "../cultures/index.js";
 ceInputLangInternal = lang;
-import { CronComponent } from "./CronComponent";
-import { CronExpresionInputTemplateGenerator } from "../templates/CronExpresionInputTemplate";
+import { CronComponent } from "./CronComponent.js";
+import { CronExpresionInputTemplateGenerator } from "../templates/CronExpresionInputTemplate.js";
 
 import { isValidCron } from 'cron-validator'
 import cronstrue from 'cronstrue';

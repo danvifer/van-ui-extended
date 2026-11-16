@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import van, { type ChildDom } from "vanjs-core"
-import { TableComponent, type TableProps } from "./table"
+import { TableComponent, type TableProps } from "./table.js"
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 

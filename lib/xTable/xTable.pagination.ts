@@ -1,6 +1,6 @@
 import van, { type State } from "vanjs-core";
-import type { PaginationState, SelectionMode } from "./xTable.types";
-import { xButton } from "../xButton";
+import type { PaginationState, SelectionMode } from "./xTable.types.js";
+import { xButton } from "../xButton.js";
 import {
   checkIcon,
   chevronDownIcon,
@@ -8,8 +8,8 @@ import {
   lastPageIcon,
   nextPageIcon,
   prevPageIcon,
-} from "./xTable.icons";
-import { registerOutsideClick } from "./xTable.outsideClick";
+} from "./xTable.icons.js";
+import { registerOutsideClick } from "./xTable.outsideClick.js";
 
 const { button, div, span } = van.tags;
 

@@ -1,5 +1,5 @@
 import van from "vanjs-core";
-import type { SelectionMode } from "./xTable.types";
+import type { SelectionMode } from "./xTable.types.js";
 
 const { input, td, th } = van.tags;
 
