@@ -105,9 +105,11 @@ the stylesheet into Tailwind's components layer:
 
 ### Using it from Nuxt / Vue / SSR
 
-VanJS builds real DOM nodes at import time and has no server renderer. Mount these
-components client-side only (`<ClientOnly>`, a `.client.vue` component, or inside
-`onMounted`) or the server build will fail on `document is not defined`.
+Importing the package is safe on the server: no module touches the DOM when it loads, so
+SSR builds and Vitest suites with `environment: "node"` can import it. VanJS has no server
+renderer, though: calling a component builds real DOM nodes. Mount them client-side only
+(`<ClientOnly>`, a `.client.vue` component, or inside `onMounted`) or the server render
+will fail on `document is not defined`.
 
 ## Local development
 

@@ -1,6 +1,6 @@
 import van from "vanjs-core";
-import { xTable } from "./xTable";
-import type { XColumn, XTableProps } from "./xTable.types";
+import { xTable } from "./xTable.js";
+import type { XColumn, XTableProps } from "./xTable.types.js";
 
 /**
  * Local factory that defaults every showcase table to the Material theme

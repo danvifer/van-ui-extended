@@ -1,6 +1,10 @@
 import van from "vanjs-core"
 import type { EChartsOption } from "echarts"
-import { xLastValue, TableComponent, xChart } from "./index"
+// WHY: import from the concrete modules, not the package barrel. The barrel re-exports this
+// file, so importing it here was a cycle and pulled every component into widget's graph.
+import { xLastValue } from "./xLastValue.js"
+import { TableComponent } from "./table.js"
+import { xChart } from "./xChart.js"
 import type { ECharts } from "echarts"
 const tags = van.tags
 

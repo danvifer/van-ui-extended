@@ -1,7 +1,7 @@
 import van from "vanjs-core";
 const { a, button, div, input, li, small, span, ul } = van.tags
 const { path, svg } = van.tags("http://www.w3.org/2000/svg")
-import { CronFields } from "../nodes/CronFields";
+import { CronFields } from "../nodes/CronFields.js";
 export function CronExpresionInputTemplateGenerator(obj: any, objLang: any) {
     return div(div({ class: "cronInput", style: `display: flex !important; width: ${obj.width} !important; height: ${obj.height} !important;` },
         input({ class: "cronInsideInput" + (obj.extraClass ? " " + obj.extraClass : ""), type: "text", placeholder: objLang.inputPlaceholder }),

@@ -4,7 +4,15 @@ export interface CronState {
   [key: string]: unknown
 }
 
-export class CronComponent extends HTMLElement {
+// WHY: `extends HTMLElement` reads the global when the module loads, so without a DOM (SSR,
+// Node, Vitest's node environment) importing the package threw (issue #23). The stand-in base
+// only lets the module load there; creating the element still needs a real DOM.
+const ElementBase: typeof HTMLElement =
+  typeof HTMLElement === "undefined"
+    ? (class {} as unknown as typeof HTMLElement)
+    : HTMLElement
+
+export class CronComponent extends ElementBase {
   state!: CronState
   hasZero?: boolean
 
